@@ -1,10 +1,17 @@
 package com.ruoyi.business.iot.protocol;
 
+import com.ruoyi.business.iot.protocol.constant.AbnormalTypeEnum;
+import com.ruoyi.business.iot.protocol.constant.CmdEnum;
+import com.ruoyi.business.iot.protocol.vo.UplinkDataVO;
+import com.ruoyi.business.iot.protocol.vo.UplinkCmd08DataVO;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 @Slf4j
 public class UplinkDataParser {
@@ -62,28 +69,73 @@ public class UplinkDataParser {
         return Arrays.copyOfRange(decryptedBody, 0, decryptedBody.length - 1);
     }
 
+    /**
+     * 注意：Java 的 ByteBuffer 默认使用大端序，但我们已通过 .order(ByteOrder.LITTLE_ENDIAN)
+     *         // 显式设置为小端序，因此 getFloat()、getInt() 等方法会正确解析小端数据。
+     * @param body
+     * @return
+     */
+    public static UplinkDataVO parseData(byte[] body){
+        ByteBuffer buffer = ByteBuffer.wrap(body).order(ByteOrder.LITTLE_ENDIAN);
+        UplinkDataVO uplinkDataVO = parseCommonData(buffer);
+        Integer cmdNum = uplinkDataVO.getCmdNum();
+        for (int i = 0; i < cmdNum; i++) {
+            byte[] snBytes = getDeviceSnBYte(buffer);
+            ByteBuffer dataBuffer = getDataBuffer(buffer);
+            byte cmd = dataBuffer.get();
+            if(CmdEnum.UPLINK_08.getCode().equals(cmd)){
+                UplinkCmd08DataVO uplinkCmd08DataVO = parseCmd08Data(dataBuffer);
+                uplinkCmd08DataVO.setDeviceSn(IotCommonUtil.bytesToHex(snBytes));
+                uplinkDataVO.addCmd08DataVOS(uplinkCmd08DataVO);
+            }else {
+
+            }
+
+        }
+        return uplinkDataVO;
+    }
+
+
+    public static UplinkCmd08DataVO parseCmd08Data(ByteBuffer buffer) {
+        return UplinkCmd08DataVO.builder()
+                .batteryLevel(IotCommonUtil.byte2int(buffer.get()))
+                .abnormalTypes(buildAbnormalTypes(buffer.get()))
+                .uplinkPeriod(buffer.getShort())
+                .build();
+
+
+    }
+
+    private static List<AbnormalTypeEnum> buildAbnormalTypes(byte abnormal){
+
+        return new ArrayList<>();
+    }
 
     /**
      * 解析解密后的协议体数据，提取具体的字段信息。
      *
      * [cite_start]这是一个针对 CMD:08 指令数据的解析示例。[cite: 67]
      *
-     * @param body 解密后的协议体字节数组（即原始报文去除加密层和校验字段后的内容）
+     * @param buffer 解密后的协议体字节数组（即原始报文去除加密层和校验字段后的内容）
      */
-    public static void parseCmd08Data(byte[] body) {
-        // 创建一个 ByteBuffer 来方便地解析字节流，并设置为小端序（Little-Endian）
-        ByteBuffer buffer = ByteBuffer.wrap(body).order(ByteOrder.LITTLE_ENDIAN);
+    public static UplinkDataVO parseCommonData(ByteBuffer buffer) {
 
         // 示例：解析 CMD:08 指令对应的数据格式 [cite: 67, 79]
-        byte batteryLevel = buffer.get();        // 电池电量（单位：百分比 %）[cite: 80]
-        byte alarm = buffer.get();               // 报警状态字节（可能包含多个标志位）[cite: 80]
-        short reportPeriod = buffer.getShort();  // 上报周期（单位：分钟）[cite: 80]
+        byte batteryLevel = buffer.get();        // 电池电量（单位：百分比 %）
+        byte signalStrength = buffer.get();        // 信号强度
+        byte[] iccIDBytes = new byte[11];
+        buffer.get(iccIDBytes);
+        byte replyFlag = buffer.get();
+        byte cmdNum = buffer.get();
 
-        // 用于演示，打印解析出的数据
-        System.out.println("电池电量: " + batteryLevel + " (" + (batteryLevel & 0xFF) + "%)"); // [cite: 64]
-        System.out.println("报警状态: " + String.format("0x%02X", alarm)); // 以两位十六进制格式输出 [cite: 80]
-        System.out.println("上报周期: " + reportPeriod + " 分钟"); // [cite: 80]
-
+        return UplinkDataVO.builder()
+                .batteryLevel(IotCommonUtil.byte2int(batteryLevel))
+                .signalStrength(IotCommonUtil.byte2int(signalStrength))
+                .iccID(IotCommonUtil.bytesToHex(iccIDBytes))
+                .replyFlag(IotCommonUtil.byte2int(replyFlag))
+                .cmdNum(IotCommonUtil.byte2int(cmdNum))
+                .build()
+                ;
         // 后续的解析逻辑通常包括：
         // 1. 读取“数据使能位”（Data Enable Bits），它是一个或多个字节，
         //    每一位表示后续某个特定数据字段是否存在或有效。
@@ -95,8 +147,23 @@ public class UplinkDataParser {
         // float instantaneousFlow = buffer.getFloat(); // 自动按小端序解析
         // System.out.println("瞬时流量: " + instantaneousFlow + " m³/h");
         //
-        // 注意：Java 的 ByteBuffer 默认使用大端序，但我们已通过 .order(ByteOrder.LITTLE_ENDIAN)
-        // 显式设置为小端序，因此 getFloat()、getInt() 等方法会正确解析小端数据。
+        //
+    }
+
+
+    private static @NotNull ByteBuffer getDataBuffer(ByteBuffer buffer) {
+        short dataLength = buffer.getShort();
+        byte[] dataBytes = new byte[dataLength];
+        buffer.get(dataBytes);
+        ByteBuffer dataBuffer = ByteBuffer.wrap(dataBytes).order(ByteOrder.LITTLE_ENDIAN);
+        return dataBuffer;
+    }
+
+    private static byte[] getDeviceSnBYte(ByteBuffer buffer) {
+        byte snLength = buffer.get();
+        byte[] snBytes = new byte[snLength];
+        buffer.get(snBytes);
+        return snBytes;
     }
 
     public static void main(String[] args) {

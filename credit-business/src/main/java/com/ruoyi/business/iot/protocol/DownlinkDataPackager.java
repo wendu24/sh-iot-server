@@ -1,6 +1,6 @@
 package com.ruoyi.business.iot.protocol;
 
-import com.ruoyi.business.iot.protocol.constant.CmdNumberEnum;
+import com.ruoyi.business.iot.protocol.constant.CmdEnum;
 import com.ruoyi.business.iot.protocol.constant.ReadWriteEnum;
 import lombok.extern.slf4j.Slf4j;
 
@@ -18,13 +18,13 @@ public class DownlinkDataPackager {
 
     /**
      * 构建下发命令的消息体
-     * @param cmdNumberEnum CMD
+     * @param cmdEnum CMD
      * @param mid 消息编号
      * @param readWriteEnum 读写标识
      * @param data 数据
      */
     public static byte[] buildShortCommand(
-                                    CmdNumberEnum cmdNumberEnum,
+                                    CmdEnum cmdEnum,
                                     Short mid,
                                     ReadWriteEnum readWriteEnum,
                                     Short data
@@ -40,7 +40,7 @@ public class DownlinkDataPackager {
             // 2. 构建命令体：CMD:23(设置上报间隔)
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             // 写入 CMD (1 字节)
-            outputStream.write(cmdNumberEnum.getCode());
+            outputStream.write(cmdEnum.getCode());
             // 写入 MID (2 字节)
             outputStream.write(IotCommonUtil.shortToBytes(mid));
             // 写入读写标志 (1 字节) 这个方法只会写入最低八位

@@ -1,5 +1,7 @@
 package com.ruoyi.business.iot.protocol;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
@@ -61,4 +63,40 @@ public class IotCommonUtil {
     public static byte[] intToBytes(int value) {
         return ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN).putInt(value).array();
     }
+
+    /**
+     * 将单个字节（byte）转换为无符号整数（int）。
+     *
+     * @param b 要转换的字节。
+     * @return 转换后的无符号整数值。
+     */
+    public static int byte2int(byte b) {
+        // 使用按位与操作 & 0xFF 来消除符号扩展，确保结果为正数。
+        // 如果 b 是负数，例如 -1，在不使用 & 0xFF 的情况下会转换为 -1。
+        // 但通过 & 0xFF 操作，会得到 255。
+        return b & 0xFF;
+    }
+
+    /**
+     * 将单个字节（byte）转换为无符号整数（int）。
+     *
+     * @param b 要转换的字节。
+     * @return 转换后的无符号整数值。
+     */
+    public static BigDecimal byte2Gigdecimal(byte b) {
+        int intval = byte2int(b);
+        return BigDecimal.valueOf(intval).divide(BigDecimal.TEN,1, RoundingMode.HALF_UP);
+    }
+
+    /**
+     * Converts a hexadecimal string to an integer.
+     *
+     * @param hexString The hexadecimal string to convert.
+     * @return The integer value of the hexadecimal string.
+     * @throws NumberFormatException if the string does not contain a parsable integer in hexadecimal format.
+     */
+    public static int hex2int(String hexString) {
+        return Integer.parseInt(hexString, 16);
+    }
+
 }

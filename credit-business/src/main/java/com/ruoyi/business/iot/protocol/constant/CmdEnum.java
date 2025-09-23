@@ -6,16 +6,19 @@ import lombok.Getter;
  * CMD 命令枚举
  */
 @Getter
-public enum CmdNumberEnum {
+public enum CmdEnum {
+
+    UPLINK_08((byte)0x08,"上传数据"),
+
     ;
-    private Integer code;
+    private Byte code;
 
     private String desc;
 
 
 
 
-    CmdNumberEnum(Integer code, String desc) {
+    CmdEnum(Byte code, String desc) {
         this.code = code;
         this.desc = desc;
     }
