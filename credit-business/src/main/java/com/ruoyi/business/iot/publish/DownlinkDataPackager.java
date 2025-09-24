@@ -13,6 +13,7 @@ import java.nio.ByteOrder;
 import java.util.Arrays;
 
 @Slf4j
+@Deprecated
 public class DownlinkDataPackager {
 
 
@@ -25,6 +26,7 @@ public class DownlinkDataPackager {
      * @param readWriteEnum 读写标识
      * @param data 数据
      */
+    @Deprecated
     public static byte[] buildShortCommand(
                                     CmdEnum cmdEnum,
                                     Short mid,
@@ -67,6 +69,7 @@ public class DownlinkDataPackager {
      * @return
      * @throws Exception
      */
+    @Deprecated
     public static byte[] buildDownlinkMessage(int timestamp, byte commandCount, byte[] sn, byte[] cmdData,String aesKey) throws Exception {
         byte[] aesKeyBytes = aesKey.getBytes("UTF-8");
         // Step 1: 构建未加密的协议主体部分 [cite: 92]

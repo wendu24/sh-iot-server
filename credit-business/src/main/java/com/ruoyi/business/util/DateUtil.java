@@ -30,7 +30,20 @@ public class DateUtil {
         LocalDateTime localDateTime = instant.atZone(ZoneId.systemDefault()).toLocalDateTime();
         return localDateTime.format(DateTimeFormatter.ofPattern(pattern));
     }
-
+    /**
+     * 将 LocalDateTime 格式化为指定格式的字符串。
+     *
+     * @param localDateTime 要转换的 LocalDateTime 对象。
+     * @param pattern       格式化模式，例如 "yyyy-MM-dd HH:mm:ss"。
+     * @return 格式化后的字符串。
+     */
+    public static String formatLocalDateTime(LocalDateTime localDateTime, String pattern) {
+        if (localDateTime == null || pattern == null || pattern.isEmpty()) {
+            return null;
+        }
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
+        return localDateTime.format(formatter);
+    }
 
     /**
      * 将时间戳（毫秒）转换为 LocalDateTime。
@@ -115,5 +128,17 @@ public class DateUtil {
         }
         return Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
     }
-
+    /**
+     * 将 LocalDateTime 转换为时间戳（毫秒）。
+     *
+     * @param localDateTime 要转换的 LocalDateTime 对象。
+     * @return 转换后的时间戳，单位为毫秒。
+     */
+    public static long localDateTimeToTimestamp(LocalDateTime localDateTime) {
+        if (localDateTime == null) {
+            return 0L;
+        }
+        // 先转换为带时区的 ZonedDateTime，再获取其 Instant，最后转为毫秒时间戳。
+        return localDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+    }
 }

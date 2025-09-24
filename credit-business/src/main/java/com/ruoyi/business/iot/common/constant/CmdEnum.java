@@ -2,36 +2,55 @@ package com.ruoyi.business.iot.common.constant;
 
 import lombok.Getter;
 
+import java.util.Arrays;
+
 /**
  * CMD 命令枚举
  */
 @Getter
 public enum CmdEnum {
 
-    UPLINK_08((byte)0x08,"上传数据"),
-    UPLINK_FF((byte)0x00,"应答数据"),
+    UPLINK_08((byte)0x08,null,null,"上传数据"),
+    UPLINK_FF((byte)0x00,null,null,"应答数据"),
 
-    DOWNLINK_16((byte)0x16,"下发修改/读取目标地址"),
-    DOWNLINK_19((byte)0x19,"下发修改/读取AES密钥"),
-    DOWNLINK_26((byte)0x26,"下发修改/读取鉴权密钥"),
-    DOWNLINK_23((byte)0x23,"下发设置/读取上报间隔"),
-    DOWNLINK_25((byte)0x25,"下发设置/读取采集间隔"),
-    DOWNLINK_30((byte)0x30,"下发设置/读取阀门开度"),
-    DOWNLINK_40((byte)0x40,"下发读取实时数据并上报"),
-    DOWNLINK_F0((byte)0xF0,"设备固件升级"),
+
+
+    DOWNLINK_16((byte)0x16, String.class,50,"下发修改/读取目标地址"),
+    DOWNLINK_19((byte)0x19, String.class,16,"下发修改/读取AES密钥"),
+    DOWNLINK_26((byte)0x26, String.class,16,"下发修改/读取鉴权密钥"),
+
+    DOWNLINK_23((byte)0x23, Float.class,2,"下发设置/读取上报间隔"),
+    DOWNLINK_25((byte)0x25,Float.class,2,"下发设置/读取采集间隔"),
+    DOWNLINK_30((byte)0x30,Float.class,2,"下发设置/读取阀门开度"),
+    DOWNLINK_40((byte)0x40,null,null,"下发读取实时数据并上报"),
+    DOWNLINK_F0((byte)0xF0,null,null,"设备固件升级"),
 
 
 
     ;
+    /**
+     * 命令字编码
+     */
     private Byte code;
-
+    /**
+     * 如果是下发数据,下发数据的类型
+     */
+    private Class DataClazz;
+    /**
+     * 下发数据的字节数
+     */
+    private Integer dataLength;
+    /**
+     * 描述
+     */
     private String desc;
 
 
 
-
-    CmdEnum(Byte code, String desc) {
+    CmdEnum(Byte code, Class dataClazz, Integer dataLength, String desc) {
         this.code = code;
+        DataClazz = dataClazz;
+        this.dataLength = dataLength;
         this.desc = desc;
     }
 }
