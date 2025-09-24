@@ -1,7 +1,6 @@
-package com.ruoyi.business.iot.protocol.vo;
+package com.ruoyi.business.iot.common.vo;
 
-import com.ruoyi.business.iot.protocol.constant.AbnormalTypeEnum;
-import lombok.Builder;
+import com.ruoyi.business.iot.common.constant.AbnormalTypeEnum;
 import lombok.Data;
 import lombok.experimental.SuperBuilder;
 

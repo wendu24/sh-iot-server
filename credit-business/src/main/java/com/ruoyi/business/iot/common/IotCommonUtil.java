@@ -1,4 +1,4 @@
-package com.ruoyi.business.iot.protocol;
+package com.ruoyi.business.iot.common;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;

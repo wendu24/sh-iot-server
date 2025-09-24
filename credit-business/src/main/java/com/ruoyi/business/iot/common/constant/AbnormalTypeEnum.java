@@ -1,4 +1,4 @@
-package com.ruoyi.business.iot.protocol.constant;
+package com.ruoyi.business.iot.common.constant;
 
 import lombok.Getter;
 

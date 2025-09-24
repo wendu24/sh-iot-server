@@ -1,7 +1,10 @@
-package com.ruoyi.business.iot.protocol;
+package com.ruoyi.business.iot.publish;
 
-import com.ruoyi.business.iot.protocol.constant.CmdEnum;
-import com.ruoyi.business.iot.protocol.constant.ReadWriteEnum;
+import com.ruoyi.business.iot.common.AesUtil;
+import com.ruoyi.business.iot.common.IotCommonUtil;
+import com.ruoyi.business.iot.common.MidGenerator;
+import com.ruoyi.business.iot.common.constant.CmdEnum;
+import com.ruoyi.business.iot.common.constant.ReadWriteEnum;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Date;

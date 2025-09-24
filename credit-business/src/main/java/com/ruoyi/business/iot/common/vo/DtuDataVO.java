@@ -1,4 +1,4 @@
-package com.ruoyi.business.iot.protocol.vo;
+package com.ruoyi.business.iot.common.vo;
 
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import lombok.Data;
@@ -9,7 +9,7 @@ import java.util.List;
 
 @Data
 @SuperBuilder
-public class UplinkDataVO {
+public class DtuDataVO {
 
 
     /**
