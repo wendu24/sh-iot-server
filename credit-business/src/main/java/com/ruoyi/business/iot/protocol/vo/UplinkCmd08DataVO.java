@@ -69,7 +69,7 @@ public class UplinkCmd08DataVO {
     /**
      * 累计流量 m³
      */
-    private BigDecimal TotalFlowVolume;
+    private BigDecimal totalFlowVolume;
 
     /**
      * 累计热量 kW
@@ -87,6 +87,8 @@ public class UplinkCmd08DataVO {
      * 室内温度
      */
     private BigDecimal roomTemperature;
+
+    private BigDecimal targetRoomTemperature;
 
 
 
