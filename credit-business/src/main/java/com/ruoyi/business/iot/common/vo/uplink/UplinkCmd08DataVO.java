@@ -1,4 +1,4 @@
-package com.ruoyi.business.iot.common.vo;
+package com.ruoyi.business.iot.common.vo.uplink;
 
 import com.ruoyi.business.iot.common.constant.AbnormalTypeEnum;
 import lombok.Data;

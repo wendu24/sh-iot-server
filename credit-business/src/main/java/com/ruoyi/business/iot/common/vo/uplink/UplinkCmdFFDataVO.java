@@ -1,4 +1,4 @@
-package com.ruoyi.business.iot.common.vo;
+package com.ruoyi.business.iot.common.vo.uplink;
 
 import lombok.Builder;
 import lombok.Data;
@@ -26,8 +26,11 @@ public class UplinkCmdFFDataVO {
      */
     private LocalDateTime deviceTime;
     /**
-     * 0 成功; 1失败
+     * 0 成功; 1失败 , 下发写命令有该值, 这两个互斥
      */
     private Byte result;
-
+    /**
+     * 如果是我读数据,那么就有该值
+     */
+    private String dataHex;
 }

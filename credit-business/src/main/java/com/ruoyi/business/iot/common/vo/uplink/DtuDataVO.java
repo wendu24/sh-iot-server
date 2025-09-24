@@ -1,4 +1,4 @@
-package com.ruoyi.business.iot.common.vo;
+package com.ruoyi.business.iot.common.vo.uplink;
 
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import lombok.Data;

@@ -2,7 +2,7 @@ package com.ruoyi.business.iot.subscribe;
 
 import com.ruoyi.business.iot.common.IotCommonUtil;
 import com.ruoyi.business.iot.common.constant.AbnormalTypeEnum;
-import com.ruoyi.business.iot.common.vo.UplinkCmd08DataVO;
+import com.ruoyi.business.iot.common.vo.uplink.UplinkCmd08DataVO;
 import com.ruoyi.business.util.DateUtil;
 
 import java.math.BigDecimal;

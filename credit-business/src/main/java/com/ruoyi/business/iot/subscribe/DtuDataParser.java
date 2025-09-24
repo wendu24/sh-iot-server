@@ -1,7 +1,7 @@
 package com.ruoyi.business.iot.subscribe;
 
 import com.ruoyi.business.iot.common.IotCommonUtil;
-import com.ruoyi.business.iot.common.vo.DtuDataVO;
+import com.ruoyi.business.iot.common.vo.uplink.DtuDataVO;
 
 import java.nio.ByteBuffer;
 

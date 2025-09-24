@@ -4,9 +4,9 @@ import com.alibaba.fastjson2.JSONObject;
 import com.ruoyi.business.iot.common.AesUtil;
 import com.ruoyi.business.iot.common.IotCommonUtil;
 import com.ruoyi.business.iot.common.constant.CmdEnum;
-import com.ruoyi.business.iot.common.vo.DtuDataVO;
-import com.ruoyi.business.iot.common.vo.UplinkCmd08DataVO;
-import com.ruoyi.business.iot.common.vo.UplinkCmdFFDataVO;
+import com.ruoyi.business.iot.common.vo.uplink.DtuDataVO;
+import com.ruoyi.business.iot.common.vo.uplink.UplinkCmd08DataVO;
+import com.ruoyi.business.iot.common.vo.uplink.UplinkCmdFFDataVO;
 import lombok.extern.slf4j.Slf4j;
 
 import java.nio.ByteBuffer;
