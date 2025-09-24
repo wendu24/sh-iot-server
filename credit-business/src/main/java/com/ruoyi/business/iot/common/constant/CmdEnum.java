@@ -28,6 +28,12 @@ public enum CmdEnum {
 
 
     ;
+
+
+    public static CmdEnum getByCode(byte code){
+        return Arrays.stream(CmdEnum.values()).filter( cmdEnum -> code == cmdEnum.getCode()).findAny().orElseThrow(()->new RuntimeException("无效的CMD" + code ));
+    }
+
     /**
      * 命令字编码
      */

@@ -8,29 +8,46 @@ import com.ruoyi.business.iot.common.vo.uplink.DtuDataVO;
 import com.ruoyi.business.iot.common.vo.uplink.UplinkCmd08DataVO;
 import com.ruoyi.business.iot.common.vo.uplink.UplinkCmdFFDataVO;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.stereotype.Component;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 @Slf4j
-public class MqttSubcriber {
+@Component
+public class MqttMsgHandler {
+
+    @Autowired
+    private ThreadPoolTaskExecutor mqttMessageExecutor;
+
+    /**
+     * 异步处理
+     * @param topic
+     * @param hexString
+     */
+    public void handleSync(String topic, String hexString){
+        mqttMessageExecutor.execute(()->handle(topic,hexString));
+    }
+
+    public DtuDataVO handle(String topic, String hexString){
+        String[] parts = topic.split("/");
+        String deviceSN = parts[3];
+        DtuDataVO dtuDataVO = parse(deviceSN, hexString);
+        return dtuDataVO;
+    }
 
 
-    public void handle(){
+    public DtuDataVO parse(String deviceSN, String hexString){
 
-        String payload = "";
-        // reply信息
-        String hexString = "aa723300209d91b90d8898329f827d450d2e56e2abfd1a4d2ba8d5b1220b7a31c201fa44d87b498119fec4deee619dac3542c190ed6fdd";
-//        String hexString = "aa729300202563eb117a2f53cad8253be245f14e4625e05cec5c29b78595922e2bc2430220c60a38a703db1d6af14dd7d9d5e2b28b7dd0a5a9a672148f6159b0d7d995d3b90ee2fc0c7ca2e3ef8e751e637364163b872fb400a3d955cabadcbe1166e4860225e05cec5c29b78595922e2bc2430220f255e43390e41ca677f68bfe323b72272c6ea2ec588d5ca1925048117ab04a8f96dd";
-
-        byte[] mockReceivedData = IotCommonUtil.hexToBytes(hexString);
-        String deviceSN = "";
+        byte[] rawData = IotCommonUtil.hexToBytes(hexString);
         String aesKey = AesUtil.getAesKey(deviceSN);
         try {
             /**
              * 第一步: 解析出消息体并解密
              */
-            byte[] decryptedBody = RawDataParser.parse(mockReceivedData,aesKey);
+            byte[] decryptedBody = RawDataParser.parse(rawData,aesKey);
             System.out.println("解密后的数据 decryptedBody : " + IotCommonUtil.bytesToHex(decryptedBody));
             // 这个buffer整个链路一直在用
             ByteBuffer buffer = ByteBuffer.wrap(decryptedBody).order(ByteOrder.LITTLE_ENDIAN);
@@ -43,10 +60,13 @@ public class MqttSubcriber {
              */
             parseData(buffer,dtuDataVO);
             log.info("解析出的数据 {}",JSONObject.toJSONString(dtuDataVO));
+            return dtuDataVO;
         } catch (Exception e) {
             log.error("消息解析出错啦",e);
+            return null;
         }
     }
+
 
 
     /**
@@ -69,7 +89,7 @@ public class MqttSubcriber {
                 dtuDataVO.addCmd08DataVOS(uplinkCmd08DataVO);
                 // 回复数据的cmd取决于下发时的cmd
             }else {
-                UplinkCmdFFDataVO cmdFFDataVO = CmdFFDataParser.parse(oneDataBuffer);
+                UplinkCmdFFDataVO cmdFFDataVO = CmdFFDataParser.parse(oneDataBuffer,cmd);
                 dtuDataVO.addCmdFFDataVOS(cmdFFDataVO);
             }
         }
@@ -92,7 +112,7 @@ public class MqttSubcriber {
     }
 
     public static void main(String[] args) {
-        MqttSubcriber mqttSubcriber = new MqttSubcriber();
-        mqttSubcriber.handle();
+        MqttMsgHandler mqttMsgHandler = new MqttMsgHandler();
+//        mqttMsgHandler.handle2();
     }
 }

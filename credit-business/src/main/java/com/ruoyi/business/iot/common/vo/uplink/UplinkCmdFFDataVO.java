@@ -1,5 +1,6 @@
 package com.ruoyi.business.iot.common.vo.uplink;
 
+import com.ruoyi.business.iot.common.constant.CmdEnum;
 import lombok.Builder;
 import lombok.Data;
 
@@ -13,6 +14,8 @@ import java.time.LocalDateTime;
 public class UplinkCmdFFDataVO {
 
     private String deviceSn;
+
+    private byte cmdCode;
     /**
      * 下发数据时的mid
      */
@@ -32,5 +35,5 @@ public class UplinkCmdFFDataVO {
     /**
      * 如果是我读数据,那么就有该值
      */
-    private String dataHex;
+    private byte[] dataBytes;
 }
