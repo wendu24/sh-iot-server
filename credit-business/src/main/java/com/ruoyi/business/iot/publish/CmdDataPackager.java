@@ -1,6 +1,6 @@
 package com.ruoyi.business.iot.publish;
 
-import com.ruoyi.business.iot.common.IotCommonUtil;
+import com.ruoyi.business.iot.common.util.IotCommonUtil;
 import com.ruoyi.business.iot.common.constant.CmdEnum;
 import com.ruoyi.business.iot.common.constant.ReadWriteEnum;
 import com.ruoyi.business.iot.common.vo.down.CommonDownDataVO;

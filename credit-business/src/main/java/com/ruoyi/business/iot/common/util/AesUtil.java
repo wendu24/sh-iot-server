@@ -1,4 +1,4 @@
-package com.ruoyi.business.iot.common;
+package com.ruoyi.business.iot.common.util;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;

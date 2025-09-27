@@ -1,8 +1,8 @@
 package com.ruoyi.business.iot.subscribe;
 
 import com.alibaba.fastjson2.JSONObject;
-import com.ruoyi.business.iot.common.AesUtil;
-import com.ruoyi.business.iot.common.IotCommonUtil;
+import com.ruoyi.business.iot.common.util.AesUtil;
+import com.ruoyi.business.iot.common.util.IotCommonUtil;
 import com.ruoyi.business.iot.common.constant.CmdEnum;
 import com.ruoyi.business.iot.common.vo.uplink.DtuDataVO;
 import com.ruoyi.business.iot.common.vo.uplink.UplinkCmd08DataVO;

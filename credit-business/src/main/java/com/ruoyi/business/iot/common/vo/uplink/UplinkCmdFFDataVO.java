@@ -32,8 +32,7 @@ public class UplinkCmdFFDataVO {
      * 0 成功; 1失败 , 下发写命令有该值, 这两个互斥
      */
     private Byte result;
-    /**
-     * 如果是我读数据,那么就有该值
-     */
-    private byte[] dataBytes;
+
+
+    private String data;
 }

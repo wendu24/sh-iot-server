@@ -1,7 +1,7 @@
 package com.ruoyi.business.iot.subscribe;
 
-import com.ruoyi.business.iot.common.AesUtil;
-import com.ruoyi.business.iot.common.IotCommonUtil;
+import com.ruoyi.business.iot.common.util.AesUtil;
+import com.ruoyi.business.iot.common.util.IotCommonUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import java.nio.ByteBuffer;

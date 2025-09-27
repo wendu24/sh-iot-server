@@ -1,9 +1,10 @@
-package com.ruoyi.business.iot.common;
+package com.ruoyi.business.iot.common.util;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.charset.StandardCharsets;
 
 public class IotCommonUtil {
 
@@ -43,7 +44,22 @@ public class IotCommonUtil {
         return (byte) (sum & 0xFF); // 确保返回值在 -128 到 127 范围内，符合 byte 类型
     }
 
+    public static String paddedBytesToString(byte[] paddedBytes) {
+        // 1. Convert the entire byte array to a string using a suitable encoding.
+        // UTF-8 is a common and safe choice.
+        String fullString = new String(paddedBytes, StandardCharsets.UTF_8);
 
+        // 2. Find the index of the first null character ('\0').
+        int nullIndex = fullString.indexOf('\0');
+
+        // 3. If a null character is found, return the substring up to that point.
+        // Otherwise, return the full string.
+        if (nullIndex != -1) {
+            return fullString.substring(0, nullIndex);
+        } else {
+            return fullString;
+        }
+    }
 
 
     /**

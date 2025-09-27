@@ -1,7 +1,7 @@
 package com.ruoyi.business.iot.publish;
 
-import com.ruoyi.business.iot.common.AesUtil;
-import com.ruoyi.business.iot.common.IotCommonUtil;
+import com.ruoyi.business.iot.common.util.AesUtil;
+import com.ruoyi.business.iot.common.util.IotCommonUtil;
 import com.ruoyi.business.iot.common.constant.CommonConstant;
 import com.ruoyi.business.iot.common.vo.down.DtuDownDataVO;
 import lombok.extern.slf4j.Slf4j;
