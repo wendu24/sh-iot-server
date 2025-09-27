@@ -6,6 +6,7 @@ import com.ruoyi.business.iot.common.vo.uplink.UplinkCmd08DataVO;
 import com.ruoyi.business.util.DateUtil;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.nio.ByteBuffer;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -55,31 +56,31 @@ public class Cmd08DataParser {
                         break;
                     case 1:
                         short valvePosition = buffer.getShort();
-                        uplinkCmd08DataVO.setValvePosition(IotCommonUtil.short2bigdecimal(valvePosition));
+                        uplinkCmd08DataVO.setValvePosition(IotCommonUtil.short2bigdecimal(valvePosition).setScale(1, RoundingMode.HALF_UP));
                         break;
                     case 2:
                         short targetValvePosition = buffer.getShort();
-                        uplinkCmd08DataVO.setTargetValvePosition(IotCommonUtil.short2bigdecimal(targetValvePosition));
+                        uplinkCmd08DataVO.setTargetValvePosition(IotCommonUtil.short2bigdecimal(targetValvePosition).setScale(1, RoundingMode.HALF_UP));
                         break;
                     case 3:
                         short returnWaterTemperature = buffer.getShort();
-                        uplinkCmd08DataVO.setReturnWaterPressure(IotCommonUtil.short2bigdecimal(returnWaterTemperature));
+                        uplinkCmd08DataVO.setReturnWaterPressure(IotCommonUtil.short2bigdecimal(returnWaterTemperature).setScale(1, RoundingMode.HALF_UP));
                         break;
                     case 4:
                         short targetReturnWaterTemperature = buffer.getShort();
-                        uplinkCmd08DataVO.setTargetReturnWaterTemperature(IotCommonUtil.short2bigdecimal(targetReturnWaterTemperature));
+                        uplinkCmd08DataVO.setTargetReturnWaterTemperature(IotCommonUtil.short2bigdecimal(targetReturnWaterTemperature).setScale(1, RoundingMode.HALF_UP));
                         break;
                     case 5:
                         short supplyWaterTemperature = buffer.getShort();
-                        uplinkCmd08DataVO.setSupplyWaterTemperature(IotCommonUtil.short2bigdecimal(supplyWaterTemperature));
+                        uplinkCmd08DataVO.setSupplyWaterTemperature(IotCommonUtil.short2bigdecimal(supplyWaterTemperature).setScale(1, RoundingMode.HALF_UP));
                         break;
                     case 6:
                         float flowRate = buffer.getFloat();
-                        uplinkCmd08DataVO.setFlowRate(BigDecimal.valueOf(flowRate));
+                        uplinkCmd08DataVO.setFlowRate(BigDecimal.valueOf(flowRate).setScale(1, RoundingMode.HALF_UP));
                         break;
                     case 7:
                         float heatOutput = buffer.getFloat();
-                        uplinkCmd08DataVO.setHeatOutput(BigDecimal.valueOf(heatOutput));
+                        uplinkCmd08DataVO.setHeatOutput(BigDecimal.valueOf(heatOutput).setScale(1, RoundingMode.HALF_UP));
                         break;
                 }
             }
@@ -101,27 +102,27 @@ public class Cmd08DataParser {
                 switch (i) {
                     case 0:
                         double totalFlowVolume = buffer.getDouble();
-                        uplinkCmd08DataVO.setTotalFlowVolume(BigDecimal.valueOf(totalFlowVolume));
+                        uplinkCmd08DataVO.setTotalFlowVolume(BigDecimal.valueOf(totalFlowVolume).setScale(1, RoundingMode.HALF_UP));
                         break;
                     case 1:
                         double totalHeatOutput = buffer.getDouble();
-                        uplinkCmd08DataVO.setTotalHeatOutput(BigDecimal.valueOf(totalHeatOutput));
+                        uplinkCmd08DataVO.setTotalHeatOutput(BigDecimal.valueOf(totalHeatOutput).setScale(1, RoundingMode.HALF_UP));
                         break;
                     case 2:
                         float supplyWaterPressure = buffer.getFloat();
-                        uplinkCmd08DataVO.setSupplyWaterPressure(BigDecimal.valueOf(supplyWaterPressure));
+                        uplinkCmd08DataVO.setSupplyWaterPressure(BigDecimal.valueOf(supplyWaterPressure).setScale(1, RoundingMode.HALF_UP));
                         break;
                     case 3:
                         float returnWaterPressure = buffer.getFloat();
-                        uplinkCmd08DataVO.setReturnWaterPressure(BigDecimal.valueOf(returnWaterPressure));
+                        uplinkCmd08DataVO.setReturnWaterPressure(BigDecimal.valueOf(returnWaterPressure).setScale(1, RoundingMode.HALF_UP));
                         break;
                     case 4:
                         short roomTemperature = buffer.getShort();
-                        uplinkCmd08DataVO.setRoomTemperature(IotCommonUtil.short2bigdecimal(roomTemperature));
+                        uplinkCmd08DataVO.setRoomTemperature(IotCommonUtil.short2bigdecimal(roomTemperature).setScale(1, RoundingMode.HALF_UP));
                         break;
                     case 5:
                         short targetRoomTemperature = buffer.getShort();
-                        uplinkCmd08DataVO.setTargetRoomTemperature(IotCommonUtil.short2bigdecimal(targetRoomTemperature));
+                        uplinkCmd08DataVO.setTargetRoomTemperature(IotCommonUtil.short2bigdecimal(targetRoomTemperature).setScale(1, RoundingMode.HALF_UP));
                         break;
                     case 6:
                         break;
