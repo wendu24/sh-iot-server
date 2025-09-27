@@ -1,4 +1,4 @@
-package com.ruoyi.business.iot.publish;
+package com.ruoyi.business.iot.packager;
 
 import com.ruoyi.business.iot.common.util.AesUtil;
 import com.ruoyi.business.iot.common.util.IotCommonUtil;

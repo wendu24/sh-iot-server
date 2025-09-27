@@ -1,4 +1,4 @@
-package com.ruoyi.business.iot.subscribe;
+package com.ruoyi.business.iot.parser;
 
 import com.ruoyi.business.iot.common.util.AesUtil;
 import com.ruoyi.business.iot.common.util.IotCommonUtil;

@@ -1,4 +1,4 @@
-package com.ruoyi.business.iot.subscribe;
+package com.ruoyi.business.iot.parser;
 
 import com.ruoyi.business.iot.common.util.IotCommonUtil;
 import com.ruoyi.business.iot.common.vo.uplink.DtuDataVO;

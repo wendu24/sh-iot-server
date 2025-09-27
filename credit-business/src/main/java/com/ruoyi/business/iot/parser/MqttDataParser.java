@@ -1,4 +1,4 @@
-package com.ruoyi.business.iot.subscribe;
+package com.ruoyi.business.iot.parser;
 
 import com.alibaba.fastjson2.JSONObject;
 import com.ruoyi.business.iot.common.util.AesUtil;
@@ -8,38 +8,23 @@ import com.ruoyi.business.iot.common.vo.uplink.DtuDataVO;
 import com.ruoyi.business.iot.common.vo.uplink.UplinkCmd08DataVO;
 import com.ruoyi.business.iot.common.vo.uplink.UplinkCmdFFDataVO;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-import org.springframework.stereotype.Component;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 @Slf4j
-@Component
-public class MqttMsgHandler {
+public class MqttDataParser {
 
-    @Autowired
-    private ThreadPoolTaskExecutor mqttMessageExecutor;
 
-    /**
-     * 异步处理
-     * @param topic
-     * @param hexString
-     */
-    public void handleSync(String topic, String hexString){
-        mqttMessageExecutor.execute(()->handle(topic,hexString));
-    }
-
-    public DtuDataVO handle(String topic, String hexString){
+    public static DtuDataVO parse(String topic, String hexString){
         String[] parts = topic.split("/");
         String deviceSN = parts[3];
-        DtuDataVO dtuDataVO = parse(deviceSN, hexString);
+        DtuDataVO dtuDataVO = parseData(deviceSN, hexString);
         return dtuDataVO;
     }
 
 
-    public DtuDataVO parse(String deviceSN, String hexString){
+    public static DtuDataVO parseData(String deviceSN, String hexString){
 
         byte[] rawData = IotCommonUtil.hexToBytes(hexString);
         String aesKey = AesUtil.getAesKey(deviceSN);
@@ -112,7 +97,7 @@ public class MqttMsgHandler {
     }
 
     public static void main(String[] args) {
-        MqttMsgHandler mqttMsgHandler = new MqttMsgHandler();
+        MqttDataParser mqttDataParser = new MqttDataParser();
 //        mqttMsgHandler.handle2();
     }
 }

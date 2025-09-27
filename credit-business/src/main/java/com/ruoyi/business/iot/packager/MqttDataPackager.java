@@ -1,4 +1,4 @@
-package com.ruoyi.business.iot.publish;
+package com.ruoyi.business.iot.packager;
 
 import com.ruoyi.business.iot.common.util.AesUtil;
 import com.ruoyi.business.iot.common.util.IotCommonUtil;
@@ -12,7 +12,7 @@ import java.io.ByteArrayOutputStream;
  * 完整数据打包 起始/结尾标识符/总长度/协议等
  */
 @Slf4j
-public class CompleteDataPackager {
+public class MqttDataPackager {
 
 
     public static byte[] build(DtuDownDataVO dtuDownDataVO,String aesKey) throws Exception {
