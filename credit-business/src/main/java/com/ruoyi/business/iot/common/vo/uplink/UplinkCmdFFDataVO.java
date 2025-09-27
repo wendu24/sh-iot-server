@@ -36,4 +36,10 @@ public class UplinkCmdFFDataVO {
 
 
     private String data;
+
+
+
+    public String msgKey (){
+        return deviceSn + "_" + mid;
+    }
 }

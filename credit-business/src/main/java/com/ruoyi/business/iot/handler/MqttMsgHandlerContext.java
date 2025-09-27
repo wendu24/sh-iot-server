@@ -1,5 +1,6 @@
 package com.ruoyi.business.iot.handler;
 
+import com.ruoyi.business.iot.common.vo.IotMsg;
 import com.ruoyi.business.iot.common.vo.uplink.DtuDataVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -16,9 +17,11 @@ public class MqttMsgHandlerContext {
 
     private static final Map<String , MqttMsgHandler> handlerMap = new ConcurrentHashMap<>() ;
 
-    public void handle(String topic, DtuDataVO dtuDataVO){
+    public void handle(String topic, IotMsg iotMsg){
         mqttMessageExecutor.execute(()->{
-            handlerMap.get(topic).handle(dtuDataVO);
+            String[] parts = topic.split("/");
+            String topicSuffer = parts[4];
+            handlerMap.get(topicSuffer).handle(topic,iotMsg);
         });
     }
 

@@ -27,16 +27,16 @@ public class MqttPublisher {
                                   CmdEnum cmdEnum
                                   ){
         try {
-            // 第一步：构建消息体
-            byte commandCount = ONE.byteValue();
-            Short mid = MidGenerator.generatorMid(deviceSn);
-            String aesKey = AesUtil.getAesKey(deviceSn);
-            byte[] commandBody = DownlinkDataPackager.buildShortCommand(cmdEnum, mid, ReadWriteEnum.READ, null);
-            // 第二步：发送消息
-            int timestamp = (int) (new Date().getTime() / 1000);
-            byte[] sn = IotCommonUtil.hexToBytes(deviceSn); // 有时候是设备的SN，有时候是DTU的SN
-            byte[] bytes = DownlinkDataPackager.buildDownlinkMessage(timestamp, commandCount, sn, commandBody, aesKey);
-            log.info("消息 {}", IotCommonUtil.bytesToHex(bytes));
+//            // 第一步：构建消息体
+//            byte commandCount = ONE.byteValue();
+//            Short mid = MidGenerator.generatorMid(deviceSn);
+//            String aesKey = AesUtil.getAesKey(deviceSn);
+//            byte[] commandBody = DownlinkDataPackager.buildShortCommand(cmdEnum, mid, ReadWriteEnum.READ, null);
+//            // 第二步：发送消息
+//            int timestamp = (int) (new Date().getTime() / 1000);
+//            byte[] sn = IotCommonUtil.hexToBytes(deviceSn); // 有时候是设备的SN，有时候是DTU的SN
+//            byte[] bytes = DownlinkDataPackager.buildDownlinkMessage(timestamp, commandCount, sn, commandBody, aesKey);
+//            log.info("消息 {}", IotCommonUtil.bytesToHex(bytes));
             return true;
         } catch (Exception e) {
             log.error("发送消息出错啦！deviceSn={}",deviceSn,e);
@@ -58,15 +58,15 @@ public class MqttPublisher {
             short data
     ){
         try {
-            // 第一步：构建消息体
-            byte commandCount = ONE.byteValue();
-            Short mid = MidGenerator.generatorMid(deviceSn);
-            String aesKey = AesUtil.getAesKey(deviceSn);
-            byte[] commandBody = DownlinkDataPackager.buildShortCommand(cmdEnum, mid, ReadWriteEnum.WRITE, data);
-            // 第二步：发送消息
-            int timestamp = (int) (new Date().getTime() / 1000);
-            byte[] sn = IotCommonUtil.hexToBytes(deviceSn); // 有时候是设备的SN，有时候是DTU的SN
-            DownlinkDataPackager.buildDownlinkMessage(timestamp,commandCount,sn,commandBody,aesKey);
+//            // 第一步：构建消息体
+//            byte commandCount = ONE.byteValue();
+//            Short mid = MidGenerator.generatorMid(deviceSn);
+//            String aesKey = AesUtil.getAesKey(deviceSn);
+//            byte[] commandBody = DownlinkDataPackager.buildShortCommand(cmdEnum, mid, ReadWriteEnum.WRITE, data);
+//            // 第二步：发送消息
+//            int timestamp = (int) (new Date().getTime() / 1000);
+//            byte[] sn = IotCommonUtil.hexToBytes(deviceSn); // 有时候是设备的SN，有时候是DTU的SN
+//            DownlinkDataPackager.buildDownlinkMessage(timestamp,commandCount,sn,commandBody,aesKey);
             return true;
         } catch (Exception e) {
             log.error("发送消息出错啦！deviceSn={}",deviceSn,e);

@@ -68,4 +68,9 @@ public class MsgSetReplyDO {
      * 创建时间
      */
     private LocalDateTime createTime;
+
+
+    public String msgKey (){
+        return deviceSn + "_" + mid;
+    }
 }

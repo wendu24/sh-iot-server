@@ -10,4 +10,7 @@ public class TopicConstant {
      * 上报数据的topic
      */
     public static final String UNIT_DATA = "data";
+
+
+    public static final String PUBLISH_SET ="set";
 }

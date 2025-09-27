@@ -3,6 +3,7 @@ package com.ruoyi.business.iot;
 import com.ruoyi.business.iot.common.constant.TopicConstant;
 import com.ruoyi.business.iot.common.util.AesUtil;
 import com.ruoyi.business.iot.common.util.IotCommonUtil;
+import com.ruoyi.business.iot.common.util.MidGenerator;
 import com.ruoyi.business.iot.common.vo.down.DtuDownDataVO;
 import com.ruoyi.business.iot.common.vo.uplink.DtuDataVO;
 import com.ruoyi.business.iot.handler.MqttMsgHandlerContext;
@@ -17,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import java.time.LocalDateTime;
 
 /**
  * 发布和订阅消息
@@ -32,14 +34,20 @@ public class MqttService {
     @Autowired
     MqttMsgHandlerContext mqttMsgHandlerContext;
 
+    @Autowired
+    MidGenerator midGenerator;
+
 
 
 
     public void publish(String topicDeviceSn, DtuDownDataVO dtuDownDataVO) throws Exception{
+        dtuDownDataVO.getDataVOList().forEach(commonDownDataVO -> commonDownDataVO.setMid(midGenerator.generatorMid(commonDownDataVO.getDeviceSn())));
+        dtuDownDataVO.setPublishTime(LocalDateTime.now());
         byte[] dataBytes = MqttDataPackager.build(dtuDownDataVO, AesUtil.getAesKey(topicDeviceSn));
         String topic = "tje/unit/cmd/"+topicDeviceSn+"/set";
         int qos = 0;
         publish(topic,dataBytes,qos);
+        mqttMsgHandlerContext.handle(topic,dtuDownDataVO);
     }
 
     // 发布消息
@@ -62,7 +70,7 @@ public class MqttService {
             listeners[i] = (topic, message) -> {
                 log.info("收到消息 Topic={} ,msg={}",topic,IotCommonUtil.bytesToHex(message.getPayload()));
                 DtuDataVO dtuDataVO = MqttDataParser.parse(topic, IotCommonUtil.bytesToHex(message.getPayload()));
-                mqttMsgHandlerContext.handle(TopicConstant.UNIT_DATA,dtuDataVO);
+                mqttMsgHandlerContext.handle(topic,dtuDataVO);
             };
         }
         mqttClient.subscribe(topics, qos, listeners);
@@ -79,7 +87,7 @@ public class MqttService {
             listeners[i] = (topic, message) -> {
                 log.info("收到消息 Topic={} ,msg={}",topic,IotCommonUtil.bytesToHex(message.getPayload()));
                 DtuDataVO dtuDataVO = MqttDataParser.parse(topic, IotCommonUtil.bytesToHex(message.getPayload()));
-                mqttMsgHandlerContext.handle(TopicConstant.UNIT_SET_REPLY,dtuDataVO);
+                mqttMsgHandlerContext.handle(topic,dtuDataVO);
             };
         }
         mqttClient.subscribe(topics, qos, listeners);

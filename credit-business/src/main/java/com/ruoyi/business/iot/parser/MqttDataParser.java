@@ -75,6 +75,7 @@ public class MqttDataParser {
                 // 回复数据的cmd取决于下发时的cmd
             }else {
                 UplinkCmdFFDataVO cmdFFDataVO = CmdFFDataParser.parse(oneDataBuffer,cmd);
+                cmdFFDataVO.setDeviceSn(deviceSn);
                 dtuDataVO.addCmdFFDataVOS(cmdFFDataVO);
             }
         }

@@ -1,6 +1,7 @@
 package com.ruoyi.business.iot.common.vo.uplink;
 
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
+import com.ruoyi.business.iot.common.vo.IotMsg;
 import lombok.Data;
 import lombok.experimental.SuperBuilder;
 
@@ -9,7 +10,7 @@ import java.util.List;
 
 @Data
 @SuperBuilder
-public class DtuDataVO {
+public class DtuDataVO implements IotMsg {
 
 
     /**
