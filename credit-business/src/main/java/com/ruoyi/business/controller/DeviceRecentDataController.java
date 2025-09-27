@@ -1,0 +1,11 @@
+package com.ruoyi.business.controller;
+
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@Slf4j
+@RestController
+@RequestMapping("/data/recent")
+public class DeviceRecentDataController {
+}
