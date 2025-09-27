@@ -72,6 +72,15 @@ public class IotCommonUtil {
     }
 
     /**
+     * 将 short 类型整数转换为小端序（Little-Endian）的 2 字节数组
+     * @param value 输入的 short 值
+     * @return 长度为 2 的字节数组
+     */
+    public static byte[] shortToBytes2(short value) {
+        return ByteBuffer.allocate(2).putShort(value).array();
+    }
+
+    /**
      * 将 int 类型整数转换为小端序（Little-Endian）的 4 字节数组
      * @param value 输入的 int 值
      * @return 长度为 4 的字节数组

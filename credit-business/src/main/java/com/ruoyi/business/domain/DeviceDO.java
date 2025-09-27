@@ -3,6 +3,7 @@ package com.ruoyi.business.domain;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
@@ -55,4 +56,51 @@ public class DeviceDO {
      * @see com.ruoyi.business.constant.DeleteEnum
      */
     private Integer deleteFlag;
+
+
+
+
+
+
+    /**
+     * IP地址
+     */
+    private String ipAddress;
+
+    /**
+     * 加密密钥
+     */
+    private String aesKey;
+
+    /**
+     * 鉴权密钥
+     */
+    private String loginKey;
+
+    /**
+     * 数据上报周期，单位：分钟
+     */
+    private Integer reportPeriod;
+
+    /**
+     * 数据采集间隔，单位：分钟
+     */
+    private Integer collectPeriod;
+
+    /**
+     * 阀门开度
+     */
+    private BigDecimal valvePosition;
+
+    /**
+     * 目标回水温度
+     */
+    private BigDecimal returnWaterTemperature;
+
+    /**
+     * 目标室温
+     */
+    private BigDecimal roomTemperature;
+
+
 }

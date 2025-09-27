@@ -8,6 +8,8 @@ import com.ruoyi.business.util.DateUtil;
 
 import java.math.BigDecimal;
 import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 /**
  * 解析reply 的消息
@@ -38,16 +40,15 @@ public class CmdFFDataParser {
      * @param cmdFFDataVO
      */
     private static void parseDataByCmdType(ByteBuffer buffer, CmdEnum cmdEnum, UplinkCmdFFDataVO cmdFFDataVO) {
-//        if(cmdEnum.getDataClazz() == Float.class){
-//            byte[] bytes = IotCommonUtil.shortToBytes(buffer.getShort());
-//            cmdFFDataVO.setDataBytes(new BigDecimal(by));
-//        } else if (cmdEnum.getDataClazz() == String.class) {
+        if(cmdEnum.getDataClazz() == Float.class){
+            cmdFFDataVO.setData(String.valueOf(buffer.getShort()));
+        } else if (cmdEnum.getDataClazz() == String.class) {
             // 读取所有剩余字节
             int remainingBytes = buffer.remaining();
             byte[] remainingData = new byte[remainingBytes];
             buffer.get(remainingData);
             cmdFFDataVO.setData(IotCommonUtil.paddedBytesToString(remainingData));
-//        }
+        }
     }
 
     public static void main(String[] args) {
