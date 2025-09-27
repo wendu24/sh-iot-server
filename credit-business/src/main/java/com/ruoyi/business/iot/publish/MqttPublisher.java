@@ -15,6 +15,7 @@ import java.util.Arrays;
 import java.util.Date;
 
 @Slf4j
+@Deprecated
 public class MqttPublisher {
 
 
@@ -26,6 +27,7 @@ public class MqttPublisher {
      * @param cmdEnum 命令字
      * @return
      */
+    @Deprecated
     public static boolean publishOneReadMsg(String deviceSn,
                                   CmdEnum cmdEnum
                                   ){
@@ -54,6 +56,7 @@ public class MqttPublisher {
      * @param data 下发的数据
      * @return
      */
+    @Deprecated
     public static boolean publishOneWriteMsg(
             String deviceSn,
             CmdEnum cmdEnum,
@@ -77,26 +80,26 @@ public class MqttPublisher {
     }
 
 
-    public static void main(String[] args) throws Exception {
-
-        String deviceSn = "105110042509083201";
-        CmdEnum downlink25 = CmdEnum.DOWNLINK_25;
-
-        publishOneReadMsg(deviceSn,downlink25);
-
-        CommonDownDataVO commonDownDataVO = CommonDownDataVO.builder()
-                .mid(MidGenerator.generatorMid(deviceSn))
-                .cmdEnum(CmdEnum.DOWNLINK_25)
-                .deviceSn(deviceSn)
-                .readWriteFlag(ReadWriteEnum.READ)
-                .build();
-        DtuDownDataVO dtuDownDataVO = DtuDownDataVO.builder()
-                .publishTime(LocalDateTime.now())
-                .dataVOList(Arrays.asList(commonDownDataVO))
-                .build();
-        CompleteDataPackager.build(dtuDownDataVO,AesUtil.getAesKey(deviceSn));
-
-
-    }
+//    public static void main(String[] args) throws Exception {
+//
+//        String deviceSn = "105110042509083201";
+//        CmdEnum downlink25 = CmdEnum.DOWNLINK_25;
+//
+//        publishOneReadMsg(deviceSn,downlink25);
+//
+//        CommonDownDataVO commonDownDataVO = CommonDownDataVO.builder()
+//                .mid(MidGenerator.generatorMid(deviceSn))
+//                .cmdEnum(CmdEnum.DOWNLINK_25)
+//                .deviceSn(deviceSn)
+//                .readWriteFlag(ReadWriteEnum.READ)
+//                .build();
+//        DtuDownDataVO dtuDownDataVO = DtuDownDataVO.builder()
+//                .publishTime(LocalDateTime.now())
+//                .dataVOList(Arrays.asList(commonDownDataVO))
+//                .build();
+//        CompleteDataPackager.build(dtuDownDataVO,AesUtil.getAesKey(deviceSn));
+//
+//
+//    }
 
 }

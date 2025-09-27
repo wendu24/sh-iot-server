@@ -4,6 +4,7 @@ import com.ruoyi.business.iot.common.constant.CmdEnum;
 import com.ruoyi.business.iot.common.constant.ReadWriteEnum;
 import lombok.Builder;
 import lombok.Data;
+import lombok.experimental.Tolerate;
 
 @Builder
 @Data
@@ -18,9 +19,11 @@ public class CommonDownDataVO {
     /**
      * 读写标识
      */
-    private ReadWriteEnum readWriteFlag;
-
-    private CmdEnum cmdEnum;
+    private Integer readWriteFlag;
+    /**
+     * 十进制
+     */
+    private byte cmdCode;
     /**
      * 数据 , 如果是我读数据,这个字段为空
      */
@@ -32,4 +35,7 @@ public class CommonDownDataVO {
     private String dataStr;
 
 
+    @Tolerate
+    public CommonDownDataVO() {
+    }
 }

@@ -40,17 +40,17 @@ public class CmdDataPackager {
      * @param commonDownDataVO 数据
      */
     private static byte[] buildShortCommandBody(CommonDownDataVO commonDownDataVO) throws IOException {
-        CmdEnum cmdEnum = commonDownDataVO.getCmdEnum();
+        byte cmdCode = commonDownDataVO.getCmdCode();
         // 2. 构建命令体：CMD:23(设置上报间隔)
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
         // 写入 CMD (1 字节)
-        outputStream.write(cmdEnum.getCode());
+        outputStream.write(cmdCode);
         // 写入 MID (2 字节)
         outputStream.write(IotCommonUtil.shortToBytes(commonDownDataVO.getMid()));
         // 写入读写标志 (1 字节) 这个方法只会写入最低八位
-        outputStream.write(commonDownDataVO.getReadWriteFlag().getCode());
-        if(ReadWriteEnum.WRITE.getCode().equals(commonDownDataVO.getReadWriteFlag().getCode())){
+        outputStream.write(commonDownDataVO.getReadWriteFlag());
+        if(ReadWriteEnum.WRITE.getCode().equals(commonDownDataVO.getReadWriteFlag())){
             writeData(outputStream,commonDownDataVO);
         }
         byte[] cmdData = outputStream.toByteArray();
@@ -58,7 +58,7 @@ public class CmdDataPackager {
     }
 
     private static void writeData(ByteArrayOutputStream outputStream,CommonDownDataVO commonDownDataVO) throws IOException {
-        CmdEnum cmdEnum = commonDownDataVO.getCmdEnum();
+        CmdEnum cmdEnum = CmdEnum.getByCode(commonDownDataVO.getCmdCode());
         if(cmdEnum.getDataClazz() == Float.class ){
             // 写入数据 (2 字节)
             outputStream.write(IotCommonUtil.shortToBytes(commonDownDataVO.getData().shortValue()));
