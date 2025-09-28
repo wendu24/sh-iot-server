@@ -1,4 +1,4 @@
-package com.ruoyi.business.iot.handler;
+package com.ruoyi.business.iot.observer;
 
 import com.alibaba.fastjson2.JSONObject;
 import com.ruoyi.business.domain.MsgSetReplyDO;
@@ -10,12 +10,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 @Component
-public class PublishMsgHandler implements MqttMsgHandler{
+public class PublishMsgObserver implements MqttMsgObserver {
 
     @Autowired
     MsgSetReplyService msgSetReplyService;
@@ -41,6 +40,6 @@ public class PublishMsgHandler implements MqttMsgHandler{
     @Override
     @PostConstruct
     public void register() {
-        MqttMsgHandlerContext.addHandler(TopicConstant.PUBLISH_SET,this);
+        MqttMsgProducer.addHandler(TopicConstant.PUBLISH_SET,this);
     }
 }

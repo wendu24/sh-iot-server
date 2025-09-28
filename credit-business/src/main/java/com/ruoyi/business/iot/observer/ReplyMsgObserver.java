@@ -1,4 +1,4 @@
-package com.ruoyi.business.iot.handler;
+package com.ruoyi.business.iot.observer;
 
 import com.alibaba.fastjson2.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Component
-public class ReplyMsgHandler implements MqttMsgHandler{
+public class ReplyMsgObserver implements MqttMsgObserver {
 
     @Autowired
     MsgSetReplyService msgSetReplyService;
@@ -82,6 +82,6 @@ public class ReplyMsgHandler implements MqttMsgHandler{
     @Override
     @PostConstruct
     public void register() {
-        MqttMsgHandlerContext.addHandler(TopicConstant.UNIT_SET_REPLY,this);
+        MqttMsgProducer.addHandler(TopicConstant.UNIT_SET_REPLY,this);
     }
 }

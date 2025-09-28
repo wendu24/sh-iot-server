@@ -1,9 +1,8 @@
-package com.ruoyi.business.iot.handler;
+package com.ruoyi.business.iot.observer;
 
 import com.ruoyi.business.iot.common.vo.IotMsg;
-import com.ruoyi.business.iot.common.vo.uplink.DtuDataVO;
 
-public interface MqttMsgHandler {
+public interface MqttMsgObserver {
 
     public void handle(String topic, IotMsg iotMsg);
 

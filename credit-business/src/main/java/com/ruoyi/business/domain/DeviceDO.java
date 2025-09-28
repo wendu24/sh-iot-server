@@ -23,6 +23,7 @@ public class DeviceDO {
 
     /**
      * 设备类型
+     * @see com.ruoyi.business.constant.DeviceTypeEnum
      */
     private Integer deviceType;
 
