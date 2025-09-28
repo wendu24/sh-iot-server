@@ -11,6 +11,8 @@ public enum AbnormalTypeEnum {
 
     SENSOR_ABNORMALITY(30,"传感器异常"),
 
+    KEY_PRESS(40,"按键报警触发"),
+
     ;
 
     private Integer code;

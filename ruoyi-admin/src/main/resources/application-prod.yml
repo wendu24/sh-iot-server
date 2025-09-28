@@ -117,3 +117,12 @@ mqtt:
     id: spring-boot-client-id
   username: your_username
   password: your_password
+
+udp:
+  port: 9990
+  worker-threads: 4            # Netty IO 线程数（一般 = CPU核数 * factor）
+  business-threads: 64        # 处理业务的线程池大小
+  receive-buffer-size: 1048576
+  send-buffer-size: 1048576
+  reuse-address: true
+  broadcast: false

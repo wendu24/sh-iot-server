@@ -24,7 +24,10 @@
       <artifactId>credit-common</artifactId>
       <version>3.8.3</version>
     </dependency>
-
+    <dependency>
+      <groupId>io.netty</groupId>
+      <artifactId>netty-all</artifactId>
+      <version>4.1.100.Final</version> </dependency>
     <dependency>
       <groupId>org.eclipse.paho</groupId>
       <artifactId>org.eclipse.paho.client.mqttv3</artifactId>

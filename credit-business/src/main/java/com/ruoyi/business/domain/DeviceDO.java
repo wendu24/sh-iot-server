@@ -21,6 +21,8 @@ public class DeviceDO {
      */
     private String deviceSn;
 
+    private String position;
+
     /**
      * 设备类型
      * @see com.ruoyi.business.constant.DeviceTypeEnum
