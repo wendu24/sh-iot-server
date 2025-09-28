@@ -6,10 +6,14 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 
+/**
+ * 更新dtu设备的数据
+ */
 @Component
-public class DataMsgObserver implements MqttMsgObserver {
+public class DtuDeviceObserver implements MqttMsgObserver{
+
     @Override
-    public void handle(String topic, IotMsg dtuDataVO) {
+    public void handle(String topic, IotMsg iotMsg) {
 
     }
 

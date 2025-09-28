@@ -32,9 +32,9 @@ public class DeviceLatestDataDO {
     private Integer batteryLevel;
 
     /**
-     * 异常类型 (10:拆卸告警, 20:阀门堵转, 30:传感器异常)
+     * 异常类型 (10:拆卸告警, 20:阀门堵转, 30:传感器异常) 逗号分割
      */
-    private String abnormalType;
+    private String abnormalTypes;
 
     /**
      * 数据上报周期，单位：分钟
