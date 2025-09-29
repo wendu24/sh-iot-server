@@ -15,15 +15,23 @@ public class UdpDataParser {
 
     public static void main(String[] args) {
         String hex = "AA723D00100910211004250908000151F8696B734AFDFAF7B3CE47E96771E6FB9D6D242B73E0D69C7A42B1298E803C56E2522A8C5A6046B78B956AF533771654DD";
-        DeviceDataVO deviceDataVO = parseData(hex);
+        DeviceDataVO deviceDataVO = parseData(parseSn(hex),hex);
         System.out.println(JSONObject.toJSONString(deviceDataVO));
     }
-    public static DeviceDataVO parseData( String hexString){
 
+
+    public static String parseSn( String hexString){
         byte[] rawData = IotCommonUtil.hexToBytes(hexString);
         byte snLength = rawData[5];
         byte[] snByte = Arrays.copyOfRange(rawData, 6, 6+snLength);
-        String deviceSn = IotCommonUtil.bytesToHex(snByte);
+       return IotCommonUtil.bytesToHex(snByte);
+    }
+    public static DeviceDataVO parseData(String deviceSn, String hexString){
+
+        byte[] rawData = IotCommonUtil.hexToBytes(hexString);
+//        byte snLength = rawData[5];
+//        byte[] snByte = Arrays.copyOfRange(rawData, 6, 6+snLength);
+//        String deviceSn = IotCommonUtil.bytesToHex(snByte);
         String aesKey = AesUtil.getAesKey(deviceSn);
         try {
             /**
@@ -37,7 +45,7 @@ public class UdpDataParser {
             /**
              * 第三步:解析CMD数据
              */
-            return Cmd08DataParser.parse(buffer);
+            return HeaderParser.parse(buffer);
         } catch (Exception e) {
             log.error("消息解析出错啦",e);
             return null;

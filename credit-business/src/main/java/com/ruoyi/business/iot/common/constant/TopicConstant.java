@@ -13,4 +13,13 @@ public class TopicConstant {
 
 
     public static final String PUBLISH_SET ="set";
+
+
+
+    public static  final String UDP_REPLY = "udp_reply";
+
+    public static  final String UDP_DATA = "udp_data";
+
+    public static  final String UDP_set = "udp_set";
+
 }

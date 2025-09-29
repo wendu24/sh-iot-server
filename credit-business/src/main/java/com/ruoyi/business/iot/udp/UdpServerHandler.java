@@ -1,5 +1,7 @@
 package com.ruoyi.business.iot.udp;
 
+import com.ruoyi.business.iot.common.vo.room.DeviceDataVO;
+import com.ruoyi.business.iot.parser.udp.UdpDataParser;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
@@ -27,19 +29,17 @@ public class UdpServerHandler extends SimpleChannelInboundHandler<DatagramPacket
         InetSocketAddress sender = packet.sender();
 
         // 解析SN，假设协议是 JSON，例如 {"sn":"ABC123","data":"xxx"}
-        String sn = parseSnFromMessage(msg);
-
+        String sn = UdpDataParser.parseSn(msg);
         // 更新设备地址
-        if (sn != null) {
-            DeviceSessionManager.updateDevice(sn, sender);
-        }
+        DeviceSessionManager.updateDevice(sn, sender);
+        log.info("收到UDP请求 sn ={} msg={}",sn,msg);
+        DeviceDataVO deviceDataVO = UdpDataParser.parseData(sn, msg);
 
-        System.out.printf("收到设备[%s]消息：%s%n", sn, msg);
 
         // 根据业务需要决定是否回复
-        String resp = "ACK:" + msg;
-        ByteBuf buf = Unpooled.copiedBuffer(resp, CharsetUtil.UTF_8);
-        ctx.writeAndFlush(new DatagramPacket(buf, sender));
+//        String resp = "ACK:" + msg;
+//        ByteBuf buf = Unpooled.copiedBuffer(resp, CharsetUtil.UTF_8);
+//        ctx.writeAndFlush(new DatagramPacket(buf, sender));
     }
 
     private String parseSnFromMessage(String msg) {

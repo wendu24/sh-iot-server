@@ -17,13 +17,7 @@ import java.util.List;
 public class Cmd08DataParser {
 
 
-    public static DeviceDataVO parse(ByteBuffer buffer){
-
-        byte snLength = buffer.get();
-        byte[] snByte = new byte[snLength];
-        buffer.get(snByte);
-        short dataLength = buffer.getShort();
-        byte cmdCode = buffer.get();
+    public static DeviceDataVO parse(String deviceSn, ByteBuffer buffer){
 
         byte deviceVersion = buffer.get();
         byte warning = buffer.get();
@@ -36,7 +30,7 @@ public class Cmd08DataParser {
 
         byte dataNum = buffer.get();
         DeviceDataVO deviceDataVO = DeviceDataVO.builder()
-                .deviceSn(IotCommonUtil.bytesToHex(snByte))
+                .deviceSn(deviceSn)
                 .deviceVersion(IotCommonUtil.byte2Gigdecimal(deviceVersion))
                 .abnormalTypes(buildAbnormalTypes(warning))
                 .batteryLevel(IotCommonUtil.byte2int(batteryLevel) == 255?null:IotCommonUtil.byte2int(batteryLevel))

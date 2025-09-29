@@ -27,6 +27,8 @@ public class MqttMsgProducer {
         });
     }
 
+
+
     public static void addHandler(String topicSuffix, MqttMsgObserver mqttMsgObserver){
         handlerMap.computeIfAbsent(topicSuffix, k -> new ArrayList<>())
                 .add(mqttMsgObserver);
