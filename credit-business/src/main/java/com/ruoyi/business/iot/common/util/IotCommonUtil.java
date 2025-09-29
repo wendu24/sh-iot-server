@@ -121,6 +121,15 @@ public class IotCommonUtil {
     public static BigDecimal short2bigdecimal(short b) {
         return BigDecimal.valueOf(b).divide(BigDecimal.TEN,1, RoundingMode.HALF_UP);
     }
+        /**
+     * 将单个字节（byte）转换为无符号整数（int）。
+     *
+     * @param b 要转换的字节。
+     * @return 转换后的无符号整数值。
+     */
+    public static BigDecimal short2bigdecimal(short b, BigDecimal divisor) {
+        return BigDecimal.valueOf(b).divide(divisor,2, RoundingMode.HALF_UP);
+    }
 
     /**
      * Converts a hexadecimal string to an integer.

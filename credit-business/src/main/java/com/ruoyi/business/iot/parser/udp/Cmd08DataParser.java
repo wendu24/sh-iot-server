@@ -8,6 +8,7 @@ import com.ruoyi.business.iot.common.vo.room.RoomDataVO;
 import com.ruoyi.business.util.DateUtil;
 import lombok.extern.slf4j.Slf4j;
 
+import java.math.BigDecimal;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +39,7 @@ public class Cmd08DataParser {
                 .deviceSn(IotCommonUtil.bytesToHex(snByte))
                 .deviceVersion(IotCommonUtil.byte2Gigdecimal(deviceVersion))
                 .abnormalTypes(buildAbnormalTypes(warning))
-                .batteryLevel(IotCommonUtil.byte2int(batteryLevel))
+                .batteryLevel(IotCommonUtil.byte2int(batteryLevel) == 255?null:IotCommonUtil.byte2int(batteryLevel))
                 .reportPeriod(reportPeriod)
                 .signalStrength(IotCommonUtil.byte2int(signalStrength))
                 .iccId(IotCommonUtil.bytesToHex(ICCID))
@@ -52,8 +53,8 @@ public class Cmd08DataParser {
             short roomHumidity = buffer.getShort();
             RoomDataVO roomDataVO = RoomDataVO.builder()
                     .collectTime(DateUtil.timestampToLocalDateTime(collectTime * 1000L))
-                    .roomHumidity(IotCommonUtil.short2bigdecimal(roomHumidity))
-                    .roomTemperature(IotCommonUtil.short2bigdecimal(roomTemperature))
+                    .roomHumidity(IotCommonUtil.short2bigdecimal(roomHumidity, BigDecimal.valueOf(100)))
+                    .roomTemperature(IotCommonUtil.short2bigdecimal(roomTemperature,BigDecimal.valueOf(100)))
                     .build();
             roomDataVOList.add(roomDataVO);
 

@@ -9,7 +9,7 @@ import java.io.IOException;
 public class UdpClient {
 
     // 服务器地址和端口配置
-    private static final String SERVER_IP = "127.0.0.1"; // 目标服务器IP，请根据您的实际服务器地址修改
+    private static final String SERVER_IP = "121.43.179.245"; // 目标服务器IP，请根据您的实际服务器地址修改
     private static final int SERVER_PORT = 9990;       // 目标服务器端口，请根据您的实际端口修改
     private static final int LISTEN_PORT = 10000;       // 本地监听端口，用于接收服务器回传数据
 

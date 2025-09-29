@@ -1,22 +1,30 @@
 package com.ruoyi.business.iot.parser.udp;
 
+import com.alibaba.fastjson2.JSONObject;
 import com.ruoyi.business.iot.common.util.AesUtil;
 import com.ruoyi.business.iot.common.util.IotCommonUtil;
 import com.ruoyi.business.iot.common.vo.room.DeviceDataVO;
-import com.ruoyi.business.iot.parser.RawDataParser;
 import lombok.extern.slf4j.Slf4j;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.Arrays;
 
 @Slf4j
 public class UdpDataParser {
 
-
-    public static DeviceDataVO parseData(String deviceSN, String hexString){
+    public static void main(String[] args) {
+        String hex = "AA723D00100910211004250908000151F8696B734AFDFAF7B3CE47E96771E6FB9D6D242B73E0D69C7A42B1298E803C56E2522A8C5A6046B78B956AF533771654DD";
+        DeviceDataVO deviceDataVO = parseData(hex);
+        System.out.println(JSONObject.toJSONString(deviceDataVO));
+    }
+    public static DeviceDataVO parseData( String hexString){
 
         byte[] rawData = IotCommonUtil.hexToBytes(hexString);
-        String aesKey = AesUtil.getAesKey(deviceSN);
+        byte snLength = rawData[5];
+        byte[] snByte = Arrays.copyOfRange(rawData, 6, 6+snLength);
+        String deviceSn = IotCommonUtil.bytesToHex(snByte);
+        String aesKey = AesUtil.getAesKey(deviceSn);
         try {
             /**
              * 第一步: 解析出消息体并解密
