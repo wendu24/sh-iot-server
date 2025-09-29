@@ -4,10 +4,11 @@ import com.ruoyi.business.iot.common.util.AesUtil;
 import com.ruoyi.business.iot.common.util.IotCommonUtil;
 import com.ruoyi.business.iot.common.util.MidGenerator;
 import com.ruoyi.business.iot.common.vo.down.DtuDownDataVO;
-import com.ruoyi.business.iot.common.vo.uplink.DtuDataVO;
-import com.ruoyi.business.iot.observer.MqttMsgProducer;
+import com.ruoyi.business.iot.common.vo.UplinkDataVO;
+import com.ruoyi.business.iot.handler.DownMsgHandler;
+import com.ruoyi.business.iot.handler.UplinkMsgHandler;
 import com.ruoyi.business.iot.packager.mqtt.MqttDataPackager;
-import com.ruoyi.business.iot.parser.mqtt.MqttDataParseContext;
+import com.ruoyi.business.iot.parser.MqttDataParseContext;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.paho.client.mqttv3.IMqttMessageListener;
 import org.eclipse.paho.client.mqttv3.MqttClient;
@@ -31,7 +32,10 @@ public class MqttService {
 
 
     @Autowired
-    MqttMsgProducer mqttMsgProducer;
+    UplinkMsgHandler uplinkMsgHandler;
+
+    @Autowired
+    DownMsgHandler downMsgHandler;
 
     @Autowired
     MidGenerator midGenerator;
@@ -46,7 +50,7 @@ public class MqttService {
         String topic = "tje/unit/cmd/"+topicDeviceSn+"/set";
         int qos = 0;
         publish(topic,dataBytes,qos);
-        mqttMsgProducer.handle(topic,dtuDownDataVO);
+        downMsgHandler.handle(dtuDownDataVO);
     }
 
     // 发布消息
@@ -68,8 +72,8 @@ public class MqttService {
         for (int i = 0; i < topics.length; i++) {
             listeners[i] = (topic, message) -> {
                 log.info("收到消息 Topic={} ,msg={}",topic,IotCommonUtil.bytesToHex(message.getPayload()));
-                DtuDataVO dtuDataVO = MqttDataParseContext.parse(topic, IotCommonUtil.bytesToHex(message.getPayload()));
-                mqttMsgProducer.handle(topic,dtuDataVO);
+                UplinkDataVO uplinkDataVO = MqttDataParseContext.parse(topic, IotCommonUtil.bytesToHex(message.getPayload()));
+                uplinkMsgHandler.handle(uplinkDataVO);
             };
         }
         mqttClient.subscribe(topics, qos, listeners);
@@ -85,8 +89,8 @@ public class MqttService {
         for (int i = 0; i < topics.length; i++) {
             listeners[i] = (topic, message) -> {
                 log.info("收到消息 Topic={} ,msg={}",topic,IotCommonUtil.bytesToHex(message.getPayload()));
-                DtuDataVO dtuDataVO = MqttDataParseContext.parse(topic, IotCommonUtil.bytesToHex(message.getPayload()));
-                mqttMsgProducer.handle(topic,dtuDataVO);
+                UplinkDataVO uplinkDataVO = MqttDataParseContext.parse(topic, IotCommonUtil.bytesToHex(message.getPayload()));
+                uplinkMsgHandler.handle(uplinkDataVO);
             };
         }
         mqttClient.subscribe(topics, qos, listeners);

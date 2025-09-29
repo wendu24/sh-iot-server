@@ -3,8 +3,8 @@ package com.ruoyi.business.iot.parser.udp;
 import com.alibaba.fastjson2.JSONObject;
 import com.ruoyi.business.iot.common.constant.AbnormalTypeEnum;
 import com.ruoyi.business.iot.common.util.IotCommonUtil;
-import com.ruoyi.business.iot.common.vo.room.DeviceDataVO;
-import com.ruoyi.business.iot.common.vo.room.RoomDataVO;
+import com.ruoyi.business.iot.common.vo.uplink.RoomDataVO;
+import com.ruoyi.business.iot.common.vo.uplink.UdpCmd08DataVO;
 import com.ruoyi.business.util.DateUtil;
 import lombok.extern.slf4j.Slf4j;
 
@@ -17,7 +17,7 @@ import java.util.List;
 public class Cmd08DataParser {
 
 
-    public static DeviceDataVO parse(String deviceSn, ByteBuffer buffer){
+    public static UdpCmd08DataVO parse(String deviceSn, ByteBuffer buffer){
 
         byte deviceVersion = buffer.get();
         byte warning = buffer.get();
@@ -29,7 +29,7 @@ public class Cmd08DataParser {
         buffer.get(ICCID);
 
         byte dataNum = buffer.get();
-        DeviceDataVO deviceDataVO = DeviceDataVO.builder()
+        UdpCmd08DataVO udpCmd08DataVO = UdpCmd08DataVO.builder()
                 .deviceSn(deviceSn)
                 .deviceVersion(IotCommonUtil.byte2Gigdecimal(deviceVersion))
                 .abnormalTypes(buildAbnormalTypes(warning))
@@ -53,9 +53,9 @@ public class Cmd08DataParser {
             roomDataVOList.add(roomDataVO);
 
         }
-        deviceDataVO.setRoomDataVOList(roomDataVOList);
-        log.info("解析出来的数据{}", JSONObject.toJSONString(deviceDataVO));
-        return deviceDataVO;
+        udpCmd08DataVO.setRoomDataVOList(roomDataVOList);
+        log.info("解析出来的数据{}", JSONObject.toJSONString(udpCmd08DataVO));
+        return udpCmd08DataVO;
     }
 
 

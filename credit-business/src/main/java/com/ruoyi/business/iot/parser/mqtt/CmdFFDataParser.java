@@ -3,7 +3,7 @@ package com.ruoyi.business.iot.parser.mqtt;
 import com.ruoyi.business.iot.common.util.IotCommonUtil;
 import com.ruoyi.business.iot.common.constant.CmdEnum;
 import com.ruoyi.business.iot.common.constant.ReadWriteEnum;
-import com.ruoyi.business.iot.common.vo.uplink.UplinkCmdFFDataVO;
+import com.ruoyi.business.iot.common.vo.uplink.CmdFFDataVO;
 import com.ruoyi.business.util.DateUtil;
 
 import java.nio.ByteBuffer;
@@ -14,9 +14,9 @@ import java.nio.ByteBuffer;
 public class CmdFFDataParser {
 
 
-    public static UplinkCmdFFDataVO parse(ByteBuffer buffer,byte cmdCode){
+    public static CmdFFDataVO parse(ByteBuffer buffer, byte cmdCode){
         CmdEnum cmdEnum = CmdEnum.getByCode(cmdCode);
-        UplinkCmdFFDataVO cmdFFDataVO = UplinkCmdFFDataVO.builder()
+        CmdFFDataVO cmdFFDataVO = CmdFFDataVO.builder()
                 .mid(buffer.getShort())
                 .cmdCode(cmdCode)
                 .readWriteFlag(buffer.get())
@@ -36,7 +36,7 @@ public class CmdFFDataParser {
      * @param cmdEnum
      * @param cmdFFDataVO
      */
-    private static void parseDataByCmdType(ByteBuffer buffer, CmdEnum cmdEnum, UplinkCmdFFDataVO cmdFFDataVO) {
+    private static void parseDataByCmdType(ByteBuffer buffer, CmdEnum cmdEnum, CmdFFDataVO cmdFFDataVO) {
         if(cmdEnum.getDataClazz() == Float.class){
             cmdFFDataVO.setData(String.valueOf(buffer.getShort()));
         } else if (cmdEnum.getDataClazz() == String.class) {

@@ -1,10 +1,8 @@
 package com.ruoyi.business.iot.common.vo.uplink;
 
-import com.ruoyi.business.iot.common.constant.CmdEnum;
 import lombok.Builder;
 import lombok.Data;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
@@ -12,7 +10,7 @@ import java.time.LocalDateTime;
  */
 @Data
 @Builder
-public class UplinkCmdFFDataVO {
+public class CmdFFDataVO {
 
     private String deviceSn;
 

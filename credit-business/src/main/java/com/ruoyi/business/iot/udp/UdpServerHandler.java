@@ -2,8 +2,8 @@ package com.ruoyi.business.iot.udp;
 
 import com.alibaba.fastjson2.JSONObject;
 import com.ruoyi.business.iot.common.util.IotCommonUtil;
-import com.ruoyi.business.iot.common.vo.room.HeaderDataVO;
-import com.ruoyi.business.iot.parser.udp.UdpDataParseContext;
+import com.ruoyi.business.iot.common.vo.UplinkDataVO;
+import com.ruoyi.business.iot.parser.UdpDataParseContext;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.socket.DatagramPacket;
@@ -33,8 +33,8 @@ public class UdpServerHandler extends SimpleChannelInboundHandler<DatagramPacket
         String sn = UdpDataParseContext.parseSn(msg);
         // 更新设备地址
         DeviceSessionManager.updateDevice(sn, sender);
-        HeaderDataVO headerDataVO = UdpDataParseContext.parseData(sn, msg);
-        log.info("解析出来的数据 headerDataVO={}",headerDataVO);
+        UplinkDataVO uplinkDataVO = UdpDataParseContext.parseData(sn, msg);
+        log.info("解析出来的数据 headerDataVO={}",uplinkDataVO);
 
         // 根据业务需要决定是否回复
 //        String resp = "ACK:" + msg;

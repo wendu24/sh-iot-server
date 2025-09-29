@@ -1,4 +1,4 @@
-package com.ruoyi.business.iot.common.vo.room;
+package com.ruoyi.business.iot.common.vo.uplink;
 
 import lombok.Builder;
 import lombok.Data;

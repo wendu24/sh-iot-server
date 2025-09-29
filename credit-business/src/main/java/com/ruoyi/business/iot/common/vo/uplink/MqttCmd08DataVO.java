@@ -10,7 +10,7 @@ import java.util.List;
 
 @Data
 @SuperBuilder
-public class UplinkCmd08DataVO {
+public class MqttCmd08DataVO {
 
 
     private String deviceSn;

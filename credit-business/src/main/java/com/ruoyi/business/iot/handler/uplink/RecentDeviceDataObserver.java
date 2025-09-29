@@ -1,23 +1,20 @@
-package com.ruoyi.business.iot.observer;
+package com.ruoyi.business.iot.handler.uplink;
 
 import cn.hutool.core.bean.BeanUtil;
-import com.ruoyi.business.domain.DeviceLatestDataDO;
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.ruoyi.business.domain.DeviceRecentDataDO;
 import com.ruoyi.business.iot.common.constant.AbnormalTypeEnum;
-import com.ruoyi.business.iot.common.constant.TopicConstant;
-import com.ruoyi.business.iot.common.vo.IotMsg;
-import com.ruoyi.business.iot.common.vo.uplink.DtuDataVO;
+import com.ruoyi.business.iot.common.vo.UplinkDataVO;
+import com.ruoyi.business.iot.common.vo.uplink.MqttCmd08DataVO;
 import com.ruoyi.business.service.DeviceRecentDataService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -25,18 +22,19 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @Component
-public class RecentDeviceDataObserver implements MqttMsgObserver{
+public class RecentDeviceDataObserver extends AbstractUplinkMsgObserver {
 
     @Autowired
     DeviceRecentDataService deviceRecentDataService;
 
     @Override
-    public void handle(String topic, IotMsg iotMsg) {
-        DtuDataVO dtuDataVO = (DtuDataVO) iotMsg;
-
+    public void handle( UplinkDataVO uplinkDataVO) {
+        List<MqttCmd08DataVO> mqttCmd08DataVOS = uplinkDataVO.getMqttCmd08DataVOS();
+        if(CollectionUtils.isEmpty(mqttCmd08DataVOS))
+            return;
         List<DeviceRecentDataDO> addList = new ArrayList<>();
 
-        dtuDataVO.getCmd08DataVOS().forEach(uplinkCmd08DataVO -> {
+        uplinkDataVO.getMqttCmd08DataVOS().forEach(uplinkCmd08DataVO -> {
             DeviceRecentDataDO deviceRecentDataDO = new DeviceRecentDataDO();
             BeanUtil.copyProperties(uplinkCmd08DataVO,deviceRecentDataDO);
             String abnormalTypes = uplinkCmd08DataVO.getAbnormalTypes()
@@ -54,9 +52,4 @@ public class RecentDeviceDataObserver implements MqttMsgObserver{
 
     }
 
-    @Override
-    @PostConstruct
-    public void register() {
-        MqttMsgProducer.addHandler(TopicConstant.UNIT_DATA,this);
-    }
 }

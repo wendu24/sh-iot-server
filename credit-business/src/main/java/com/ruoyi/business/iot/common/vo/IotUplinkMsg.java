@@ -1,4 +1,4 @@
 package com.ruoyi.business.iot.common.vo;
 
-public interface IotMsg {
+public interface IotUplinkMsg {
 }
