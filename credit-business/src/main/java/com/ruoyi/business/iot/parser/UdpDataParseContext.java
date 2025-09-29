@@ -75,6 +75,7 @@ public class UdpDataParseContext {
             uplinkDataVO.setUdpCmd08DataVO(udpCmd08DataVO);
         }else {
             CmdFFDataVO cmdFFDataVO = CmdFFDataParser.parse(buffer, cmdCode);
+            cmdFFDataVO.setDeviceSn(deviceSn);
             uplinkDataVO.setCmdFFDataVOS(Arrays.asList(cmdFFDataVO));
         }
         return uplinkDataVO;
