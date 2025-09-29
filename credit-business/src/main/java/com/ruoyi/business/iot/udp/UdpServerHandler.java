@@ -3,6 +3,7 @@ package com.ruoyi.business.iot.udp;
 import com.alibaba.fastjson2.JSONObject;
 import com.ruoyi.business.iot.common.util.IotCommonUtil;
 import com.ruoyi.business.iot.common.vo.UplinkDataVO;
+import com.ruoyi.business.iot.handler.UplinkMsgHandler;
 import com.ruoyi.business.iot.parser.UdpDataParseContext;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -16,9 +17,11 @@ import java.util.concurrent.ExecutorService;
 public class UdpServerHandler extends SimpleChannelInboundHandler<DatagramPacket>{
 
     private final ExecutorService businessExecutor;
+    private final UplinkMsgHandler uplinkMsgHandler;
 
-    public UdpServerHandler(ExecutorService businessExecutor) {
+    public UdpServerHandler(ExecutorService businessExecutor, UplinkMsgHandler uplinkMsgHandler) {
         this.businessExecutor = businessExecutor;
+        this.uplinkMsgHandler = uplinkMsgHandler;
     }
 
     @Override
@@ -35,7 +38,7 @@ public class UdpServerHandler extends SimpleChannelInboundHandler<DatagramPacket
         DeviceSessionManager.updateDevice(sn, sender);
         UplinkDataVO uplinkDataVO = UdpDataParseContext.parseData(sn, msg);
         log.info("解析出来的数据 headerDataVO={}",uplinkDataVO);
-
+        uplinkMsgHandler.handle(uplinkDataVO);
         // 根据业务需要决定是否回复
 //        String resp = "ACK:" + msg;
 //        ByteBuf buf = Unpooled.copiedBuffer(resp, CharsetUtil.UTF_8);

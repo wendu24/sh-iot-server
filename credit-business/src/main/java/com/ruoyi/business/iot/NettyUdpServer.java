@@ -5,6 +5,8 @@ import com.ruoyi.business.config.UdpServerProperties;
 import com.ruoyi.business.iot.common.util.AesUtil;
 import com.ruoyi.business.iot.common.util.IotCommonUtil;
 import com.ruoyi.business.iot.common.vo.down.DtuDownDataVO;
+import com.ruoyi.business.iot.handler.DownMsgHandler;
+import com.ruoyi.business.iot.handler.UplinkMsgHandler;
 import com.ruoyi.business.iot.packager.udp.UdpDataPackager;
 import com.ruoyi.business.iot.udp.DeviceSessionManager;
 import com.ruoyi.business.iot.udp.UdpChannelInitializer;
@@ -41,12 +43,16 @@ import io.netty.channel.socket.DatagramPacket;
 public class NettyUdpServer {
 
     private final UdpServerProperties props;
+    private final UplinkMsgHandler uplinkMsgHandler;
+    private final DownMsgHandler downMsgHandler;
     private EventLoopGroup group;
     private Channel channel;
     private ExecutorService businessExecutor;
 
-    public NettyUdpServer(UdpServerProperties props) {
+    public NettyUdpServer(UdpServerProperties props, UplinkMsgHandler uplinkMsgHandler, DownMsgHandler downMsgHandler) {
         this.props = props;
+        this.uplinkMsgHandler = uplinkMsgHandler;
+        this.downMsgHandler = downMsgHandler;
     }
 
     @PostConstruct
@@ -83,16 +89,15 @@ public class NettyUdpServer {
             b.channel(NioDatagramChannel.class);
         }
 
-        b.handler(new UdpChannelInitializer(businessExecutor));
+        b.handler(new UdpChannelInitializer(businessExecutor,uplinkMsgHandler));
 
         // 绑定端口（UDP bind）
         channel = b.bind(new InetSocketAddress(props.getPort())).sync().channel();
-        System.out.println("UDP server started on port: " + props.getPort());
+        log.info("UDP server started on port: ={}" ,props.getPort());
     }
 
 
     public void sendCommand(String sn, DtuDownDataVO dtuDownDataVO) throws Exception {
-
 
         byte[] dataBytes = UdpDataPackager.build(dtuDownDataVO, sn, AesUtil.getAesKey(sn));
         InetSocketAddress target = DeviceSessionManager.getDeviceAddress(sn);
@@ -107,6 +112,7 @@ public class NettyUdpServer {
         log.info("udp下发消息target={}", JSONObject.toJSONString(target));
         ByteBuf byteBuf = Unpooled.wrappedBuffer(dataBytes);
         channel.writeAndFlush(new DatagramPacket(byteBuf, target));
+        downMsgHandler.handle(dtuDownDataVO);
     }
 
     @PreDestroy
