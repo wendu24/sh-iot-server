@@ -4,6 +4,7 @@ import com.alibaba.fastjson2.JSONObject;
 import com.ruoyi.business.config.UdpServerProperties;
 import com.ruoyi.business.iot.common.util.AesUtil;
 import com.ruoyi.business.iot.common.util.IotCommonUtil;
+import com.ruoyi.business.iot.common.util.MidGenerator;
 import com.ruoyi.business.iot.common.vo.down.DtuDownDataVO;
 import com.ruoyi.business.iot.handler.DownMsgHandler;
 import com.ruoyi.business.iot.handler.UplinkMsgHandler;
@@ -28,6 +29,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.net.InetSocketAddress;
+import java.time.LocalDateTime;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -48,11 +50,13 @@ public class NettyUdpServer {
     private EventLoopGroup group;
     private Channel channel;
     private ExecutorService businessExecutor;
+    private final MidGenerator midGenerator;
 
-    public NettyUdpServer(UdpServerProperties props, UplinkMsgHandler uplinkMsgHandler, DownMsgHandler downMsgHandler) {
+    public NettyUdpServer(UdpServerProperties props, UplinkMsgHandler uplinkMsgHandler, DownMsgHandler downMsgHandler,MidGenerator midGenerator) {
         this.props = props;
         this.uplinkMsgHandler = uplinkMsgHandler;
         this.downMsgHandler = downMsgHandler;
+        this.midGenerator = midGenerator;
     }
 
     @PostConstruct
@@ -98,7 +102,8 @@ public class NettyUdpServer {
 
 
     public void sendCommand(String sn, DtuDownDataVO dtuDownDataVO) throws Exception {
-
+        dtuDownDataVO.getDataVOList().forEach(commonDownDataVO -> commonDownDataVO.setMid(midGenerator.generatorMid(commonDownDataVO.getDeviceSn())));
+        dtuDownDataVO.setPublishTime(LocalDateTime.now());
         byte[] dataBytes = UdpDataPackager.build(dtuDownDataVO, sn, AesUtil.getAesKey(sn));
         InetSocketAddress target = DeviceSessionManager.getDeviceAddress(sn);
         if (target == null) {

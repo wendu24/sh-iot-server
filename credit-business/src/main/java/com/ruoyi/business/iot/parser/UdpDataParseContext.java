@@ -55,7 +55,7 @@ public class UdpDataParseContext {
              */
             return parseData(buffer);
         } catch (Exception e) {
-            log.error("消息解析出错啦",e);
+            log.error("消息解析出错啦hexString={}",hexString,e);
             return null;
         }
     }

@@ -17,7 +17,7 @@ public class CmdFFDataParser {
                 .mid(buffer.getShort())
                 .cmdCode(cmdCode)
                 .readWriteFlag(buffer.get())
-                .deviceTime(DateUtil.timestampToLocalDateTime(buffer.getInt() * 1000L))
+//                .deviceTime(DateUtil.timestampToLocalDateTime(buffer.getInt() * 1000L))
                 .build();
         if(ReadWriteEnum.READ.getCode().equals(cmdFFDataVO.getReadWriteFlag().intValue())){
             parseDataByCmdType(buffer, cmdEnum, cmdFFDataVO);
