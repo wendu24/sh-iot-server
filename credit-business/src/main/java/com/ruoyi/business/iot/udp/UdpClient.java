@@ -1,5 +1,7 @@
 package com.ruoyi.business.iot.udp;
 
+import com.ruoyi.business.iot.common.util.IotCommonUtil;
+
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -9,7 +11,7 @@ import java.io.IOException;
 public class UdpClient {
 
     // 服务器地址和端口配置
-    private static final String SERVER_IP = "121.43.179.245"; // 目标服务器IP，请根据您的实际服务器地址修改
+    private static final String SERVER_IP = "127.0.0.1"; // 目标服务器IP，请根据您的实际服务器地址修改
     private static final int SERVER_PORT = 9990;       // 目标服务器端口，请根据您的实际端口修改
     private static final int LISTEN_PORT = 10000;       // 本地监听端口，用于接收服务器回传数据
 
@@ -38,8 +40,8 @@ public class UdpClient {
                 }
 
                 // 示例：将用户输入的文本转换为字节数组
-                byte[] sendData = input.getBytes("UTF-8");
-
+//                byte[] sendData = input.getBytes("UTF-8");
+                byte[] sendData = IotCommonUtil.hexToBytes(input);
                 // 封装 DatagramPacket，包含数据、长度、目标地址和端口
                 DatagramPacket sendPacket = new DatagramPacket(
                         sendData,

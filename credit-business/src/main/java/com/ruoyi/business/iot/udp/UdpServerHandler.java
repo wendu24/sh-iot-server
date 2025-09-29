@@ -1,5 +1,6 @@
 package com.ruoyi.business.iot.udp;
 
+import com.ruoyi.business.iot.common.util.IotCommonUtil;
 import com.ruoyi.business.iot.common.vo.room.DeviceDataVO;
 import com.ruoyi.business.iot.parser.udp.UdpDataParser;
 import io.netty.buffer.ByteBuf;
@@ -25,14 +26,16 @@ public class UdpServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, DatagramPacket packet) throws Exception {
-        String msg = packet.content().toString(CharsetUtil.UTF_8);
+        byte[] data = new byte[packet.content().readableBytes()];
+        packet.content().readBytes(data);
+        String msg = IotCommonUtil.bytesToHex(data);
         InetSocketAddress sender = packet.sender();
 
         // 解析SN，假设协议是 JSON，例如 {"sn":"ABC123","data":"xxx"}
+        log.info("收到UDP请求 msg={}",msg);
         String sn = UdpDataParser.parseSn(msg);
         // 更新设备地址
         DeviceSessionManager.updateDevice(sn, sender);
-        log.info("收到UDP请求 sn ={} msg={}",sn,msg);
         DeviceDataVO deviceDataVO = UdpDataParser.parseData(sn, msg);
 
 
