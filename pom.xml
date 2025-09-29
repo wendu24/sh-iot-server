@@ -21,7 +21,7 @@
         <bitwalker.version>1.21</bitwalker.version>
         <swagger.version>3.0.0</swagger.version>
         <kaptcha.version>2.3.2</kaptcha.version>
-        <lombok.version>1.18.20</lombok.version>
+        <lombok.version>1.18.30</lombok.version>
         <hutool.version>5.7.2</hutool.version>
         <mybatis-plus-spring-boot.version>3.4.2</mybatis-plus-spring-boot.version>
         <pagehelper.boot.version>1.4.3</pagehelper.boot.version>
