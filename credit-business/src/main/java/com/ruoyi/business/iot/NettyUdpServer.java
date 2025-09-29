@@ -1,7 +1,9 @@
 package com.ruoyi.business.iot;
 
+import com.alibaba.fastjson2.JSONObject;
 import com.ruoyi.business.config.UdpServerProperties;
 import com.ruoyi.business.iot.common.util.AesUtil;
+import com.ruoyi.business.iot.common.util.IotCommonUtil;
 import com.ruoyi.business.iot.common.vo.down.DtuDownDataVO;
 import com.ruoyi.business.iot.packager.udp.UdpDataPackager;
 import com.ruoyi.business.iot.udp.DeviceSessionManager;
@@ -18,6 +20,7 @@ import io.netty.channel.socket.nio.NioDatagramChannel;
 import io.netty.channel.epoll.EpollDatagramChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -33,6 +36,7 @@ import io.netty.channel.socket.DatagramPacket;
 /**
  * 接收和发送消息
  */
+@Slf4j
 @Component
 public class NettyUdpServer {
 
@@ -93,14 +97,14 @@ public class NettyUdpServer {
         byte[] dataBytes = UdpDataPackager.build(dtuDownDataVO, sn, AesUtil.getAesKey(sn));
         InetSocketAddress target = DeviceSessionManager.getDeviceAddress(sn);
         if (target == null) {
-            System.err.println("设备[" + sn + "]不在线，无法下发");
+            log.error("设备={}不在线,无法下发",sn);
             return;
         }
         if (channel == null || !channel.isActive()) {
-            System.err.println("UDP channel未就绪，无法下发");
+            log.error("UDP channel未就绪，无法下发");
             return;
         }
-
+        log.info("udp下发消息target={}", JSONObject.toJSONString(target));
         ByteBuf byteBuf = Unpooled.wrappedBuffer(dataBytes);
         channel.writeAndFlush(new DatagramPacket(byteBuf, target));
     }
@@ -120,5 +124,14 @@ public class NettyUdpServer {
             }
         }
         System.out.println("UDP server stopped.");
+    }
+
+    public static void main(String[] args) {
+        String hex = "3132312E34332E3137392E3234353A39393930006F6D";
+        String hex2 = "3132312E34332E3137392E3234353A39393930";
+        byte[] bytes = IotCommonUtil.hexToBytes(hex);
+        byte[] bytes2 = IotCommonUtil.hexToBytes(hex2);
+        System.out.println(new String(bytes));
+        System.out.println(new String(bytes2));
     }
 }

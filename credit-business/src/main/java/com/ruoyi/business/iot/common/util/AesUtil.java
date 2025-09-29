@@ -1,8 +1,11 @@
 package com.ruoyi.business.iot.common.util;
 
+import lombok.extern.slf4j.Slf4j;
+
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 
+@Slf4j
 public class AesUtil {
 
     // AES 加密相关常量
@@ -22,6 +25,7 @@ public class AesUtil {
      * @return 加密后的字节数组
      */
     public static byte[] aesEncrypt(byte[] payload, byte[] key) throws Exception {
+        log.info("加密前的数据={}",IotCommonUtil.bytesToHex(payload));
         SecretKeySpec secretKey = new SecretKeySpec(key, AES_ALGORITHM);
         Cipher cipher = Cipher.getInstance(CIPHER_TRANSFORMATION);
         cipher.init(Cipher.ENCRYPT_MODE, secretKey);
