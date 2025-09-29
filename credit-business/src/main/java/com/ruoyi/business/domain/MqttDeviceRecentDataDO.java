@@ -7,9 +7,8 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
-@TableName("sh_device_latest_data")
-public class DeviceLatestDataDO {
-
+@TableName("sh_mqtt_device_recent_data")
+public class MqttDeviceRecentDataDO {
 
     /**
      * 主键ID

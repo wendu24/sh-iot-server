@@ -2,11 +2,11 @@ package com.ruoyi.business.iot.handler.uplink;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
-import com.ruoyi.business.domain.DeviceRecentDataDO;
+import com.ruoyi.business.domain.MqttDeviceRecentDataDO;
 import com.ruoyi.business.iot.common.constant.AbnormalTypeEnum;
 import com.ruoyi.business.iot.common.vo.UplinkDataVO;
 import com.ruoyi.business.iot.common.vo.uplink.MqttCmd08DataVO;
-import com.ruoyi.business.service.DeviceRecentDataService;
+import com.ruoyi.business.service.MqttDeviceRecentDataService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,33 +22,33 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @Component
-public class RecentDeviceDataObserver extends AbstractUplinkMsgObserver {
+public class MqttRecentDataObserver extends AbstractUplinkMsgObserver {
 
     @Autowired
-    DeviceRecentDataService deviceRecentDataService;
+    MqttDeviceRecentDataService mqttDeviceRecentDataService;
 
     @Override
     public void handle( UplinkDataVO uplinkDataVO) {
         List<MqttCmd08DataVO> mqttCmd08DataVOS = uplinkDataVO.getMqttCmd08DataVOS();
         if(CollectionUtils.isEmpty(mqttCmd08DataVOS))
             return;
-        List<DeviceRecentDataDO> addList = new ArrayList<>();
+        List<MqttDeviceRecentDataDO> addList = new ArrayList<>();
 
         uplinkDataVO.getMqttCmd08DataVOS().forEach(uplinkCmd08DataVO -> {
-            DeviceRecentDataDO deviceRecentDataDO = new DeviceRecentDataDO();
-            BeanUtil.copyProperties(uplinkCmd08DataVO,deviceRecentDataDO);
+            MqttDeviceRecentDataDO mqttDeviceRecentDataDO = new MqttDeviceRecentDataDO();
+            BeanUtil.copyProperties(uplinkCmd08DataVO, mqttDeviceRecentDataDO);
             String abnormalTypes = uplinkCmd08DataVO.getAbnormalTypes()
                     .stream()
                     .map(AbnormalTypeEnum::getCode)
                     .map(String::valueOf)
                     .collect(Collectors.joining(","));
             if(StringUtils.isNotBlank(abnormalTypes))
-                deviceRecentDataDO.setAbnormalTypes(abnormalTypes);
-            deviceRecentDataDO.setUplinkPeriod(uplinkCmd08DataVO.getUplinkPeriod().intValue());
-            deviceRecentDataDO.setCreateTime(LocalDateTime.now());
-            addList.add(deviceRecentDataDO);
+                mqttDeviceRecentDataDO.setAbnormalTypes(abnormalTypes);
+            mqttDeviceRecentDataDO.setUplinkPeriod(uplinkCmd08DataVO.getUplinkPeriod().intValue());
+            mqttDeviceRecentDataDO.setCreateTime(LocalDateTime.now());
+            addList.add(mqttDeviceRecentDataDO);
         });
-        deviceRecentDataService.saveBatch(addList);
+        mqttDeviceRecentDataService.saveBatch(addList);
 
     }
 
