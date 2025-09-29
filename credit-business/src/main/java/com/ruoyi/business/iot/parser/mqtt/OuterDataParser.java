@@ -1,4 +1,4 @@
-package com.ruoyi.business.iot.parser;
+package com.ruoyi.business.iot.parser.mqtt;
 
 import com.ruoyi.business.iot.common.util.AesUtil;
 import com.ruoyi.business.iot.common.util.IotCommonUtil;
@@ -9,7 +9,7 @@ import java.nio.ByteOrder;
 import java.util.Arrays;
 
 @Slf4j
-public class RawDataParser {
+public class OuterDataParser {
 
 
     /**

@@ -1,11 +1,11 @@
-package com.ruoyi.business.iot.parser;
+package com.ruoyi.business.iot.parser.mqtt;
 
 import com.ruoyi.business.iot.common.util.IotCommonUtil;
 import com.ruoyi.business.iot.common.vo.uplink.DtuDataVO;
 
 import java.nio.ByteBuffer;
 
-public class DtuDataParser {
+public class InnerDataParser {
 
 
     /**

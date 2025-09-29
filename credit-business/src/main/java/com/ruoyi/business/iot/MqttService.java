@@ -6,8 +6,8 @@ import com.ruoyi.business.iot.common.util.MidGenerator;
 import com.ruoyi.business.iot.common.vo.down.DtuDownDataVO;
 import com.ruoyi.business.iot.common.vo.uplink.DtuDataVO;
 import com.ruoyi.business.iot.observer.MqttMsgProducer;
-import com.ruoyi.business.iot.packager.MqttDataPackager;
-import com.ruoyi.business.iot.parser.MqttDataParser;
+import com.ruoyi.business.iot.packager.mqtt.MqttDataPackager;
+import com.ruoyi.business.iot.parser.mqtt.MqttDataParseContext;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.paho.client.mqttv3.IMqttMessageListener;
 import org.eclipse.paho.client.mqttv3.MqttClient;
@@ -68,7 +68,7 @@ public class MqttService {
         for (int i = 0; i < topics.length; i++) {
             listeners[i] = (topic, message) -> {
                 log.info("收到消息 Topic={} ,msg={}",topic,IotCommonUtil.bytesToHex(message.getPayload()));
-                DtuDataVO dtuDataVO = MqttDataParser.parse(topic, IotCommonUtil.bytesToHex(message.getPayload()));
+                DtuDataVO dtuDataVO = MqttDataParseContext.parse(topic, IotCommonUtil.bytesToHex(message.getPayload()));
                 mqttMsgProducer.handle(topic,dtuDataVO);
             };
         }
@@ -85,7 +85,7 @@ public class MqttService {
         for (int i = 0; i < topics.length; i++) {
             listeners[i] = (topic, message) -> {
                 log.info("收到消息 Topic={} ,msg={}",topic,IotCommonUtil.bytesToHex(message.getPayload()));
-                DtuDataVO dtuDataVO = MqttDataParser.parse(topic, IotCommonUtil.bytesToHex(message.getPayload()));
+                DtuDataVO dtuDataVO = MqttDataParseContext.parse(topic, IotCommonUtil.bytesToHex(message.getPayload()));
                 mqttMsgProducer.handle(topic,dtuDataVO);
             };
         }

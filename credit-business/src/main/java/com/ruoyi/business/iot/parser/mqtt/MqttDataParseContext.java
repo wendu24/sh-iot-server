@@ -1,4 +1,4 @@
-package com.ruoyi.business.iot.parser;
+package com.ruoyi.business.iot.parser.mqtt;
 
 import com.alibaba.fastjson2.JSONObject;
 import com.ruoyi.business.iot.common.util.AesUtil;
@@ -13,7 +13,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 @Slf4j
-public class MqttDataParser {
+public class MqttDataParseContext {
 
 
     public static DtuDataVO parse(String topic, String hexString){
@@ -24,7 +24,7 @@ public class MqttDataParser {
     }
 
 
-    public static DtuDataVO parseData(String deviceSN, String hexString){
+    private static DtuDataVO parseData(String deviceSN, String hexString){
 
         byte[] rawData = IotCommonUtil.hexToBytes(hexString);
         String aesKey = AesUtil.getAesKey(deviceSN);
@@ -32,14 +32,14 @@ public class MqttDataParser {
             /**
              * 第一步: 解析出消息体并解密
              */
-            byte[] decryptedBody = RawDataParser.parse(rawData,aesKey);
+            byte[] decryptedBody = OuterDataParser.parse(rawData,aesKey);
             System.out.println("解密后的数据 decryptedBody : " + IotCommonUtil.bytesToHex(decryptedBody));
             // 这个buffer整个链路一直在用
             ByteBuffer buffer = ByteBuffer.wrap(decryptedBody).order(ByteOrder.LITTLE_ENDIAN);
             /**
              * 第二步: 解析出DTU数据
              */
-            DtuDataVO dtuDataVO = DtuDataParser.parse(buffer);
+            DtuDataVO dtuDataVO = InnerDataParser.parse(buffer);
             /**
              * 第三步:解析CMD数据
              */
@@ -98,7 +98,7 @@ public class MqttDataParser {
     }
 
     public static void main(String[] args) {
-        MqttDataParser mqttDataParser = new MqttDataParser();
+        MqttDataParseContext mqttDataParseContext = new MqttDataParseContext();
 //        mqttMsgHandler.handle2();
     }
 }

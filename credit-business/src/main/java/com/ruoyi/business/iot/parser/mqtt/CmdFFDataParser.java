@@ -1,4 +1,4 @@
-package com.ruoyi.business.iot.parser;
+package com.ruoyi.business.iot.parser.mqtt;
 
 import com.ruoyi.business.iot.common.util.IotCommonUtil;
 import com.ruoyi.business.iot.common.constant.CmdEnum;

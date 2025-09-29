@@ -1,13 +1,7 @@
-package com.ruoyi.business.iot.packager;
+package com.ruoyi.business.iot.packager.mqtt;
 
-import com.ruoyi.business.iot.common.util.AesUtil;
-import com.ruoyi.business.iot.common.util.IotCommonUtil;
-import com.ruoyi.business.iot.common.util.MidGenerator;
 import com.ruoyi.business.iot.common.constant.CmdEnum;
-import com.ruoyi.business.iot.common.constant.ReadWriteEnum;
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.Date;
 
 @Slf4j
 @Deprecated

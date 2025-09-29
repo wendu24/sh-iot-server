@@ -1,4 +1,4 @@
-package com.ruoyi.business.iot.packager;
+package com.ruoyi.business.iot.packager.mqtt;
 
 import com.ruoyi.business.iot.common.util.IotCommonUtil;
 import com.ruoyi.business.iot.common.vo.down.DtuDownDataVO;
