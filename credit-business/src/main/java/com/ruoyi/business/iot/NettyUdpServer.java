@@ -1,6 +1,11 @@
-package com.ruoyi.business.iot.udp;
+package com.ruoyi.business.iot;
 
 import com.ruoyi.business.config.UdpServerProperties;
+import com.ruoyi.business.iot.common.util.AesUtil;
+import com.ruoyi.business.iot.common.vo.down.DtuDownDataVO;
+import com.ruoyi.business.iot.packager.udp.UdpDataPackager;
+import com.ruoyi.business.iot.udp.DeviceSessionManager;
+import com.ruoyi.business.iot.udp.UdpChannelInitializer;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
@@ -24,7 +29,6 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.socket.DatagramPacket;
-import io.netty.util.CharsetUtil;
 
 /**
  * 接收和发送消息
@@ -83,7 +87,10 @@ public class NettyUdpServer {
     }
 
 
-    public void sendCommand(String sn, String command) {
+    public void sendCommand(String sn, DtuDownDataVO dtuDownDataVO) throws Exception {
+
+
+        byte[] dataBytes = UdpDataPackager.build(dtuDownDataVO, sn, AesUtil.getAesKey(sn));
         InetSocketAddress target = DeviceSessionManager.getDeviceAddress(sn);
         if (target == null) {
             System.err.println("设备[" + sn + "]不在线，无法下发");
@@ -93,9 +100,9 @@ public class NettyUdpServer {
             System.err.println("UDP channel未就绪，无法下发");
             return;
         }
-        ByteBuf buf = Unpooled.copiedBuffer(command, CharsetUtil.UTF_8);
-        channel.writeAndFlush(new DatagramPacket(buf, target));
-        System.out.printf("下发命令给设备[%s]: %s%n", sn, command);
+
+        ByteBuf byteBuf = Unpooled.wrappedBuffer(dataBytes);
+        channel.writeAndFlush(new DatagramPacket(byteBuf, target));
     }
 
     @PreDestroy

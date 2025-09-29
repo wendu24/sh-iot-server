@@ -12,7 +12,8 @@ public class CommonConstant {
     /**
      * 版本
      */
-    public static final byte PROTOCOL = 20;
+    public static final byte PROTOCOL_20 = 20;
+    public static final byte PROTOCOL_10 = 10;
     /**
      * 结束标识
      */
