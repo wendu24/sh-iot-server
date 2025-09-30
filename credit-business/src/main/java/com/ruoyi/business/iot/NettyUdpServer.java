@@ -144,6 +144,7 @@ public class NettyUdpServer {
                 log.error("构建下发数据出错啦dtuDownDataVO={}",JSONObject.toJSONString(dtuDownDataVO),e);
             }
         });
+        dtuDownDataVOS.clear();
     }
 
     @PreDestroy
