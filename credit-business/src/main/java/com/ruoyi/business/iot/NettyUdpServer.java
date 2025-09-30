@@ -1,6 +1,7 @@
 package com.ruoyi.business.iot;
 
 import com.alibaba.fastjson2.JSONObject;
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.ruoyi.business.config.UdpServerProperties;
 import com.ruoyi.business.iot.common.util.AesUtil;
 import com.ruoyi.business.iot.common.util.IotCommonUtil;
@@ -30,6 +31,10 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.net.InetSocketAddress;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -44,6 +49,7 @@ import io.netty.channel.socket.DatagramPacket;
 @Component
 public class NettyUdpServer {
 
+    public static final ConcurrentHashMap<String, List<DtuDownDataVO>> dataCache = new ConcurrentHashMap<>();
     private final UdpServerProperties props;
     private final UplinkMsgHandler uplinkMsgHandler;
     private final DownMsgHandler downMsgHandler;
@@ -93,31 +99,51 @@ public class NettyUdpServer {
             b.channel(NioDatagramChannel.class);
         }
 
-        b.handler(new UdpChannelInitializer(businessExecutor,uplinkMsgHandler));
+        b.handler(new UdpChannelInitializer(businessExecutor,uplinkMsgHandler,this));
 
         // 绑定端口（UDP bind）
         channel = b.bind(new InetSocketAddress(props.getPort())).sync().channel();
         log.info("UDP server started on port: ={}" ,props.getPort());
     }
 
-
+    /**
+     * 由于UDP不稳定,所以先缓存,设备上传数据后在一次性下发
+     * @param sn
+     * @param dtuDownDataVO
+     * @throws Exception
+     */
     public void sendCommand(String sn, DtuDownDataVO dtuDownDataVO) throws Exception {
-        dtuDownDataVO.getDataVOList().forEach(commonDownDataVO -> commonDownDataVO.setMid(midGenerator.generatorMid(commonDownDataVO.getDeviceSn())));
-        dtuDownDataVO.setPublishTime(LocalDateTime.now());
-        byte[] dataBytes = UdpDataPackager.build(dtuDownDataVO, sn, AesUtil.getAesKey(sn));
-        InetSocketAddress target = DeviceSessionManager.getDeviceAddress(sn);
-        if (target == null) {
-            log.error("设备={}不在线,无法下发",sn);
+        List<DtuDownDataVO> list = dataCache.computeIfAbsent(sn, k -> new ArrayList<>());
+        list.add(dtuDownDataVO); // 直接操作返回的列表
+    }
+
+
+    public void doSend(String sn)  {
+        List<DtuDownDataVO> dtuDownDataVOS = dataCache.get(sn);
+        if(CollectionUtils.isEmpty(dtuDownDataVOS))
             return;
-        }
-        if (channel == null || !channel.isActive()) {
-            log.error("UDP channel未就绪，无法下发");
-            return;
-        }
-        log.info("udp下发消息target={}", JSONObject.toJSONString(target));
-        ByteBuf byteBuf = Unpooled.wrappedBuffer(dataBytes);
-        channel.writeAndFlush(new DatagramPacket(byteBuf, target));
-        downMsgHandler.handle(dtuDownDataVO);
+        dtuDownDataVOS.forEach(dtuDownDataVO -> {
+            dtuDownDataVO.getDataVOList().forEach(commonDownDataVO -> commonDownDataVO.setMid(midGenerator.generatorMid(commonDownDataVO.getDeviceSn())));
+            dtuDownDataVO.setPublishTime(LocalDateTime.now());
+            try {
+                byte[] dataBytes = UdpDataPackager.build(dtuDownDataVO, sn, AesUtil.getAesKey(sn));
+                InetSocketAddress target = DeviceSessionManager.getDeviceAddress(sn);
+                if (target == null) {
+                    log.error("设备={}不在线,无法下发",sn);
+                    return;
+                }
+                if (channel == null || !channel.isActive()) {
+                    log.error("UDP channel未就绪，无法下发");
+                    return;
+                }
+                log.info("udp下发消息target={}", JSONObject.toJSONString(target));
+                ByteBuf byteBuf = Unpooled.wrappedBuffer(dataBytes);
+                channel.writeAndFlush(new DatagramPacket(byteBuf, target));
+                downMsgHandler.handle(dtuDownDataVO);
+            } catch (Exception e) {
+                log.error("构建下发数据出错啦dtuDownDataVO={}",JSONObject.toJSONString(dtuDownDataVO),e);
+            }
+        });
     }
 
     @PreDestroy

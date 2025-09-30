@@ -1,6 +1,7 @@
 package com.ruoyi.business.iot.udp;
 
 import com.alibaba.fastjson2.JSONObject;
+import com.ruoyi.business.iot.NettyUdpServer;
 import com.ruoyi.business.iot.common.util.IotCommonUtil;
 import com.ruoyi.business.iot.common.vo.UplinkDataVO;
 import com.ruoyi.business.iot.handler.UplinkMsgHandler;
@@ -18,10 +19,12 @@ public class UdpServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 
     private final ExecutorService businessExecutor;
     private final UplinkMsgHandler uplinkMsgHandler;
+    private final NettyUdpServer nettyUdpServer;
 
-    public UdpServerHandler(ExecutorService businessExecutor, UplinkMsgHandler uplinkMsgHandler) {
+    public UdpServerHandler(ExecutorService businessExecutor, UplinkMsgHandler uplinkMsgHandler, NettyUdpServer nettyUdpServer) {
         this.businessExecutor = businessExecutor;
         this.uplinkMsgHandler = uplinkMsgHandler;
+        this.nettyUdpServer = nettyUdpServer;
     }
 
     @Override
@@ -39,10 +42,11 @@ public class UdpServerHandler extends SimpleChannelInboundHandler<DatagramPacket
         UplinkDataVO uplinkDataVO = UdpDataParseContext.parseData(sn, msg);
         log.info("解析出来的数据 headerDataVO={}",uplinkDataVO);
         uplinkMsgHandler.handle(uplinkDataVO);
-        // 根据业务需要决定是否回复
-//        String resp = "ACK:" + msg;
-//        ByteBuf buf = Unpooled.copiedBuffer(resp, CharsetUtil.UTF_8);
-//        ctx.writeAndFlush(new DatagramPacket(buf, sender));
+        /**
+         * 触发消息下发
+         */
+        nettyUdpServer.doSend(sn);
+
     }
 
     private String parseSnFromMessage(String msg) {
