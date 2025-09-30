@@ -32,6 +32,16 @@ public class MqttDeviceLatestDataDO {
     private Integer batteryLevel;
 
     /**
+     * 信号强度
+     */
+    private Integer signalStrength;
+
+    /**
+     * 11个字节的 物联网卡ICCID
+     */
+    private String iccId;
+
+    /**
      * 异常类型 (10:拆卸告警, 20:阀门堵转, 30:传感器异常) 逗号分割
      */
     private String abnormalTypes;

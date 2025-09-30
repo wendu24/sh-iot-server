@@ -7,6 +7,8 @@ import lombok.Data;
 @Builder
 public class DtuDataVO {
 
+    private String dtuDeviceSn;
+
     /**
      * 电池电量
      */
@@ -19,7 +21,7 @@ public class DtuDataVO {
     /**
      * 11个字节的 物联网卡ICCID
      */
-    private String iccID;
+    private String iccId;
 
     /**
      * 是否需要平台应答

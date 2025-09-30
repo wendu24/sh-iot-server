@@ -22,16 +22,16 @@ public class MqttDataParseContext {
 
     public static UplinkDataVO parse(String topic, String hexString){
         String[] parts = topic.split("/");
-        String deviceSN = parts[3];
-        UplinkDataVO uplinkDataVO = parseData(deviceSN, hexString);
+        String dtuDeviceSN = parts[3];
+        UplinkDataVO uplinkDataVO = parseData(dtuDeviceSN, hexString);
         return uplinkDataVO;
     }
 
 
-    private static UplinkDataVO parseData(String deviceSN, String hexString){
+    private static UplinkDataVO parseData(String dtuDeviceSN, String hexString){
 
         byte[] rawData = IotCommonUtil.hexToBytes(hexString);
-        String aesKey = AesUtil.getAesKey(deviceSN);
+        String aesKey = AesUtil.getAesKey(dtuDeviceSN);
         try {
             /**
              * 第一步: 解析出消息体并解密
@@ -43,7 +43,7 @@ public class MqttDataParseContext {
             /**
              * 第二步: 解析出DTU数据
              */
-            UplinkDataVO uplinkDataVO = DtuDataParser.parse(buffer);
+            UplinkDataVO uplinkDataVO = DtuDataParser.parse(dtuDeviceSN, buffer);
             /**
              * 第三步:解析CMD数据
              */

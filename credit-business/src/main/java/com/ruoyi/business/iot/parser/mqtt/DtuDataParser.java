@@ -13,7 +13,7 @@ public class DtuDataParser {
         解析出DTU 的数据
      * @param buffer 解密后的协议体字节数组（即原始报文去除加密层和校验字段后的内容）
      */
-    public static UplinkDataVO parse(ByteBuffer buffer) {
+    public static UplinkDataVO parse(String dtuDeviceSn, ByteBuffer buffer) {
 
         byte batteryLevel = buffer.get();        // 电池电量（单位：百分比 %）
         byte signalStrength = buffer.get();        // 信号强度
@@ -23,9 +23,10 @@ public class DtuDataParser {
         byte cmdNum = buffer.get();
 
         DtuDataVO dtuDataVO = DtuDataVO.builder()
+                .dtuDeviceSn(dtuDeviceSn)
                 .batteryLevel(IotCommonUtil.byte2int(batteryLevel))
                 .signalStrength(IotCommonUtil.byte2int(signalStrength))
-                .iccID(IotCommonUtil.bytesToHex(iccIDBytes))
+                .iccId(IotCommonUtil.bytesToHex(iccIDBytes))
                 .replyFlag(IotCommonUtil.byte2int(replyFlag))
                 .cmdNum(IotCommonUtil.byte2int(cmdNum))
                 .build();
