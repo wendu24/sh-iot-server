@@ -1,4 +1,4 @@
-package com.ruoyi.business.iot;
+package com.ruoyi.business.iot.udp;
 
 import com.alibaba.fastjson2.JSONObject;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
@@ -24,7 +24,9 @@ import io.netty.channel.socket.nio.NioDatagramChannel;
 import io.netty.channel.epoll.EpollDatagramChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -33,12 +35,12 @@ import java.net.InetSocketAddress;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
+
 import io.netty.buffer.Unpooled;
 import io.netty.channel.socket.DatagramPacket;
 
@@ -49,27 +51,24 @@ import io.netty.channel.socket.DatagramPacket;
 @Component
 public class NettyUdpServer {
 
-    public static final ConcurrentHashMap<String, List<DtuDownDataVO>> dataCache = new ConcurrentHashMap<>();
-    private final UdpServerProperties props;
-    private final UplinkMsgHandler uplinkMsgHandler;
-    private final DownMsgHandler downMsgHandler;
+    @Autowired
+    private UdpServerProperties props;
+
+    @Autowired
+    private UdpChannelInitializer udpChannelInitializer;
     private EventLoopGroup group;
     private Channel channel;
-    private ExecutorService businessExecutor;
-    private final MidGenerator midGenerator;
 
-    public NettyUdpServer(UdpServerProperties props, UplinkMsgHandler uplinkMsgHandler, DownMsgHandler downMsgHandler,MidGenerator midGenerator) {
-        this.props = props;
-        this.uplinkMsgHandler = uplinkMsgHandler;
-        this.downMsgHandler = downMsgHandler;
-        this.midGenerator = midGenerator;
-    }
+    private ExecutorService businessExecutor;
+
+
 
     @PostConstruct
     public void start() throws InterruptedException {
         // 业务线程池
         businessExecutor = Executors.newFixedThreadPool(props.getBusinessThreads(), new ThreadFactory() {
             private final AtomicInteger idx = new AtomicInteger(1);
+
             @Override
             public Thread newThread(Runnable r) {
                 Thread t = new Thread(r, "udp-business-" + idx.getAndIncrement());
@@ -99,52 +98,28 @@ public class NettyUdpServer {
             b.channel(NioDatagramChannel.class);
         }
 
-        b.handler(new UdpChannelInitializer(businessExecutor,uplinkMsgHandler,this));
+        b.handler(udpChannelInitializer);
 
         // 绑定端口（UDP bind）
         channel = b.bind(new InetSocketAddress(props.getPort())).sync().channel();
-        log.info("UDP server started on port: ={}" ,props.getPort());
-    }
-
-    /**
-     * 由于UDP不稳定,所以先缓存,设备上传数据后在一次性下发
-     * @param sn
-     * @param dtuDownDataVO
-     * @throws Exception
-     */
-    public void sendCommand(String sn, DtuDownDataVO dtuDownDataVO) throws Exception {
-        List<DtuDownDataVO> list = dataCache.computeIfAbsent(sn, k -> new ArrayList<>());
-        list.add(dtuDownDataVO); // 直接操作返回的列表
+        log.info("UDP server started on port: ={}", props.getPort());
     }
 
 
-    public void doSend(String sn)  {
-        List<DtuDownDataVO> dtuDownDataVOS = dataCache.get(sn);
-        if(CollectionUtils.isEmpty(dtuDownDataVOS))
+
+    public void sendUdpMsg(String deviceSn, byte[] dataBytes){
+        InetSocketAddress target = DeviceSessionManager.getDeviceAddress(deviceSn);
+        if (target == null) {
+            log.error("设备={}不在线,无法下发", deviceSn);
             return;
-        dtuDownDataVOS.forEach(dtuDownDataVO -> {
-            dtuDownDataVO.getDataVOList().forEach(commonDownDataVO -> commonDownDataVO.setMid(midGenerator.generatorMid(commonDownDataVO.getDeviceSn())));
-            dtuDownDataVO.setPublishTime(LocalDateTime.now());
-            try {
-                byte[] dataBytes = UdpDataPackager.build(dtuDownDataVO, sn, AesUtil.getAesKey(sn));
-                InetSocketAddress target = DeviceSessionManager.getDeviceAddress(sn);
-                if (target == null) {
-                    log.error("设备={}不在线,无法下发",sn);
-                    return;
-                }
-                if (channel == null || !channel.isActive()) {
-                    log.error("UDP channel未就绪，无法下发");
-                    return;
-                }
-                log.info("udp下发消息target={}", JSONObject.toJSONString(target));
-                ByteBuf byteBuf = Unpooled.wrappedBuffer(dataBytes);
-                channel.writeAndFlush(new DatagramPacket(byteBuf, target));
-                downMsgHandler.handle(dtuDownDataVO);
-            } catch (Exception e) {
-                log.error("构建下发数据出错啦dtuDownDataVO={}",JSONObject.toJSONString(dtuDownDataVO),e);
-            }
-        });
-        dtuDownDataVOS.clear();
+        }
+        if (channel == null || !channel.isActive()) {
+            log.error("UDP channel未就绪，无法下发");
+            return;
+        }
+        log.info("udp下发消息target={}", JSONObject.toJSONString(target));
+        ByteBuf byteBuf = Unpooled.wrappedBuffer(dataBytes);
+        channel.writeAndFlush(new DatagramPacket(byteBuf, target));
     }
 
     @PreDestroy
@@ -164,12 +139,5 @@ public class NettyUdpServer {
         System.out.println("UDP server stopped.");
     }
 
-    public static void main(String[] args) {
-        String hex = "3132312E34332E3137392E3234353A39393930006F6D";
-        String hex2 = "3132312E34332E3137392E3234353A39393930";
-        byte[] bytes = IotCommonUtil.hexToBytes(hex);
-        byte[] bytes2 = IotCommonUtil.hexToBytes(hex2);
-        System.out.println(new String(bytes));
-        System.out.println(new String(bytes2));
-    }
+
 }

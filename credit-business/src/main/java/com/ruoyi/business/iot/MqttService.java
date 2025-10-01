@@ -41,8 +41,12 @@ public class MqttService {
     MidGenerator midGenerator;
 
 
-
-
+    /**
+     * 发布命令,所有命令需要是同一个dtu下的
+     * @param topicDeviceSn dtu sn
+     * @param dtuDownDataVO
+     * @throws Exception
+     */
     public void publish(String topicDeviceSn, DtuDownDataVO dtuDownDataVO) throws Exception{
         dtuDownDataVO.getDataVOList().forEach(commonDownDataVO -> commonDownDataVO.setMid(midGenerator.generatorMid(commonDownDataVO.getDeviceSn())));
         dtuDownDataVO.setPublishTime(LocalDateTime.now());
@@ -94,5 +98,8 @@ public class MqttService {
             };
         }
         mqttClient.subscribe(topics, qos, listeners);
+    }
+
+    public static class NettyService {
     }
 }

@@ -1,29 +1,22 @@
 package com.ruoyi.business.iot.udp;
 
 
-import com.ruoyi.business.iot.NettyUdpServer;
-import com.ruoyi.business.iot.handler.UplinkMsgHandler;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.DatagramChannel;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-import java.util.concurrent.ExecutorService;
+@Component
 public class UdpChannelInitializer extends ChannelInitializer<DatagramChannel> {
 
-    private final ExecutorService businessExecutor;
-    private final UplinkMsgHandler uplinkMsgHandler;
-    private final  NettyUdpServer nettyUdpServer;
-
-    public UdpChannelInitializer(ExecutorService businessExecutor, UplinkMsgHandler uplinkMsgHandler, NettyUdpServer nettyUdpServer) {
-        this.businessExecutor = businessExecutor;
-        this.uplinkMsgHandler = uplinkMsgHandler;
-        this.nettyUdpServer = nettyUdpServer;
-    }
+    @Autowired
+    private  UdpServerHandler udpServerHandler;
 
     @Override
     protected void initChannel(DatagramChannel ch) throws Exception {
         ChannelPipeline p = ch.pipeline();
         // 根据需要可以添加编解码器/日志/限流等 handler
-        p.addLast(new UdpServerHandler(businessExecutor,uplinkMsgHandler,nettyUdpServer));
+        p.addLast(udpServerHandler);
     }
 }

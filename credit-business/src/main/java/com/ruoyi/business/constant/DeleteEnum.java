@@ -1,5 +1,8 @@
 package com.ruoyi.business.constant;
 
+import lombok.Getter;
+
+@Getter
 public enum DeleteEnum {
 
     DELETED(-1,"已删除"),

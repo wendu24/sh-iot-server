@@ -1,9 +1,9 @@
 package com.ruoyi.business.controller;
 
 import com.ruoyi.business.iot.MqttService;
-import com.ruoyi.business.iot.NettyUdpServer;
+import com.ruoyi.business.iot.UdpService;
+import com.ruoyi.business.iot.udp.NettyUdpServer;
 import com.ruoyi.business.iot.common.vo.down.DtuDownDataVO;
-import com.ruoyi.business.mapper.BizUserMapper;
 import com.ruoyi.business.service.BizUserService;
 import com.ruoyi.business.vo.BizUserVO;
 import com.ruoyi.common.core.domain.AjaxResult;
@@ -25,7 +25,7 @@ public class BizUserController {
     private MqttService mqttService;
 
     @Autowired
-    NettyUdpServer nettyUdpServer;
+    UdpService udpService;
 
     @RequestMapping("/user-info")
     public AjaxResult userInfo(@RequestBody BizUserVO bizUserVO){
@@ -49,7 +49,7 @@ public class BizUserController {
     public AjaxResult publishMsgUdp(@RequestBody DtuDownDataVO dtuDownDataVO){
         String topicDeviceSn = "102110042509080001";
         try {
-            nettyUdpServer.sendCommand(topicDeviceSn, dtuDownDataVO);
+            udpService.sendCommand2cache(topicDeviceSn, dtuDownDataVO);
             return AjaxResult.success("消息发布成功");
         } catch (Exception e) {
             log.error("发布消息出错啦,",e);
