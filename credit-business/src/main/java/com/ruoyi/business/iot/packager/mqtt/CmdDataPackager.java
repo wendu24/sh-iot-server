@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Date;
 
 /**
  * 命令数据打包
@@ -23,7 +24,7 @@ public class CmdDataPackager {
     public static byte[] buildCommand(CommonDownDataVO commonDownDataVO) throws IOException {
         ByteArrayOutputStream outputStream =  new ByteArrayOutputStream();
         // 数据体
-        byte[] commandData = buildShortCommandBody(commonDownDataVO);
+        byte[] commandData = buildCommandBody(commonDownDataVO);
         byte[] sn = IotCommonUtil.hexToBytes(commonDownDataVO.getDeviceSn());
         outputStream.write((byte)sn.length);
         outputStream.write(sn);
@@ -39,7 +40,7 @@ public class CmdDataPackager {
      * 构建下发命令的消息体
      * @param commonDownDataVO 数据
      */
-    private static byte[] buildShortCommandBody(CommonDownDataVO commonDownDataVO) throws IOException {
+    private static byte[] buildCommandBody(CommonDownDataVO commonDownDataVO) throws IOException {
         byte cmdCode = commonDownDataVO.getCmdCode();
         // 2. 构建命令体：CMD:23(设置上报间隔)
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -62,6 +63,7 @@ public class CmdDataPackager {
         if(cmdEnum.getDataClazz() == Float.class ){
             // 写入数据 (2 字节)
             outputStream.write(IotCommonUtil.shortToBytes(commonDownDataVO.getData().shortValue()));
+
         }else if(cmdEnum.getDataClazz() == String.class ){
             byte[] bytes = commonDownDataVO.getDataStr().getBytes("utf-8");
             outputStream.write(bytes);
@@ -70,6 +72,11 @@ public class CmdDataPackager {
             if (paddingLength > 0) {
                 outputStream.write(new byte[paddingLength]);
             }
+        }else if(cmdEnum.getDataClazz() == Date.class){
+            int time = (int)System.currentTimeMillis() / 1000;
+            byte[] timeBytes = IotCommonUtil.intToBytes(time);
+            outputStream.write(timeBytes);
+            outputStream.write((byte)0);
         }else {
             log.error("暂不支持的数据类型");
         }

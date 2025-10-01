@@ -3,6 +3,7 @@ package com.ruoyi.business.iot.common.constant;
 import lombok.Getter;
 
 import java.util.Arrays;
+import java.util.Date;
 
 /**
  * CMD 命令枚举
@@ -24,6 +25,7 @@ public enum CmdEnum {
     DOWNLINK_30((byte)0x30,Float.class,2,"下发设置/读取阀门开度"),
     DOWNLINK_40((byte)0x40,null,null,"下发读取实时数据并上报"),
     DOWNLINK_F0((byte)0xF0,null,null,"设备固件升级"),
+    DOWNLINK_FF((byte)0xFF, Date.class,4,"下发时间戳"),
 
 
 
