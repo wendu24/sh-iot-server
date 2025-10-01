@@ -51,7 +51,9 @@ public class CmdDataPackager {
         outputStream.write(IotCommonUtil.shortToBytes(commonDownDataVO.getMid()));
         // 写入读写标志 (1 字节) 这个方法只会写入最低八位
         outputStream.write(commonDownDataVO.getReadWriteFlag());
-        if(ReadWriteEnum.WRITE.getCode().equals(commonDownDataVO.getReadWriteFlag())){
+        if(ReadWriteEnum.WRITE.getCode().equals(commonDownDataVO.getReadWriteFlag())
+         || ReadWriteEnum.RESPONSE.getCode().equals(commonDownDataVO.getReadWriteFlag())
+        ){
             writeData(outputStream,commonDownDataVO);
         }
         byte[] cmdData = outputStream.toByteArray();
@@ -73,13 +75,23 @@ public class CmdDataPackager {
                 outputStream.write(new byte[paddingLength]);
             }
         }else if(cmdEnum.getDataClazz() == Date.class){
-            int time = (int)System.currentTimeMillis() / 1000;
+            int time = (int)(System.currentTimeMillis() / 1000);
             byte[] timeBytes = IotCommonUtil.intToBytes(time);
             outputStream.write(timeBytes);
             outputStream.write((byte)0);
+            log.info("time={}",time);
+            log.info("timeBytes={}",IotCommonUtil.bytesToHex(timeBytes));
+
         }else {
             log.error("暂不支持的数据类型");
         }
 
+    }
+
+    public static void main(String[] args) {
+        int time = (int)(System.currentTimeMillis() / 1000);
+        System.out.println(time);
+        byte[] timeBytes = IotCommonUtil.intToBytes(time);
+        System.out.println(IotCommonUtil.bytesToHex(timeBytes));
     }
 }

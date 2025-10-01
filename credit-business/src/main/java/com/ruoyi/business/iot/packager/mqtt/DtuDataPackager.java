@@ -15,7 +15,7 @@ public class DtuDataPackager {
 
     public static byte[] buildCommand(DtuDownDataVO dtuDownDataVO) throws Exception {
         ByteArrayOutputStream outputStream =  new ByteArrayOutputStream();
-        int timestamp = (int)DateUtil.localDateTimeToTimestamp(dtuDownDataVO.getPublishTime())/1000;
+        int timestamp = (int)(System.currentTimeMillis()/1000);
         outputStream.write(IotCommonUtil.intToBytes(timestamp));
         outputStream.write((byte)dtuDownDataVO.getDataVOList().size());
         dtuDownDataVO.getDataVOList().forEach(oneData ->{
