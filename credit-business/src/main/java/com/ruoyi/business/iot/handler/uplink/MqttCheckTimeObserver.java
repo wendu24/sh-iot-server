@@ -15,8 +15,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
@@ -32,11 +35,18 @@ public class MqttCheckTimeObserver extends AbstractUplinkMsgObserver{
     @Autowired
     DeviceMapper deviceMapper;
 
+    private static final ConcurrentHashMap<String, LocalDateTime> timeMap = new ConcurrentHashMap();
+
     @Override
     public void handle(UplinkDataVO uplinkDataVO) {
         if(CollectionUtils.isEmpty(uplinkDataVO.getMqttCmd08DataVOS()))
             return;
         String deviceSn = uplinkDataVO.getMqttCmd08DataVOS().get(0).getDeviceSn();
+        LocalDateTime latestPushTime = timeMap.get(deviceSn);
+        if(Objects.nonNull(latestPushTime)&& latestPushTime.plusHours(1).compareTo(LocalDateTime.now()) > 0){
+            return;
+        }
+
         LambdaQueryWrapper<DeviceDO> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(DeviceDO::getDeviceSn,deviceSn);
         queryWrapper.eq(DeviceDO::getDeleteFlag, DeleteEnum.NORMAL.getCode());
