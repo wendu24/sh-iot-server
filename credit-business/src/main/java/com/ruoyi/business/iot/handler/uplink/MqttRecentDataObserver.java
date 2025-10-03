@@ -2,10 +2,12 @@ package com.ruoyi.business.iot.handler.uplink;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
+import com.ruoyi.business.domain.MqttDeviceDataTemplateDO;
 import com.ruoyi.business.domain.MqttDeviceRecentDataDO;
 import com.ruoyi.business.iot.common.constant.AbnormalTypeEnum;
 import com.ruoyi.business.iot.common.vo.UplinkDataVO;
 import com.ruoyi.business.iot.common.vo.uplink.MqttCmd08DataVO;
+import com.ruoyi.business.service.MqttDeviceDataTemplateService;
 import com.ruoyi.business.service.MqttDeviceRecentDataService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -25,17 +27,17 @@ import java.util.stream.Collectors;
 public class MqttRecentDataObserver extends AbstractUplinkMsgObserver {
 
     @Autowired
-    MqttDeviceRecentDataService mqttDeviceRecentDataService;
+    MqttDeviceDataTemplateService mqttDeviceDataTemplateService;
 
     @Override
     public void handle( UplinkDataVO uplinkDataVO) {
         List<MqttCmd08DataVO> mqttCmd08DataVOS = uplinkDataVO.getMqttCmd08DataVOS();
         if(CollectionUtils.isEmpty(mqttCmd08DataVOS))
             return;
-        List<MqttDeviceRecentDataDO> addList = new ArrayList<>();
+        List<MqttDeviceDataTemplateDO> addList = new ArrayList<>();
 
         uplinkDataVO.getMqttCmd08DataVOS().forEach(uplinkCmd08DataVO -> {
-            MqttDeviceRecentDataDO mqttDeviceRecentDataDO = new MqttDeviceRecentDataDO();
+            MqttDeviceDataTemplateDO mqttDeviceRecentDataDO = new MqttDeviceDataTemplateDO();
             BeanUtil.copyProperties(uplinkCmd08DataVO, mqttDeviceRecentDataDO);
             String abnormalTypes = uplinkCmd08DataVO.getAbnormalTypes()
                     .stream()
@@ -48,7 +50,7 @@ public class MqttRecentDataObserver extends AbstractUplinkMsgObserver {
             mqttDeviceRecentDataDO.setCreateTime(LocalDateTime.now());
             addList.add(mqttDeviceRecentDataDO);
         });
-        mqttDeviceRecentDataService.saveBatch(addList);
+        mqttDeviceDataTemplateService.saveBatch(addList);
 
     }
 
