@@ -18,7 +18,7 @@ public class TableCopyJob {
 
 
     /**
-     * 每月最后一天23点59分执行表结构复制
+     * 每天都会执行,避免漏了,表存在额不会重复创建
      * 新表命名格式: sh_mqtt_device_recent_data_yyyyMM
      */
     @Scheduled(cron = "0 0 4 * * ? ")
@@ -42,7 +42,7 @@ public class TableCopyJob {
     }
 
     /**
-     * 每月最后一天23点59分执行表结构复制
+     * 每天都会执行,避免漏了,表存在额不会重复创建
      * 新表命名格式: sh_mqtt_device_recent_data_yyyyMM
      */
     @Scheduled(cron = "0 0 4 * * ? ")
