@@ -26,6 +26,7 @@ public enum CmdEnum {
     DOWNLINK_40((byte)0x40,null,null,"下发读取实时数据并上报"),
     DOWNLINK_F0((byte)0xF0,null,null,"设备固件升级"),
     DOWNLINK_FF((byte)0xFF, Date.class,4,"下发时间戳"),
+    DOWNLINK_UDP_RESPONSE((byte)0x08, Date.class,4,"下发时间戳"),
 
 
 

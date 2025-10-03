@@ -45,11 +45,23 @@ public class BizUserController {
         }
     }
 
+    @RequestMapping("/publish-msg-udp-cache")
+    public AjaxResult publishMsgUdpCache(@RequestBody DtuDownDataVO dtuDownDataVO){
+        String topicDeviceSn = "102110042509080001";
+        try {
+            udpService.sendCommand2cache(topicDeviceSn, dtuDownDataVO);
+            return AjaxResult.success("消息发布成功");
+        } catch (Exception e) {
+            log.error("发布消息出错啦,",e);
+            return AjaxResult.error(e.getMessage());
+        }
+    }
+
     @RequestMapping("/publish-msg-udp")
     public AjaxResult publishMsgUdp(@RequestBody DtuDownDataVO dtuDownDataVO){
         String topicDeviceSn = "102110042509080001";
         try {
-            udpService.sendCommand2cache(topicDeviceSn, dtuDownDataVO);
+            udpService.sendCommand(topicDeviceSn, dtuDownDataVO);
             return AjaxResult.success("消息发布成功");
         } catch (Exception e) {
             log.error("发布消息出错啦,",e);
