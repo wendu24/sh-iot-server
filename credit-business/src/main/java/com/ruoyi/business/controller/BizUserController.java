@@ -4,6 +4,7 @@ import com.ruoyi.business.iot.MqttService;
 import com.ruoyi.business.iot.UdpService;
 import com.ruoyi.business.iot.udp.NettyUdpServer;
 import com.ruoyi.business.iot.common.vo.down.DtuDownDataVO;
+import com.ruoyi.business.job.TableCopyJob;
 import com.ruoyi.business.service.BizUserService;
 import com.ruoyi.business.vo.BizUserVO;
 import com.ruoyi.common.core.domain.AjaxResult;
@@ -26,6 +27,9 @@ public class BizUserController {
 
     @Autowired
     UdpService udpService;
+
+    @Autowired
+    TableCopyJob tableCopyJob;
 
     @RequestMapping("/user-info")
     public AjaxResult userInfo(@RequestBody BizUserVO bizUserVO){
@@ -65,6 +69,18 @@ public class BizUserController {
             return AjaxResult.success("消息发布成功");
         } catch (Exception e) {
             log.error("发布消息出错啦,",e);
+            return AjaxResult.error(e.getMessage());
+        }
+    }
+
+    @RequestMapping("/create-table")
+    public AjaxResult createTable(){
+        try {
+            tableCopyJob.copyMqttTableStructure();
+            tableCopyJob.copyUdpTableStructure();
+            return AjaxResult.success("建表成功");
+        } catch (Exception e) {
+            log.error("建表,",e);
             return AjaxResult.error(e.getMessage());
         }
     }

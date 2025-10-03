@@ -21,7 +21,7 @@ public class CmdDataPackager {
     public static byte[] buildCommand(CommonDownDataVO commonDownDataVO) throws IOException {
         ByteArrayOutputStream outputStream =  new ByteArrayOutputStream();
         // 数据体
-        byte[] commandData = buildShortCommandBody(commonDownDataVO);
+        byte[] commandData = buildCommandBody(commonDownDataVO);
         byte[] sn = IotCommonUtil.hexToBytes(commonDownDataVO.getDeviceSn());
         outputStream.write((byte)sn.length);
         outputStream.write(sn);
@@ -37,7 +37,7 @@ public class CmdDataPackager {
      * 构建下发命令的消息体
      * @param commonDownDataVO 数据
      */
-    private static byte[] buildShortCommandBody(CommonDownDataVO commonDownDataVO) throws IOException {
+    private static byte[] buildCommandBody(CommonDownDataVO commonDownDataVO) throws IOException {
         byte cmdCode = commonDownDataVO.getCmdCode();
         // 2. 构建命令体：CMD:23(设置上报间隔)
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
