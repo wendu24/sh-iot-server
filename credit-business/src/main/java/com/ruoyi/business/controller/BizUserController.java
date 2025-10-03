@@ -1,11 +1,14 @@
 package com.ruoyi.business.controller;
 
+import com.ruoyi.business.domain.UdpDeviceDataTemplateDO;
 import com.ruoyi.business.iot.MqttService;
 import com.ruoyi.business.iot.UdpService;
 import com.ruoyi.business.iot.udp.NettyUdpServer;
 import com.ruoyi.business.iot.common.vo.down.DtuDownDataVO;
 import com.ruoyi.business.job.TableCopyJob;
 import com.ruoyi.business.service.BizUserService;
+import com.ruoyi.business.service.MqttDeviceDataTemplateService;
+import com.ruoyi.business.service.UdpDeviceDataTemplateService;
 import com.ruoyi.business.vo.BizUserVO;
 import com.ruoyi.common.core.domain.AjaxResult;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +33,12 @@ public class BizUserController {
 
     @Autowired
     TableCopyJob tableCopyJob;
+
+    @Autowired
+    MqttDeviceDataTemplateService mqttDeviceDataTemplateService;
+
+    @Autowired
+    UdpDeviceDataTemplateService udpDeviceDataTemplateService;
 
     @RequestMapping("/user-info")
     public AjaxResult userInfo(@RequestBody BizUserVO bizUserVO){
@@ -78,6 +87,19 @@ public class BizUserController {
         try {
             tableCopyJob.copyMqttTableStructure();
             tableCopyJob.copyUdpTableStructure();
+            return AjaxResult.success("建表成功");
+        } catch (Exception e) {
+            log.error("建表,",e);
+            return AjaxResult.error(e.getMessage());
+        }
+    }
+
+    @RequestMapping("/dynamic-insert")
+    public AjaxResult dynamicInsert(){
+        try {
+            UdpDeviceDataTemplateDO ud = new UdpDeviceDataTemplateDO();
+            ud.setDeviceSn("test");
+           udpDeviceDataTemplateService.save(ud);
             return AjaxResult.success("建表成功");
         } catch (Exception e) {
             log.error("建表,",e);

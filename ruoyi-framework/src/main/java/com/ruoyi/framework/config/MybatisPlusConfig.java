@@ -87,12 +87,12 @@ public class MybatisPlusConfig {
         Map<String, TableNameHandler> tableNameHandlerMap = new HashMap<>();
         tableNameHandlerMap.put(TableNameConstant.SH_MQTT_DEVICE_DATA_TEMPLATE, (sql, tableName) -> {
             // 生成当前月份的表名（格式：sh_mqtt_device_recent_data_202310）
-            String yyyyMM = DateUtils.parseDateToStr(DateUtils.YYYY_MM,new Date());
+            String yyyyMM = DateUtils.parseDateToStr(DateUtils.YYYYMM,new Date());
             return TableNameConstant.MQTT_TABLE_NAME + "_" + yyyyMM;
         });
         tableNameHandlerMap.put(TableNameConstant.SH_UDP_DEVICE_DATA_TEMPLATE, (sql, tableName) -> {
             // 生成当前月份的表名（格式：sh_mqtt_device_recent_data_202310）
-            String yyyyMM = DateUtils.parseDateToStr(DateUtils.YYYY_MM,new Date());
+            String yyyyMM = DateUtils.parseDateToStr(DateUtils.YYYYMM,new Date());
             return TableNameConstant.UDP_TABLE_NAME + "_" + yyyyMM;
         });
 
