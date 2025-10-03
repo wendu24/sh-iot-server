@@ -66,7 +66,9 @@ public class MqttCheckTimeObserver extends AbstractUplinkMsgObserver{
     }
 
     private static DtuDownDataVO buildCommand(UplinkDataVO uplinkDataVO) {
-        List<CommonDownDataVO> commonDownDataVOS = uplinkDataVO.getMqttCmd08DataVOS().stream().map(mqttCmd08DataVO -> CommonDownDataVO.builder()
+        List<CommonDownDataVO> commonDownDataVOS = uplinkDataVO.getMqttCmd08DataVOS()
+                .stream()
+                .map(mqttCmd08DataVO -> CommonDownDataVO.builder()
                         .cmdCode(CmdEnum.DOWNLINK_FF.getCode())
                         .readWriteFlag(ReadWriteEnum.RESPONSE.getCode())
                         .deviceSn(mqttCmd08DataVO.getDeviceSn())
