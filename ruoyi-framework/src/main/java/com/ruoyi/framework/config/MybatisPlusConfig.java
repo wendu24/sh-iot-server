@@ -3,13 +3,22 @@ package com.ruoyi.framework.config;
 import com.baomidou.mybatisplus.annotation.DbType;
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
+import com.baomidou.mybatisplus.extension.plugins.handler.TableNameHandler;
 import com.baomidou.mybatisplus.extension.plugins.inner.BlockAttackInnerInterceptor;
+import com.baomidou.mybatisplus.extension.plugins.inner.DynamicTableNameInnerInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.OptimisticLockerInnerInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
+import com.ruoyi.common.constant.TableNameConstant;
+import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.framework.handle.CreateAndUpdateMetaObjectHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+
+import java.time.LocalDateTime;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Mybatis Plus 配置
@@ -29,6 +38,8 @@ public class MybatisPlusConfig {
         interceptor.addInnerInterceptor(optimisticLockerInnerInterceptor());
         // 阻断插件
         interceptor.addInnerInterceptor(blockAttackInnerInterceptor());
+
+        dynamicTableNameHandler(interceptor);
         return interceptor;
     }
 
@@ -65,4 +76,29 @@ public class MybatisPlusConfig {
     public MetaObjectHandler metaObjectHandler() {
         return new CreateAndUpdateMetaObjectHandler();
     }
+
+
+    public void dynamicTableNameHandler(MybatisPlusInterceptor interceptor) {
+
+        // 动态表名拦截器
+        DynamicTableNameInnerInterceptor dynamicTableNameInnerInterceptor = new DynamicTableNameInnerInterceptor();
+
+        // 配置表名处理器（根据当前月份动态生成表名）
+        Map<String, TableNameHandler> tableNameHandlerMap = new HashMap<>();
+        tableNameHandlerMap.put(TableNameConstant.SH_MQTT_DEVICE_DATA_TEMPLATE, (sql, tableName) -> {
+            // 生成当前月份的表名（格式：sh_mqtt_device_recent_data_202310）
+            String yyyyMM = DateUtils.parseDateToStr(DateUtils.YYYY_MM,new Date());
+            return TableNameConstant.MQTT_TABLE_NAME + "_" + yyyyMM;
+        });
+        tableNameHandlerMap.put(TableNameConstant.SH_UDP_DEVICE_DATA_TEMPLATE, (sql, tableName) -> {
+            // 生成当前月份的表名（格式：sh_mqtt_device_recent_data_202310）
+            String yyyyMM = DateUtils.parseDateToStr(DateUtils.YYYY_MM,new Date());
+            return TableNameConstant.UDP_TABLE_NAME + "_" + yyyyMM;
+        });
+
+        dynamicTableNameInnerInterceptor.setTableNameHandlerMap(tableNameHandlerMap);
+        interceptor.addInnerInterceptor(dynamicTableNameInnerInterceptor);
+    }
+
+
 }
