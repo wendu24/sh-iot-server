@@ -40,6 +40,7 @@ public class UdpCheckTimeObserver extends AbstractUplinkMsgObserver{
         try {
             log.info("下发udp 时间校验数据 sn={}",udpCmd08DataVO.getDeviceSn());
             udpService.sendCommand(udpCmd08DataVO.getDeviceSn(),buildCommand(uplinkDataVO));
+            timeMap.put(deviceSn,LocalDateTime.now());
         } catch (Exception e) {
             log.error("发布udp时间校验出错啦={}",udpCmd08DataVO.getDeviceSn(),e);
         }

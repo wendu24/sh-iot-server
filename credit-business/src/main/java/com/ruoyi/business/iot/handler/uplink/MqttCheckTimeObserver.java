@@ -58,6 +58,7 @@ public class MqttCheckTimeObserver extends AbstractUplinkMsgObserver{
 
         try {
             mqttService.publish(deviceDO.getDtuSn(),dtuDownDataVO);
+            timeMap.put(deviceSn,LocalDateTime.now());
         } catch (Exception e) {
             log.error("发布mqtt消息出错了 deviceSn={}",deviceSn,e);
         }
