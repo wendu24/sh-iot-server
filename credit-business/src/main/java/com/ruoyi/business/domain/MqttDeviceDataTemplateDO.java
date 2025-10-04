@@ -21,6 +21,11 @@ public class MqttDeviceDataTemplateDO {
      */
     private String deviceSn;
 
+
+    private Long communityId;
+
+    private String communityName;
+
     /**
      * 数据采集时间
      */

@@ -17,6 +17,11 @@ public class UdpDeviceLatestDataDO {
 
     private String deviceSn;
 
+
+
+    private Long communityId;
+
+    private String communityName;
     /**
      * 设备版本
      */

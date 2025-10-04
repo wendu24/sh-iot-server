@@ -20,6 +20,11 @@ public class MqttDeviceRecentDataDO {
      */
     private String deviceSn;
 
+
+    private Long communityId;
+
+    private String communityName;
+
     /**
      * 数据采集时间
      */

@@ -5,4 +5,6 @@ import com.ruoyi.business.domain.BizUserDO;
 import com.ruoyi.business.domain.DeviceDO;
 
 public interface DeviceService extends IService<DeviceDO> {
-}
+
+    public DeviceDO findByDeviceSn(String deviceSn) throws Exception ;
+    }
