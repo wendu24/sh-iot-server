@@ -28,12 +28,12 @@ public class CommunityDO {
     /**
      * 管理员
      */
-    private Character manager;
+    private String manager;
 
     /**
      * 电话
      */
-    private Character phone;
+    private String phone;
 
     /**
      * 位置（如经纬度）

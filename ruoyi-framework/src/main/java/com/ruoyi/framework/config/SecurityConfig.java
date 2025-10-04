@@ -120,6 +120,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 // 授权登录回调地址
                 .antMatchers("/au/weiXinMp/callback").anonymous()
                 .antMatchers("/biz/**").anonymous()
+                .antMatchers("/wjx/**").anonymous()
 
                 // 对于登录login 注册register 验证码captchaImage 允许匿名访问
                 .antMatchers("/login", "/register", "/captchaImage").anonymous()
