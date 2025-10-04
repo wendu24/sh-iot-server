@@ -29,6 +29,13 @@ public class UdpCheckTimeObserver extends AbstractUplinkMsgObserver{
     public void handle(UplinkDataVO uplinkDataVO) {
         if(Objects.isNull(uplinkDataVO.getUdpCmd08DataVO()))
             return;
+
+        String deviceSn = uplinkDataVO.getMqttCmd08DataVOS().get(0).getDeviceSn();
+        LocalDateTime latestPushTime = timeMap.get(deviceSn);
+        if(Objects.nonNull(latestPushTime)&& latestPushTime.plusHours(1).compareTo(LocalDateTime.now()) > 0){
+            return;
+        }
+
         UdpCmd08DataVO udpCmd08DataVO = uplinkDataVO.getUdpCmd08DataVO();
         try {
             log.info("下发udp 时间校验数据 sn={}",udpCmd08DataVO.getDeviceSn());
@@ -43,7 +50,7 @@ public class UdpCheckTimeObserver extends AbstractUplinkMsgObserver{
     private static DtuDownDataVO buildCommand(UplinkDataVO uplinkDataVO) {
         UdpCmd08DataVO udpCmd08DataVO = uplinkDataVO.getUdpCmd08DataVO();
         CommonDownDataVO commonDownDataVO = CommonDownDataVO.builder()
-                .cmdCode(DownCmdEnum.DOWNLINK_FF.getCode())
+                .cmdCode(DownCmdEnum.DOWNLINK_UDP_RESPONSE.getCode())
                 .readWriteFlag(ReadWriteEnum.RESPONSE.getCode())
                 .deviceSn(udpCmd08DataVO.getDeviceSn())
                 .build();
