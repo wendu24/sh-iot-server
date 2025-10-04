@@ -1,57 +1,35 @@
 package com.ruoyi.business.iot.handler.uplink;
 
-import cn.hutool.core.bean.BeanUtil;
-import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
-import com.ruoyi.business.domain.MqttDeviceDataTemplateDO;
 import com.ruoyi.business.domain.MqttDeviceRecentDataDO;
-import com.ruoyi.business.iot.common.constant.AbnormalTypeEnum;
 import com.ruoyi.business.iot.common.vo.UplinkDataVO;
-import com.ruoyi.business.iot.common.vo.uplink.MqttCmd08DataVO;
-import com.ruoyi.business.service.MqttDeviceDataTemplateService;
+import com.ruoyi.business.iot.common.vo.uplink.DtuDataVO;
 import com.ruoyi.business.service.MqttDeviceRecentDataService;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Objects;
 
-/**
- * 将消息存入 recent表
- */
-@Slf4j
 @Component
 public class MqttRecentDataObserver extends AbstractUplinkMsgObserver {
 
+// MqttHistoryDataObserver
     @Autowired
-    MqttDeviceDataTemplateService mqttDeviceDataTemplateService;
+    private MqttDeviceRecentDataService mqttDeviceRecentDataService;
 
     @Override
-    public void handle( UplinkDataVO uplinkDataVO) {
-        List<MqttCmd08DataVO> mqttCmd08DataVOS = uplinkDataVO.getMqttCmd08DataVOS();
-        if(CollectionUtils.isEmpty(mqttCmd08DataVOS))
-            return;
-        List<MqttDeviceDataTemplateDO> addList = new ArrayList<>();
+    public void handle(UplinkDataVO uplinkDataVO) {
 
-        uplinkDataVO.getMqttCmd08DataVOS().forEach(uplinkCmd08DataVO -> {
-            MqttDeviceDataTemplateDO mqttDeviceRecentDataDO = new MqttDeviceDataTemplateDO();
-            BeanUtil.copyProperties(uplinkCmd08DataVO, mqttDeviceRecentDataDO);
-            String abnormalTypes = uplinkCmd08DataVO.getAbnormalTypes()
-                    .stream()
-                    .map(AbnormalTypeEnum::getCode)
-                    .map(String::valueOf)
-                    .collect(Collectors.joining(","));
-            if(StringUtils.isNotBlank(abnormalTypes))
-                mqttDeviceRecentDataDO.setAbnormalTypes(abnormalTypes);
-            mqttDeviceRecentDataDO.setUplinkPeriod(uplinkCmd08DataVO.getUplinkPeriod().intValue());
-            mqttDeviceRecentDataDO.setCreateTime(LocalDateTime.now());
-            addList.add(mqttDeviceRecentDataDO);
-        });
-        mqttDeviceDataTemplateService.saveBatch(addList);
+        DtuDataVO dtuDataVO = uplinkDataVO.getDtuDataVO();
+        if (Objects.isNull(dtuDataVO))
+            return;
+        MqttDeviceRecentDataDO mqttDeviceRecentDataDO = new MqttDeviceRecentDataDO();
+        mqttDeviceRecentDataDO.setDeviceSn(dtuDataVO.getDtuDeviceSn());
+        mqttDeviceRecentDataDO.setBatteryLevel(dtuDataVO.getBatteryLevel());
+        mqttDeviceRecentDataDO.setSignalStrength(dtuDataVO.getSignalStrength());
+        mqttDeviceRecentDataDO.setCreateTime(LocalDateTime.now());
+        mqttDeviceRecentDataDO.setIccId(dtuDataVO.getIccId());
+        mqttDeviceRecentDataService.save(mqttDeviceRecentDataDO);
 
     }
-
 }
