@@ -1,7 +1,5 @@
 package com.ruoyi.business.iot.common.vo.down;
 
-import com.ruoyi.business.iot.common.constant.CmdEnum;
-import com.ruoyi.business.iot.common.constant.ReadWriteEnum;
 import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.Tolerate;

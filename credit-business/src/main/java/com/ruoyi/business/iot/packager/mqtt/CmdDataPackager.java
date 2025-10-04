@@ -1,7 +1,7 @@
 package com.ruoyi.business.iot.packager.mqtt;
 
 import com.ruoyi.business.iot.common.util.IotCommonUtil;
-import com.ruoyi.business.iot.common.constant.CmdEnum;
+import com.ruoyi.business.iot.common.constant.DownCmdEnum;
 import com.ruoyi.business.iot.common.constant.ReadWriteEnum;
 import com.ruoyi.business.iot.common.vo.down.CommonDownDataVO;
 import lombok.extern.slf4j.Slf4j;
@@ -61,20 +61,20 @@ public class CmdDataPackager {
     }
 
     private static void writeData(ByteArrayOutputStream outputStream,CommonDownDataVO commonDownDataVO) throws IOException {
-        CmdEnum cmdEnum = CmdEnum.getByCode(commonDownDataVO.getCmdCode());
-        if(cmdEnum.getDataClazz() == Float.class ){
+        DownCmdEnum downCmdEnum = DownCmdEnum.getByCode(commonDownDataVO.getCmdCode());
+        if(downCmdEnum.getDataClazz() == Float.class ){
             // 写入数据 (2 字节)
             outputStream.write(IotCommonUtil.shortToBytes(commonDownDataVO.getData().shortValue()));
 
-        }else if(cmdEnum.getDataClazz() == String.class ){
+        }else if(downCmdEnum.getDataClazz() == String.class ){
             byte[] bytes = commonDownDataVO.getDataStr().getBytes("utf-8");
             outputStream.write(bytes);
             // 如果字符串长度不足 50 字节，用 0 填充
-            int paddingLength = cmdEnum.getDataLength() - bytes.length;
+            int paddingLength = downCmdEnum.getDataLength() - bytes.length;
             if (paddingLength > 0) {
                 outputStream.write(new byte[paddingLength]);
             }
-        }else if(cmdEnum.getDataClazz() == Date.class){
+        }else if(downCmdEnum.getDataClazz() == Date.class){
             int time = (int)(System.currentTimeMillis() / 1000);
             byte[] timeBytes = IotCommonUtil.intToBytes(time);
             outputStream.write(timeBytes);

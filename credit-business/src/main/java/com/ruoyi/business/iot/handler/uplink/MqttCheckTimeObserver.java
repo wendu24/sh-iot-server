@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.ruoyi.business.constant.DeleteEnum;
 import com.ruoyi.business.domain.DeviceDO;
 import com.ruoyi.business.iot.MqttService;
-import com.ruoyi.business.iot.common.constant.CmdEnum;
+import com.ruoyi.business.iot.common.constant.DownCmdEnum;
 import com.ruoyi.business.iot.common.constant.ReadWriteEnum;
 import com.ruoyi.business.iot.common.vo.UplinkDataVO;
 import com.ruoyi.business.iot.common.vo.down.CommonDownDataVO;
@@ -17,7 +17,6 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -69,7 +68,7 @@ public class MqttCheckTimeObserver extends AbstractUplinkMsgObserver{
         List<CommonDownDataVO> commonDownDataVOS = uplinkDataVO.getMqttCmd08DataVOS()
                 .stream()
                 .map(mqttCmd08DataVO -> CommonDownDataVO.builder()
-                        .cmdCode(CmdEnum.DOWNLINK_FF.getCode())
+                        .cmdCode(DownCmdEnum.DOWNLINK_FF.getCode())
                         .readWriteFlag(ReadWriteEnum.RESPONSE.getCode())
                         .deviceSn(mqttCmd08DataVO.getDeviceSn())
                         .build())

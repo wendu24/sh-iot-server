@@ -1,9 +1,10 @@
 package com.ruoyi.business.iot.parser;
 
 import com.alibaba.fastjson2.JSONObject;
+import com.ruoyi.business.iot.common.constant.UplinkCmdEnum;
 import com.ruoyi.business.iot.common.util.AesUtil;
 import com.ruoyi.business.iot.common.util.IotCommonUtil;
-import com.ruoyi.business.iot.common.constant.CmdEnum;
+import com.ruoyi.business.iot.common.constant.DownCmdEnum;
 import com.ruoyi.business.iot.common.vo.UplinkDataVO;
 import com.ruoyi.business.iot.common.vo.uplink.MqttCmd08DataVO;
 import com.ruoyi.business.iot.common.vo.uplink.CmdFFDataVO;
@@ -72,7 +73,7 @@ public class MqttDataParseContext {
             String deviceSn = getDeviceSnBYte(allDataBuffer);
             ByteBuffer oneDataBuffer = getDataBuffer(allDataBuffer);
             byte cmd = oneDataBuffer.get();
-            if(CmdEnum.UPLINK_08.getCode().equals(cmd)){
+            if(UplinkCmdEnum.UPLINK_08.getCode().equals(cmd)){
                 MqttCmd08DataVO mqttCmd08DataVO = Cmd08DataParser.parse(oneDataBuffer);
                 mqttCmd08DataVO.setDeviceSn(deviceSn);
                 uplinkDataVO.addCmd08DataVOS(mqttCmd08DataVO);

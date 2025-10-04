@@ -1,7 +1,7 @@
 package com.ruoyi.business.iot.parser;
 
-import com.alibaba.fastjson2.JSONObject;
-import com.ruoyi.business.iot.common.constant.CmdEnum;
+import com.ruoyi.business.iot.common.constant.DownCmdEnum;
+import com.ruoyi.business.iot.common.constant.UplinkCmdEnum;
 import com.ruoyi.business.iot.common.util.AesUtil;
 import com.ruoyi.business.iot.common.util.IotCommonUtil;
 import com.ruoyi.business.iot.common.vo.uplink.CmdFFDataVO;
@@ -70,7 +70,7 @@ public class UdpDataParseContext {
         String deviceSn = IotCommonUtil.bytesToHex(snByte);
         UplinkDataVO uplinkDataVO = UplinkDataVO.builder()
                 .build();
-        if(CmdEnum.UPLINK_08.getCode().equals(cmdCode)){
+        if(UplinkCmdEnum.UPLINK_08.getCode().equals(cmdCode)){
             UdpCmd08DataVO udpCmd08DataVO = Cmd08DataParser.parse(deviceSn, buffer);
             uplinkDataVO.setUdpCmd08DataVO(udpCmd08DataVO);
         }else {

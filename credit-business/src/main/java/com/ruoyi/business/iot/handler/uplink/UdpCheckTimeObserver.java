@@ -1,7 +1,7 @@
 package com.ruoyi.business.iot.handler.uplink;
 
 import com.ruoyi.business.iot.UdpService;
-import com.ruoyi.business.iot.common.constant.CmdEnum;
+import com.ruoyi.business.iot.common.constant.DownCmdEnum;
 import com.ruoyi.business.iot.common.constant.ReadWriteEnum;
 import com.ruoyi.business.iot.common.vo.UplinkDataVO;
 import com.ruoyi.business.iot.common.vo.down.CommonDownDataVO;
@@ -13,10 +13,8 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Component
@@ -45,7 +43,7 @@ public class UdpCheckTimeObserver extends AbstractUplinkMsgObserver{
     private static DtuDownDataVO buildCommand(UplinkDataVO uplinkDataVO) {
         UdpCmd08DataVO udpCmd08DataVO = uplinkDataVO.getUdpCmd08DataVO();
         CommonDownDataVO commonDownDataVO = CommonDownDataVO.builder()
-                .cmdCode(CmdEnum.DOWNLINK_FF.getCode())
+                .cmdCode(DownCmdEnum.DOWNLINK_FF.getCode())
                 .readWriteFlag(ReadWriteEnum.RESPONSE.getCode())
                 .deviceSn(udpCmd08DataVO.getDeviceSn())
                 .build();

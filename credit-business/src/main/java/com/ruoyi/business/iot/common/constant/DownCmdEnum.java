@@ -9,10 +9,7 @@ import java.util.Date;
  * CMD 命令枚举
  */
 @Getter
-public enum CmdEnum {
-
-    UPLINK_08((byte)0x08,null,null,"上传数据"),
-    UPLINK_FF((byte)0x00,null,null,"应答数据"),
+public enum DownCmdEnum {
 
 
 
@@ -33,8 +30,8 @@ public enum CmdEnum {
     ;
 
 
-    public static CmdEnum getByCode(byte code){
-        return Arrays.stream(CmdEnum.values()).filter( cmdEnum -> code == cmdEnum.getCode()).findAny().orElseThrow(()->new RuntimeException("无效的CMD" + code ));
+    public static DownCmdEnum getByCode(byte code){
+        return Arrays.stream(DownCmdEnum.values()).filter(cmdEnum -> code == cmdEnum.getCode()).findAny().orElseThrow(()->new RuntimeException("无效的CMD" + code ));
     }
 
     /**
@@ -56,7 +53,7 @@ public enum CmdEnum {
 
 
 
-    CmdEnum(Byte code, Class dataClazz, Integer dataLength, String desc) {
+    DownCmdEnum(Byte code, Class dataClazz, Integer dataLength, String desc) {
         this.code = code;
         DataClazz = dataClazz;
         this.dataLength = dataLength;
