@@ -2,11 +2,13 @@ package com.ruoyi.business.iot.handler.uplink;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
+import com.ruoyi.business.domain.DeviceDO;
 import com.ruoyi.business.domain.UdpDeviceDataTemplateDO;
 import com.ruoyi.business.domain.UdpDeviceRecentDataDO;
 import com.ruoyi.business.iot.common.constant.AbnormalTypeEnum;
 import com.ruoyi.business.iot.common.vo.UplinkDataVO;
 import com.ruoyi.business.iot.common.vo.uplink.UdpCmd08DataVO;
+import com.ruoyi.business.service.DeviceService;
 import com.ruoyi.business.service.UdpDeviceDataTemplateService;
 import com.ruoyi.business.service.UdpDeviceRecentDataService;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +25,8 @@ import java.util.stream.Collectors;
 @Slf4j
 public class UdpHistoryDataObserver extends AbstractUplinkMsgObserver{
 
+    @Autowired
+    private DeviceService deviceService;
 
     @Autowired
     private UdpDeviceDataTemplateService udpDeviceDataTemplateService;
@@ -32,6 +36,15 @@ public class UdpHistoryDataObserver extends AbstractUplinkMsgObserver{
         UdpCmd08DataVO udpCmd08DataVO = uplinkDataVO.getUdpCmd08DataVO();
         if(Objects.isNull(udpCmd08DataVO))
             return;
+
+        String deviceSn = udpCmd08DataVO.getDeviceSn();
+        DeviceDO deviceDO;
+        try {
+            deviceDO = deviceService.findByDeviceSn(deviceSn);
+        } catch (Exception e) {
+            log.error("未找到deviceSn={]",deviceSn,e);
+            return;
+        }
 
         List<UdpDeviceDataTemplateDO> saveList = new ArrayList<>();
         udpCmd08DataVO.getRoomDataVOList().forEach(roomDataVO -> {
@@ -44,6 +57,8 @@ public class UdpHistoryDataObserver extends AbstractUplinkMsgObserver{
                 udpDeviceRecentDataDO.setAbnormalTypes(abnormals);
 
             }
+            udpDeviceRecentDataDO.setCommunityId(deviceDO.getCommunityId());
+            udpDeviceRecentDataDO.setCommunityName(deviceDO.getCommunityName());
             udpDeviceRecentDataDO.setReportPeriod(udpCmd08DataVO.getReportPeriod().intValue());
             udpDeviceRecentDataDO.setCreateTime(LocalDateTime.now());
             udpDeviceRecentDataDO.setCollectTime(roomDataVO.getCollectTime());

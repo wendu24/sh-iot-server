@@ -3,10 +3,12 @@ package com.ruoyi.business.iot.handler.uplink;
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
+import com.ruoyi.business.domain.DeviceDO;
 import com.ruoyi.business.domain.MqttDeviceLatestDataDO;
 import com.ruoyi.business.iot.common.constant.AbnormalTypeEnum;
 import com.ruoyi.business.iot.common.vo.UplinkDataVO;
 import com.ruoyi.business.iot.common.vo.uplink.MqttCmd08DataVO;
+import com.ruoyi.business.service.DeviceService;
 import com.ruoyi.business.service.MqttDeviceLatestDataService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -31,11 +33,17 @@ public class MqttLatestDataObserver extends AbstractUplinkMsgObserver {
     @Autowired
     MqttDeviceLatestDataService mqttDeviceLatestDataService;
 
+    @Autowired
+    DeviceService deviceService;
+
     @Override
     public void handle(UplinkDataVO uplinkDataVO) {
         List<MqttCmd08DataVO> mqttCmd08DataVOS = uplinkDataVO.getMqttCmd08DataVOS();
         if(CollectionUtils.isEmpty(mqttCmd08DataVOS))
             return;
+
+
+
         List<MqttDeviceLatestDataDO> updateList = new ArrayList<>();
         List<MqttDeviceLatestDataDO> addList = new ArrayList<>();
         /**
@@ -59,11 +67,15 @@ public class MqttLatestDataObserver extends AbstractUplinkMsgObserver {
         }
     }
 
-    private static void buildSaveUpdateList(UplinkDataVO uplinkDataVO,
+    private void buildSaveUpdateList(UplinkDataVO uplinkDataVO,
                                             Map<String, MqttDeviceLatestDataDO> dbDataMap,
                                             List<MqttDeviceLatestDataDO> addList,
                                             List<MqttDeviceLatestDataDO> updateList
     ) {
+
+        List<String> deviceSnList = uplinkDataVO.getMqttCmd08DataVOS().stream().map(MqttCmd08DataVO::getDeviceSn).distinct().collect(Collectors.toList());
+        Map<String, DeviceDO> deviceMap = deviceService.findByDeviceSn(deviceSnList);
+
 
         uplinkDataVO.getMqttCmd08DataVOS().forEach(mqttCmd08DataVO -> {
 
@@ -79,6 +91,11 @@ public class MqttLatestDataObserver extends AbstractUplinkMsgObserver {
                 mqttDeviceLatestDataDO.setAbnormalTypes(abnormalTypes);
             mqttDeviceLatestDataDO.setUplinkPeriod(mqttCmd08DataVO.getUplinkPeriod().intValue());
             mqttDeviceLatestDataDO.setCreateTime(LocalDateTime.now());
+            DeviceDO deviceDO = deviceMap.get(mqttCmd08DataVO.getDeviceSn());
+            if(Objects.nonNull(deviceDO)){
+                mqttDeviceLatestDataDO.setCommunityId(deviceDO.getCommunityId());
+                mqttDeviceLatestDataDO.setCommunityName(deviceDO.getCommunityName());
+            }
             if(Objects.isNull(dbData)){
                 addList.add(mqttDeviceLatestDataDO);
             }else{

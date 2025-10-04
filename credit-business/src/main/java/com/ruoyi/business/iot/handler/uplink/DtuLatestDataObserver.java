@@ -1,10 +1,13 @@
 package com.ruoyi.business.iot.handler.uplink;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.ruoyi.business.domain.DeviceDO;
 import com.ruoyi.business.domain.MqttDeviceLatestDataDO;
 import com.ruoyi.business.iot.common.vo.UplinkDataVO;
 import com.ruoyi.business.iot.common.vo.uplink.DtuDataVO;
+import com.ruoyi.business.service.DeviceService;
 import com.ruoyi.business.service.MqttDeviceLatestDataService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -12,17 +15,29 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Component
+@Slf4j
 public class DtuLatestDataObserver extends AbstractUplinkMsgObserver{
 
     @Autowired
     private MqttDeviceLatestDataService mqttDeviceLatestDataService;
 
+    @Autowired
+    DeviceService deviceService;
 
     @Override
     public void handle(UplinkDataVO uplinkDataVO) {
         DtuDataVO dtuDataVO = uplinkDataVO.getDtuDataVO();
         if(Objects.isNull(dtuDataVO))
             return;
+        String dtuDeviceSn = uplinkDataVO.getDtuDataVO().getDtuDeviceSn();
+        DeviceDO deviceDO;
+        try {
+            deviceDO = deviceService.findByDeviceSn(dtuDeviceSn);
+        } catch (Exception e) {
+            log.error("未找到deviceSn={]",dtuDeviceSn,e);
+            return;
+        }
+
 
         LambdaQueryWrapper<MqttDeviceLatestDataDO> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(MqttDeviceLatestDataDO::getDeviceSn,dtuDataVO.getDtuDeviceSn());
@@ -32,6 +47,8 @@ public class DtuLatestDataObserver extends AbstractUplinkMsgObserver{
         mqttDeviceLatestDataDO.setDeviceSn(dtuDataVO.getDtuDeviceSn());
         mqttDeviceLatestDataDO.setBatteryLevel(dtuDataVO.getBatteryLevel());
         mqttDeviceLatestDataDO.setSignalStrength(dtuDataVO.getSignalStrength());
+        mqttDeviceLatestDataDO.setCommunityName(deviceDO.getCommunityName());
+        mqttDeviceLatestDataDO.setCommunityId(deviceDO.getCommunityId());
         if(Objects.isNull(dbData)){
             mqttDeviceLatestDataDO.setCreateTime(LocalDateTime.now());
             mqttDeviceLatestDataService.save(mqttDeviceLatestDataDO);
