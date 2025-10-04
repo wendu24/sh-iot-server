@@ -49,6 +49,7 @@ public class MqttRecentDataObserver extends AbstractUplinkMsgObserver {
             addList.add(mqttDeviceRecentDataDO);
         });
         mqttDeviceRecentDataService.saveBatch(addList);
+        log.info("保存mqtt数据成功");
 
     }
 

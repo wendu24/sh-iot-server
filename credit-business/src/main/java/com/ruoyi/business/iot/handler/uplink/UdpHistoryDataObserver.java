@@ -9,6 +9,7 @@ import com.ruoyi.business.iot.common.vo.UplinkDataVO;
 import com.ruoyi.business.iot.common.vo.uplink.UdpCmd08DataVO;
 import com.ruoyi.business.service.UdpDeviceDataTemplateService;
 import com.ruoyi.business.service.UdpDeviceRecentDataService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -19,6 +20,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Component
+@Slf4j
 public class UdpHistoryDataObserver extends AbstractUplinkMsgObserver{
 
 
@@ -50,6 +52,7 @@ public class UdpHistoryDataObserver extends AbstractUplinkMsgObserver{
             saveList.add(udpDeviceRecentDataDO);
         });
         udpDeviceDataTemplateService.saveBatch(saveList);
+        log.info("保存udp模板数据成功");
 //            udpCmd08DataVO.getRoomDataVOList().sort(Comparator.comparing(RoomDataVO::getCollectTime).reversed());
 
     }

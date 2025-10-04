@@ -9,6 +9,7 @@ import com.ruoyi.business.iot.common.vo.uplink.DtuDataVO;
 import com.ruoyi.business.iot.common.vo.uplink.MqttCmd08DataVO;
 import com.ruoyi.business.service.MqttDeviceLatestDataService;
 import com.ruoyi.business.service.MqttDeviceRecentDataService;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -23,6 +24,7 @@ import java.util.stream.Collectors;
  * 更新dtu设备的数据
  */
 @Component
+@Slf4j
 public class DtuRecentDataObserver extends AbstractUplinkMsgObserver {
 
     @Autowired
@@ -41,6 +43,6 @@ public class DtuRecentDataObserver extends AbstractUplinkMsgObserver {
         mqttDeviceRecentDataDO.setCreateTime(LocalDateTime.now());
         mqttDeviceRecentDataDO.setIccId(dtuDataVO.getIccId());
         mqttDeviceRecentDataService.save(mqttDeviceRecentDataDO);
-
+        log.info("保存dtu数据成功");
     }
 }

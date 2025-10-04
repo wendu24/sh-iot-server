@@ -3,12 +3,14 @@ package com.ruoyi.business.iot.handler.uplink;
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
+import com.ruoyi.business.domain.DeviceDO;
 import com.ruoyi.business.domain.UdpDeviceLatestDataDO;
 import com.ruoyi.business.domain.UdpDeviceRecentDataDO;
 import com.ruoyi.business.iot.common.constant.AbnormalTypeEnum;
 import com.ruoyi.business.iot.common.vo.UplinkDataVO;
 import com.ruoyi.business.iot.common.vo.uplink.RoomDataVO;
 import com.ruoyi.business.iot.common.vo.uplink.UdpCmd08DataVO;
+import com.ruoyi.business.service.DeviceService;
 import com.ruoyi.business.service.UdpDeviceLatestDataService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +28,9 @@ import java.util.stream.Collectors;
 public class UdpLatestDataObserver extends AbstractUplinkMsgObserver{
 
     @Autowired
+    DeviceService deviceService;
+
+    @Autowired
     private UdpDeviceLatestDataService udpDeviceLatestDataService;
 
     @Override
@@ -33,6 +38,15 @@ public class UdpLatestDataObserver extends AbstractUplinkMsgObserver{
         UdpCmd08DataVO udpCmd08DataVO = uplinkDataVO.getUdpCmd08DataVO();
         if(Objects.isNull(udpCmd08DataVO))
             return;
+
+        String deviceSn = udpCmd08DataVO.getDeviceSn();
+        DeviceDO deviceDO;
+        try {
+            deviceDO = deviceService.findByDeviceSn(deviceSn);
+        } catch (Exception e) {
+            log.error("未找到deviceSn={]",deviceSn,e);
+            return;
+        }
 
         LambdaQueryWrapper<UdpDeviceLatestDataDO> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(UdpDeviceLatestDataDO::getDeviceSn, udpCmd08DataVO.getDeviceSn());
@@ -50,15 +64,19 @@ public class UdpLatestDataObserver extends AbstractUplinkMsgObserver{
             udpDeviceLatestDataDO.setAbnormalTypes(abnormals);
         }
         udpDeviceLatestDataDO.setReportPeriod(udpCmd08DataVO.getReportPeriod().intValue());
+        udpDeviceLatestDataDO.setCommunityId(deviceDO.getCommunityId());
+        udpDeviceLatestDataDO.setCommunityName(deviceDO.getCommunityName());
         udpDeviceLatestDataDO.setCreateTime(LocalDateTime.now());
         udpDeviceLatestDataDO.setCollectTime(roomDataVO.getCollectTime());
         udpDeviceLatestDataDO.setRoomHumidity(roomDataVO.getRoomHumidity());
         udpDeviceLatestDataDO.setRoomTemperature(roomDataVO.getRoomTemperature());
         if(Objects.isNull(dbData)){
             udpDeviceLatestDataService.save(udpDeviceLatestDataDO);
+            log.info("保存udp数据成功");
         }else {
             udpDeviceLatestDataDO.setId(dbData.getId());
             udpDeviceLatestDataService.updateById(udpDeviceLatestDataDO);
+            log.info("更新udp数据成功");
         }
 
 

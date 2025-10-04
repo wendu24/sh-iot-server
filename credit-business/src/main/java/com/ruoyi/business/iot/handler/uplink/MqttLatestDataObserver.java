@@ -51,9 +51,11 @@ public class MqttLatestDataObserver extends AbstractUplinkMsgObserver {
          */
         if(CollectionUtils.isNotEmpty(updateList)){
             mqttDeviceLatestDataService.updateBatchById(updateList);
+            log.info("更新mqtt数据成功");
         }
         if(CollectionUtils.isNotEmpty(addList)){
             mqttDeviceLatestDataService.saveBatch(addList);
+            log.info("保存mqtt数据成功");
         }
     }
 

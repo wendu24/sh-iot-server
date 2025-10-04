@@ -110,6 +110,7 @@ public class DeviceUpdateObserver extends AbstractUplinkMsgObserver {
 
         }
         deviceService.updateById(update);
+        log.info("设备数据更新成功update={}",JSONObject.toJSONString(update));
     }
 
 

@@ -12,13 +12,18 @@ import com.ruoyi.business.service.DeviceService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, DeviceDO> implements DeviceService {
 
 
+    @Override
     public DeviceDO findByDeviceSn(String deviceSn) throws Exception {
         LambdaQueryWrapper<DeviceDO> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(DeviceDO::getDeviceSn,deviceSn);
@@ -27,6 +32,14 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, DeviceDO> imple
         if(Objects.isNull(deviceDO))
             throw new Exception("设备未找到" + deviceSn);
         return deviceDO;
+    }
+
+    @Override
+    public Map<String,DeviceDO> findByDeviceSn(List<String> deviceSns)  {
+        LambdaQueryWrapper<DeviceDO> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.in(DeviceDO::getDeviceSn,deviceSns);
+        queryWrapper.eq(DeviceDO::getDeleteFlag, DeleteEnum.NORMAL.getCode());
+        return list(queryWrapper).stream().collect(Collectors.toMap(DeviceDO::getDeviceSn, Function.identity(),(t1,t2)->t1));
     }
 
 }
