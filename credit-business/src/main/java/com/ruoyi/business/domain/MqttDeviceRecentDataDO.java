@@ -1,6 +1,7 @@
 package com.ruoyi.business.domain;
 
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.ruoyi.business.util.DateUtil;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -124,4 +125,13 @@ public class MqttDeviceRecentDataDO {
      * 创建时间
      */
     private LocalDateTime createTime;
+
+
+    public String groupKey(){
+        String day = DateUtil.formatLocalDateTime(collectionTime, DateUtil.YYYY_MM_DD);
+        int hour = collectionTime.getHour();
+        return communityId + "_" + day + "_" + hour;
+
+    }
+
 }

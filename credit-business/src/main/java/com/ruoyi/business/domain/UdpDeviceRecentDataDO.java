@@ -1,6 +1,7 @@
 package com.ruoyi.business.domain;
 
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.ruoyi.business.util.DateUtil;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -48,4 +49,13 @@ public class UdpDeviceRecentDataDO {
     private BigDecimal roomHumidity ;
 
     private LocalDateTime createTime;
+
+
+
+    public String groupKey(){
+        String day = DateUtil.formatLocalDateTime(collectTime, DateUtil.YYYY_MM_DD);
+        int hour = collectTime.getHour();
+        return communityId + "_" + day + "_" + hour;
+
+    }
 }

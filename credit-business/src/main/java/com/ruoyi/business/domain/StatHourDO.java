@@ -33,7 +33,7 @@ public class StatHourDO {
     /**
      * 统计小时（格式：HH）
      */
-    private String statHour;
+    private Integer statHour;
 
     /**
      * 平均温度
@@ -75,5 +75,9 @@ public class StatHourDO {
      */
     private LocalDateTime createTime;
 
+
+    public String mapKey(){
+        return communityId + "_" + statDay + "_" + statHour;
+    }
 
 }
