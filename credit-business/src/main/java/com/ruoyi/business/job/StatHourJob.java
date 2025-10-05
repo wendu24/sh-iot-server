@@ -46,6 +46,11 @@ public class StatHourJob {
         LocalDateTime startTime = LocalDateTime.now().plusHours(-2).withMinute(0).withSecond(0);
         LocalDateTime endTime = LocalDateTime.now().plusHours(-1).withMinute(0).withSecond(0);
         /**
+         * 先删除
+         */
+        removeByStartTime(startTime);
+
+        /**
          * 统计MQTT数据
          */
         Map<String, StatHourDO> statHourDOMap = statMqttDataList(startTime, endTime);
@@ -54,10 +59,19 @@ public class StatHourJob {
          */
         statUdpDataList(startTime, endTime, statHourDOMap);
 
-        List<StatHourDO> saveList = statHourDOMap.values().stream().filter(statHourDO -> Objects.nonNull(statHourDO.getAvgTemperature())).toList();
+        List<StatHourDO> saveList = statHourDOMap.values().stream().filter(statHourDO -> Objects.nonNull(statHourDO.getAvgTemperature())).collect(Collectors.toList());
         if(CollectionUtils.isNotEmpty(saveList))
             statHourService.saveBatch(saveList);
 
+    }
+
+    private void removeByStartTime(LocalDateTime startTime) {
+        String statDay = DateUtil.formatLocalDateTime(startTime, DateUtil.YYYY_MM_DD);
+        int hour = startTime.getHour();
+        LambdaQueryWrapper<StatHourDO> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(StatHourDO::getStatDay,statDay);
+        queryWrapper.eq(StatHourDO::getStatHour,hour);
+        statHourService.remove(queryWrapper);
     }
 
     private void statUdpDataList(LocalDateTime startTime, LocalDateTime endTime, Map<String, StatHourDO> statHourDOMap) {
