@@ -1,6 +1,7 @@
 package com.ruoyi.business.controller;
 
 import com.ruoyi.business.service.DeviceService;
+import com.ruoyi.business.service.HomeService;
 import com.ruoyi.business.service.StatHourService;
 import com.ruoyi.business.vo.home.HomeQueryVO;
 import com.ruoyi.business.vo.home.OverviewVO;
@@ -22,56 +23,58 @@ public class HomeController {
     @Autowired
     StatHourService statHourService;
 
+    @Autowired
+    HomeService homeService;
 
     /**
      *  总览: 小区数, 设备数(按类型), 故障设备数(按类型). 平均室温, 平均设备开度
      */
     @RequestMapping("/overview")
     public AjaxResult overview(@RequestBody HomeQueryVO homeQueryVO){
-
+        return AjaxResult.success(homeService.overview(homeQueryVO));
     }
 
 
     /**
      * 近三十天每小时平均室温 ,平均湿度,
      */
-    public void roomDataThirtyDays(){
-
-
+    @RequestMapping("/roomDataThirtyDays")
+    public AjaxResult roomDataThirtyDays(@RequestBody HomeQueryVO homeQueryVO){
+        return AjaxResult.success(homeService.roomDataThirtyDays(homeQueryVO));
     }
 
     /**
      * 平均室温较高和较低top5
      */
-    public void top5TemperatureCommunity(){
+    public void top5TemperatureCommunity(@RequestBody HomeQueryVO homeQueryVO){
 
     }
 
     /**
      * 阀门开度和室温的散点图
      */
-    public void valveAndTemperature(){
+    public void valveAndTemperature(@RequestBody HomeQueryVO homeQueryVO){
 
     }
 
     /**
      * 供水水压和室温 散点图
      */
-    public void pressureAndTemperature(){
+    public void pressureAndTemperature(@RequestBody HomeQueryVO homeQueryVO){
 
     }
 
     /**
      * 供水水温和室温散点图
      */
-    public void waterAndTemperature(){
+    public void waterAndTemperature(@RequestBody HomeQueryVO homeQueryVO){
 
     }
 
     /**
      * 供水水温/回水水温 和 小时的折线图
      */
-    public void waterTemperatureAndHour(){
+    public void waterTemperatureAndHour(@RequestBody HomeQueryVO homeQueryVO){
 
     }
 
