@@ -28,6 +28,7 @@ public class CommunityServiceImpl extends ServiceImpl<CommunityMapper, Community
     public Page<CommunityDO> page(CommunityVO communityVO){
         LambdaQueryWrapper<CommunityDO> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.like(StringUtils.isNotEmpty(communityVO.getName()),CommunityDO::getName,communityVO.getName());
+        queryWrapper.orderByDesc(CommunityDO::getId);
         Page<CommunityDO> pageParam = new Page<>(communityVO.getPageNum(), communityVO.getPageSize());
         Page<CommunityDO> dataPage = this.page(pageParam, queryWrapper);
         return dataPage;
