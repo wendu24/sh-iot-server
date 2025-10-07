@@ -1,8 +1,7 @@
 package com.ruoyi.business.service;
 
-import com.ruoyi.business.vo.home.HomeQueryVO;
-import com.ruoyi.business.vo.home.OverviewVO;
-import com.ruoyi.business.vo.home.RoomDataThirtyDayVO;
+import com.ruoyi.business.domain.StatHourDO;
+import com.ruoyi.business.vo.home.*;
 
 import java.util.List;
 
@@ -13,6 +12,9 @@ public interface HomeService {
 
     public List<RoomDataThirtyDayVO> roomDataThirtyDays(HomeQueryVO homeQueryVO);
 
+    public Top5TemperatureCommunityVO top5TemperatureCommunity(HomeQueryVO homeQueryVO);
+
+    public List<StatHourDO> scatterChart(HomeQueryVO homeQueryVO);
 
 
 }

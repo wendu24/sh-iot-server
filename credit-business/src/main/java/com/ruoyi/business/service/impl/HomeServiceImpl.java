@@ -6,9 +6,7 @@ import com.ruoyi.business.constant.DeleteEnum;
 import com.ruoyi.business.domain.*;
 import com.ruoyi.business.service.*;
 import com.ruoyi.business.util.DateUtil;
-import com.ruoyi.business.vo.home.HomeQueryVO;
-import com.ruoyi.business.vo.home.OverviewVO;
-import com.ruoyi.business.vo.home.RoomDataThirtyDayVO;
+import com.ruoyi.business.vo.home.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -66,7 +64,7 @@ public class HomeServiceImpl implements HomeService {
         LambdaQueryWrapper<StatHourDO> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.in(CollectionUtils.isNotEmpty(homeQueryVO.getCommunityIds()),StatHourDO::getCommunityId, homeQueryVO.getCommunityIds());
         queryWrapper.ge(StatHourDO::getStatDay, DateUtil.formatLocalDateTime(LocalDateTime.now().minusDays(-30),DateUtil.YYYY_MM_DD));
-        queryWrapper.le(StatHourDO::getStatDay, DateUtil.formatLocalDateTime(LocalDateTime.now().minusDays(-30),DateUtil.YYYY_MM_DD));
+        queryWrapper.le(StatHourDO::getStatDay, DateUtil.formatLocalDateTime(LocalDateTime.now(),DateUtil.YYYY_MM_DD));
         queryWrapper.select(StatHourDO::getAvgTemperature,StatHourDO::getAvgHumidity, StatHourDO::getStatHour);
         statHourService.list(queryWrapper).stream()
                 .collect(Collectors.groupingBy(StatHourDO::getStatHour))
@@ -94,7 +92,62 @@ public class HomeServiceImpl implements HomeService {
     }
 
 
+    @Override
+    public Top5TemperatureCommunityVO top5TemperatureCommunity(HomeQueryVO homeQueryVO){
+        List<RoomDataThirtyDayVO> result = new ArrayList<>();
+        LambdaQueryWrapper<StatHourDO> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.in(CollectionUtils.isNotEmpty(homeQueryVO.getCommunityIds()),StatHourDO::getCommunityId, homeQueryVO.getCommunityIds());
+        queryWrapper.ge(StatHourDO::getStatDay, DateUtil.formatLocalDateTime(LocalDateTime.now().minusDays(-30),DateUtil.YYYY_MM_DD));
+        queryWrapper.le(StatHourDO::getStatDay, DateUtil.formatLocalDateTime(LocalDateTime.now(),DateUtil.YYYY_MM_DD));
+        queryWrapper.select(StatHourDO::getAvgTemperature,StatHourDO::getAvgHumidity, StatHourDO::getCommunityId, StatHourDO::getCommunityName);
+        statHourService.list(queryWrapper)
+                .stream()
+                .collect(Collectors.groupingBy(StatHourDO::getCommunityName))
+                .forEach((communityName,communityStatList)->{
+                    double avgTemp = communityStatList.stream()
+                            .map(StatHourDO::getAvgTemperature)
+                            .mapToDouble(BigDecimal::doubleValue)
+                            .average()
+                            .orElse(0.0);
 
+                    double avgHumi = communityStatList.stream()
+                            .map(StatHourDO::getAvgHumidity)
+                            .mapToDouble(BigDecimal::doubleValue)
+                            .average()
+                            .orElse(0.0);
+                    RoomDataThirtyDayVO dataThirtyDayVO = RoomDataThirtyDayVO.builder()
+                            .avgRoomHumidity(BigDecimal.valueOf(avgHumi))
+                            .avgRoomTemperature(BigDecimal.valueOf(avgTemp))
+                            .communityName(communityName)
+                            .build();
+                    result.add(dataThirtyDayVO);
+
+                });
+        List<RoomDataThirtyDayVO> top5 = result.stream().sorted(Comparator.comparing(RoomDataThirtyDayVO::getAvgRoomTemperature).reversed()).limit(5).collect(Collectors.toList());
+        List<RoomDataThirtyDayVO> low5 = result.stream().sorted(Comparator.comparing(RoomDataThirtyDayVO::getAvgRoomTemperature)).limit(5).collect(Collectors.toList());
+        return Top5TemperatureCommunityVO.builder()
+                .top5(top5)
+                .low5(low5)
+                .build();
+
+
+    }
+
+
+    /**
+     * 阀门开度和温度散点图
+     * @param homeQueryVO
+     */
+    @Override
+    public List<StatHourDO> scatterChart(HomeQueryVO homeQueryVO){
+        LambdaQueryWrapper<StatHourDO> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.in(CollectionUtils.isNotEmpty(homeQueryVO.getCommunityIds()),StatHourDO::getCommunityId, homeQueryVO.getCommunityIds());
+        queryWrapper.ge(StatHourDO::getStatDay, DateUtil.formatLocalDateTime(LocalDateTime.now().minusDays(-30),DateUtil.YYYY_MM_DD));
+        queryWrapper.le(StatHourDO::getStatDay, DateUtil.formatLocalDateTime(LocalDateTime.now(),DateUtil.YYYY_MM_DD));
+        queryWrapper.select(StatHourDO::getAvgValvePosition,StatHourDO::getAvgTemperature, StatHourDO::getAvgSupplyWaterPressure,StatHourDO::getAvgSupplyWaterTemperature);
+        return statHourService.list(queryWrapper);
+
+    }
 
 
 

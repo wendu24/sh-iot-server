@@ -114,7 +114,7 @@ public class StatHourJob {
                         StatHourDO statHourDO = new StatHourDO();
                         statHourDO.setCommunityId(recentDataDO.getCommunityId());
                         statHourDO.setCommunityName(recentDataDO.getCommunityName());
-                        statHourDO.setStatDay(DateUtil.formatLocalDateTime(recentDataDO.getCollectionTime(), DateUtil.YYYY_MM_DD));
+                        statHourDO.setStatDay(recentDataDO.getCollectionTime().toLocalDate());
                         statHourDO.setStatHour(recentDataDO.getCollectionTime().getHour());
 //                    statHourDO.setAvgTemperature();
 //                    statHourDO.setAvgHumidity();

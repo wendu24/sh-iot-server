@@ -46,30 +46,19 @@ public class HomeController {
     /**
      * 平均室温较高和较低top5
      */
-    public void top5TemperatureCommunity(@RequestBody HomeQueryVO homeQueryVO){
-
+    @RequestMapping("/top5TemperatureCommunity")
+    public AjaxResult top5TemperatureCommunity(@RequestBody HomeQueryVO homeQueryVO){
+        return AjaxResult.success(homeService.top5TemperatureCommunity(homeQueryVO));
     }
 
     /**
-     * 阀门开度和室温的散点图
+     * 散点图
      */
-    public void valveAndTemperature(@RequestBody HomeQueryVO homeQueryVO){
-
+    @RequestMapping("/scatterChart")
+    public AjaxResult scatterChart(@RequestBody HomeQueryVO homeQueryVO){
+        return AjaxResult.success(homeService.scatterChart(homeQueryVO));
     }
 
-    /**
-     * 供水水压和室温 散点图
-     */
-    public void pressureAndTemperature(@RequestBody HomeQueryVO homeQueryVO){
-
-    }
-
-    /**
-     * 供水水温和室温散点图
-     */
-    public void waterAndTemperature(@RequestBody HomeQueryVO homeQueryVO){
-
-    }
 
     /**
      * 供水水温/回水水温 和 小时的折线图

@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
@@ -28,7 +29,7 @@ public class StatHourDO {
     /**
      * 统计日期（格式：YYYY-MM-DD）
      */
-    private String statDay;
+    private LocalDate statDay;
 
     /**
      * 统计小时（格式：HH）

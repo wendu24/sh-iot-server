@@ -15,4 +15,6 @@ public class RoomDataThirtyDayVO {
 
     private BigDecimal avgRoomHumidity;
 
+    private String communityName;
+
 }
