@@ -2,6 +2,7 @@ package com.ruoyi.business.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ruoyi.business.domain.DeviceDO;
+import com.ruoyi.business.iot.common.vo.down.CommonDownDataVO;
 import com.ruoyi.business.service.DeviceService;
 import com.ruoyi.business.validate.CreateGroup;
 import com.ruoyi.business.vo.DeviceVO;
@@ -12,6 +13,8 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -38,7 +41,11 @@ public class DeviceController {
         return AjaxResult.success();
     }
 
-
+    @RequestMapping("public-msg")
+    public AjaxResult publicMsg(@RequestBody @Validated List<CommonDownDataVO> commonDownDataVOS){
+        deviceService.publishMsg(commonDownDataVOS);
+        return AjaxResult.success();
+    }
 
     @RequestMapping("/delete")
     public AjaxResult delete(@RequestBody DeviceVO deviceVO) {

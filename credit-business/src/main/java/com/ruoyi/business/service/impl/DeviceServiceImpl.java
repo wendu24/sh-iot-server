@@ -1,6 +1,7 @@
 package com.ruoyi.business.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.alibaba.fastjson2.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -17,12 +18,13 @@ import com.ruoyi.business.service.BizUserService;
 import com.ruoyi.business.service.DeviceService;
 import com.ruoyi.business.vo.DeviceVO;
 import com.ruoyi.common.exception.ServiceException;
-import com.ruoyi.common.utils.StringUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -74,16 +76,51 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, DeviceDO> imple
     /**
      * 下发命令读取设备参数
      */
-    public void readDeviceParam(List<CommonDownDataVO> commonDownDataVOS){
+    @Override
+    public void publishMsg(List<CommonDownDataVO> commonDownDataVOS){
 
 
-        commonDownDataVOS.stream().map()
+        List<String> deviceSnList = commonDownDataVOS.stream().map(CommonDownDataVO::getDeviceSn).distinct().collect(Collectors.toList());
+        Map<String, CommonDownDataVO> downDataVOMap = commonDownDataVOS.stream().collect(Collectors.toMap(CommonDownDataVO::getDeviceSn, Function.identity(), (t1, t2) -> t1));
 
-        mqttService.publish();
+        List<DeviceDO> deviceDOList = findByDeviceSn2(deviceSnList);
+        Map<String, DeviceDO> dtuMap = deviceDOList.stream()
+                .filter(deviceDO -> StringUtils.isNotBlank(deviceDO.getDtuSn()))
+                .collect(Collectors.toMap(DeviceDO::getDeviceSn, Function.identity(), (t1, t2) -> t1));
 
 
+        /**
+         * 发布mqtt消息
+         */
+        dtuMap.forEach((sn,deviceDO)->{
+            CommonDownDataVO commonDownDataVO = downDataVOMap.get(sn);
 
-        udpService.sendCommand2cache();
+            try {
+                mqttService.publish(deviceDO.getDtuSn(),DtuDownDataVO.builder().dataVOList(Arrays.asList(commonDownDataVO)).build());
+            } catch (Exception e) {
+                log.error("MQTT消息发布出错啦commonDownDataVO={}", JSONObject.toJSONString(commonDownDataVO),e);
+            }
+        });
+
+        /**
+         * 发布udp消息
+         */
+        Map<String, DeviceDO> udpMap = deviceDOList.stream()
+                .filter(deviceDO -> StringUtils.isEmpty(deviceDO.getDtuSn()))
+                .collect(Collectors.toMap(DeviceDO::getDeviceSn, Function.identity(), (t1, t2) -> t1));
+
+        udpMap.forEach((sn,deviceDO)->{
+            CommonDownDataVO commonDownDataVO = downDataVOMap.get(sn);
+
+            try {
+                udpService.sendCommand2cache(sn,DtuDownDataVO.builder().dataVOList(Arrays.asList(commonDownDataVO)).build());
+
+            } catch (Exception e) {
+                log.error("UDP消息发布出错啦commonDownDataVO={}", JSONObject.toJSONString(commonDownDataVO),e);
+            }
+        });
+
+
     }
 
 
@@ -104,6 +141,14 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, DeviceDO> imple
         queryWrapper.in(DeviceDO::getDeviceSn,deviceSns);
         queryWrapper.eq(DeviceDO::getDeleteFlag, DeleteEnum.NORMAL.getCode());
         return list(queryWrapper).stream().collect(Collectors.toMap(DeviceDO::getDeviceSn, Function.identity(),(t1,t2)->t1));
+    }
+
+    @Override
+    public List<DeviceDO> findByDeviceSn2(List<String> deviceSns)  {
+        LambdaQueryWrapper<DeviceDO> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.in(DeviceDO::getDeviceSn,deviceSns);
+        queryWrapper.eq(DeviceDO::getDeleteFlag, DeleteEnum.NORMAL.getCode());
+        return list(queryWrapper);
     }
 
 }
