@@ -25,7 +25,7 @@ wx:
 # 日志配置
 logging:
   level:
-    org.springframework: debug
+    org.springframework: info
     com.github.binarywang.demo.wx.mp: DEBUG
     org.mybatis.spring.mapper: DEBUG
     com.baomidou.mybatisplus: DEBUG
