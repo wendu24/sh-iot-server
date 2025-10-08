@@ -146,7 +146,17 @@ public class HomeServiceImpl implements HomeService {
         queryWrapper.ge(StatHourDO::getStatDay, DateUtil.formatLocalDateTime(LocalDateTime.now().minusDays(30),DateUtil.YYYY_MM_DD));
         queryWrapper.le(StatHourDO::getStatDay, DateUtil.formatLocalDateTime(LocalDateTime.now(),DateUtil.YYYY_MM_DD));
         queryWrapper.select(StatHourDO::getAvgValvePosition,StatHourDO::getAvgTemperature, StatHourDO::getAvgSupplyWaterPressure,StatHourDO::getAvgSupplyWaterTemperature);
-        return statHourService.list(queryWrapper);
+        List<StatHourDO> originalList = statHourService.list(queryWrapper);
+        /**
+         * 简易抽稀
+         */
+        List<StatHourDO> result = new ArrayList<>();
+        // 从第一个点开始, 每隔 samplingFactor 个点取一个
+        for (int i = 0; i < originalList.size(); i += 10) {
+            result.add(originalList.get(i));
+        }
+
+        return result;
 
     }
 

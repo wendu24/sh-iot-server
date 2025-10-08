@@ -1,5 +1,6 @@
 package com.ruoyi.business.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -27,6 +28,7 @@ public class MsgSetReplyVO {
     /**
      * 发布时间
      */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime publishTime;
 
     /**
@@ -37,6 +39,7 @@ public class MsgSetReplyVO {
     /**
      * 回复时间
      */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime replyTime;
 
     /**
@@ -70,8 +73,10 @@ public class MsgSetReplyVO {
      */
     private Integer pageNum;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime publishStartTime;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime publishEndTime;
 
     private Boolean hasReply;

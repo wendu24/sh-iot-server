@@ -1,5 +1,6 @@
 package com.ruoyi.business.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ruoyi.business.validate.CreateGroup;
 import com.ruoyi.business.validate.UpdateGroup;
 import lombok.Builder;
@@ -111,11 +112,13 @@ public class DeviceVO {
     /**
      * 创建时间
      */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
 
     /**
      * 更新时间
      */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updateTime;
 
     @Tolerate
