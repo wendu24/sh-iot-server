@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Function;
@@ -82,7 +83,7 @@ public class HomeServiceImpl implements HomeService {
                             .orElse(0.0);
                     RoomDataThirtyDayVO dataThirtyDayVO = RoomDataThirtyDayVO.builder()
                             .avgRoomHumidity(BigDecimal.valueOf(avgHumi))
-                            .avgRoomTemperature(BigDecimal.valueOf(avgTemp).setScale(2))
+                            .avgRoomTemperature(BigDecimal.valueOf(avgTemp).setScale(2, RoundingMode.HALF_UP))
                             .hour(statHour)
                             .build();
                     result.add(dataThirtyDayVO);

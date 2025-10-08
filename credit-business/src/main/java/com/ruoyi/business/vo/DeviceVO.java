@@ -4,6 +4,8 @@ import com.ruoyi.business.validate.CreateGroup;
 import com.ruoyi.business.validate.UpdateGroup;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.Tolerate;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -115,4 +117,8 @@ public class DeviceVO {
      * 更新时间
      */
     private LocalDateTime updateTime;
+
+    @Tolerate
+    public DeviceVO() {
+    }
 }
