@@ -8,5 +8,5 @@ import com.ruoyi.business.vo.MsgSetReplyVO;
 
 public interface MsgSetReplyService extends IService<MsgSetReplyDO> {
 
-    public Page<MsgSetReplyDO> list(MsgSetReplyVO msgSetReplyVO);
+    public Page<MsgSetReplyVO> list(MsgSetReplyVO msgSetReplyVO);
 }

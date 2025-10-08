@@ -24,8 +24,8 @@ public class MsgSetReplyController {
     MsgSetReplyService msgSetReplyService;
 
     @RequestMapping("/list")
-    public Page<MsgSetReplyDO> list(@RequestBody MsgSetReplyVO msgSetReplyVO){
-       return list(msgSetReplyVO);
+    public Page<MsgSetReplyVO> list(@RequestBody MsgSetReplyVO msgSetReplyVO){
+       return msgSetReplyService.list(msgSetReplyVO);
     }
 
 

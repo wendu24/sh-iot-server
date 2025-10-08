@@ -29,9 +29,7 @@ public class MqttConfig {
 
     @Bean
     public MqttClient mqttClient() throws MqttException {
-        Random random = new Random();
-        int nextInt = random.nextInt(100);
-        MqttClient client = new MqttClient(host, clientId+"_" + nextInt);
+        MqttClient client = new MqttClient(host, clientId);
         MqttConnectOptions options = new MqttConnectOptions();
         options.setCleanSession(true);
         options.setUserName(username);
