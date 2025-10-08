@@ -30,7 +30,7 @@ public class CommunityController {
 
 
     @RequestMapping("/list")
-    public Page<CommunityDO> list(CommunityVO communityVO) {
+    public Page<CommunityDO> list(@RequestBody CommunityVO communityVO) {
         return communityService.page(communityVO);
     }
 
