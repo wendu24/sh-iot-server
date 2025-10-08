@@ -44,7 +44,7 @@ public class CommunityController {
 
     @RequestMapping("/edit")
     public AjaxResult edit(@RequestBody @Validated(CreateGroup.class) CommunityVO communityVO){
-        communityService.add(communityVO);
+        communityService.edit(communityVO);
         return AjaxResult.success();
     }
 
