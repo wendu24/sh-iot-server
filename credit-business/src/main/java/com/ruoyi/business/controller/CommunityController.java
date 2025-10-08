@@ -21,7 +21,7 @@ import java.util.List;
 
 @Slf4j
 @RestController
-@RequestMapping("/wjx/community")
+@RequestMapping("/biz/community")
 public class CommunityController {
 
 

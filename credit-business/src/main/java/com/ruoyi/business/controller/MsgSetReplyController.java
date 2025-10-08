@@ -6,6 +6,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
-@RequestMapping("/msg/set-reply")
+@RequestMapping("/biz/msg/set-reply")
 public class MsgSetReplyController {
 }
