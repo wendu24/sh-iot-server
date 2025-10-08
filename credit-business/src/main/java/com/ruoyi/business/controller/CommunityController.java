@@ -50,7 +50,7 @@ public class CommunityController {
 
 
     @RequestMapping("/delete")
-    public AjaxResult delete(CommunityVO communityVO){
+    public AjaxResult delete(@RequestBody CommunityVO communityVO){
         communityService.removeById(communityVO.getId());
         return AjaxResult.success();
     }

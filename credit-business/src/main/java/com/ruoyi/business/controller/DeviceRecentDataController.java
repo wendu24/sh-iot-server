@@ -8,4 +8,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/data/recent")
 public class DeviceRecentDataController {
+
+
 }
