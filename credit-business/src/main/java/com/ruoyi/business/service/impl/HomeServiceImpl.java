@@ -63,7 +63,7 @@ public class HomeServiceImpl implements HomeService {
         List<RoomDataThirtyDayVO> result = new ArrayList<>();
         LambdaQueryWrapper<StatHourDO> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.in(CollectionUtils.isNotEmpty(homeQueryVO.getCommunityIds()),StatHourDO::getCommunityId, homeQueryVO.getCommunityIds());
-        queryWrapper.ge(StatHourDO::getStatDay, DateUtil.formatLocalDateTime(LocalDateTime.now().minusDays(-30),DateUtil.YYYY_MM_DD));
+        queryWrapper.ge(StatHourDO::getStatDay, DateUtil.formatLocalDateTime(LocalDateTime.now().minusDays(30),DateUtil.YYYY_MM_DD));
         queryWrapper.le(StatHourDO::getStatDay, DateUtil.formatLocalDateTime(LocalDateTime.now(),DateUtil.YYYY_MM_DD));
         queryWrapper.select(StatHourDO::getAvgTemperature,StatHourDO::getAvgHumidity, StatHourDO::getStatHour);
         statHourService.list(queryWrapper).stream()
@@ -82,7 +82,7 @@ public class HomeServiceImpl implements HomeService {
                             .orElse(0.0);
                     RoomDataThirtyDayVO dataThirtyDayVO = RoomDataThirtyDayVO.builder()
                             .avgRoomHumidity(BigDecimal.valueOf(avgHumi))
-                            .avgRoomTemperature(BigDecimal.valueOf(avgTemp))
+                            .avgRoomTemperature(BigDecimal.valueOf(avgTemp).setScale(2))
                             .hour(statHour)
                             .build();
                     result.add(dataThirtyDayVO);
@@ -97,7 +97,7 @@ public class HomeServiceImpl implements HomeService {
         List<RoomDataThirtyDayVO> result = new ArrayList<>();
         LambdaQueryWrapper<StatHourDO> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.in(CollectionUtils.isNotEmpty(homeQueryVO.getCommunityIds()),StatHourDO::getCommunityId, homeQueryVO.getCommunityIds());
-        queryWrapper.ge(StatHourDO::getStatDay, DateUtil.formatLocalDateTime(LocalDateTime.now().minusDays(-30),DateUtil.YYYY_MM_DD));
+        queryWrapper.ge(StatHourDO::getStatDay, DateUtil.formatLocalDateTime(LocalDateTime.now().minusDays(30),DateUtil.YYYY_MM_DD));
         queryWrapper.le(StatHourDO::getStatDay, DateUtil.formatLocalDateTime(LocalDateTime.now(),DateUtil.YYYY_MM_DD));
         queryWrapper.select(StatHourDO::getAvgTemperature,StatHourDO::getAvgHumidity, StatHourDO::getCommunityId, StatHourDO::getCommunityName);
         statHourService.list(queryWrapper)
@@ -142,7 +142,7 @@ public class HomeServiceImpl implements HomeService {
     public List<StatHourDO> scatterChart(HomeQueryVO homeQueryVO){
         LambdaQueryWrapper<StatHourDO> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.in(CollectionUtils.isNotEmpty(homeQueryVO.getCommunityIds()),StatHourDO::getCommunityId, homeQueryVO.getCommunityIds());
-        queryWrapper.ge(StatHourDO::getStatDay, DateUtil.formatLocalDateTime(LocalDateTime.now().minusDays(-30),DateUtil.YYYY_MM_DD));
+        queryWrapper.ge(StatHourDO::getStatDay, DateUtil.formatLocalDateTime(LocalDateTime.now().minusDays(30),DateUtil.YYYY_MM_DD));
         queryWrapper.le(StatHourDO::getStatDay, DateUtil.formatLocalDateTime(LocalDateTime.now(),DateUtil.YYYY_MM_DD));
         queryWrapper.select(StatHourDO::getAvgValvePosition,StatHourDO::getAvgTemperature, StatHourDO::getAvgSupplyWaterPressure,StatHourDO::getAvgSupplyWaterTemperature);
         return statHourService.list(queryWrapper);
@@ -195,6 +195,7 @@ public class HomeServiceImpl implements HomeService {
         Map<String, Long> mqttAbnormalTypeCount = mqttDeviceLatestDataService
                 .list(queryWrapper)
                 .stream()
+                .filter(Objects::nonNull)
                 .map(MqttDeviceLatestDataDO::getAbnormalTypes)         // 提取 abnormalTypes 字符串
                 .filter(Objects::nonNull)                              // 过滤 null 值
                 .filter(s -> !s.trim().isEmpty())                      // 过滤空字符串
@@ -212,6 +213,7 @@ public class HomeServiceImpl implements HomeService {
         Map<String, Long> udpAbnormalTypeCount = udpDeviceLatestDataService
                 .list(queryWrapper2)
                 .stream()
+                .filter(Objects::nonNull)
                 .map(UdpDeviceLatestDataDO::getAbnormalTypes)         // 提取 abnormalTypes 字符串
                 .filter(Objects::nonNull)                              // 过滤 null 值
                 .filter(s -> !s.trim().isEmpty())                      // 过滤空字符串

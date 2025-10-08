@@ -29,6 +29,9 @@ logging:
     com.github.binarywang.demo.wx.mp: DEBUG
     org.mybatis.spring.mapper: DEBUG
     com.baomidou.mybatisplus: DEBUG
+    #项目mapper目录
+    com.ruoyi.business.mapper: DEBUG
+
     me.chanjar.weixin: DEBUG
 
 # 数据源配置
