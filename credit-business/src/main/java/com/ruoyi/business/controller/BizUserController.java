@@ -1,6 +1,5 @@
 package com.ruoyi.business.controller;
 
-import com.ruoyi.business.domain.UdpDeviceDataTemplateDO;
 import com.ruoyi.business.iot.MqttService;
 import com.ruoyi.business.iot.UdpService;
 import com.ruoyi.business.iot.udp.NettyUdpServer;
@@ -94,17 +93,17 @@ public class BizUserController {
         }
     }
 
-    @RequestMapping("/dynamic-insert")
-    public AjaxResult dynamicInsert(){
-        try {
-            UdpDeviceDataTemplateDO ud = new UdpDeviceDataTemplateDO();
-            ud.setDeviceSn("test");
-           udpDeviceDataTemplateService.save(ud);
-            return AjaxResult.success("建表成功");
-        } catch (Exception e) {
-            log.error("建表,",e);
-            return AjaxResult.error(e.getMessage());
-        }
-    }
+//    @RequestMapping("/dynamic-insert")
+//    public AjaxResult dynamicInsert(){
+//        try {
+//            UdpDeviceDataTemplateDO ud = new UdpDeviceDataTemplateDO();
+//            ud.setDeviceSn("test");
+//           udpDeviceDataTemplateService.save(ud);
+//            return AjaxResult.success("建表成功");
+//        } catch (Exception e) {
+//            log.error("建表,",e);
+//            return AjaxResult.error(e.getMessage());
+//        }
+//    }
 
 }
