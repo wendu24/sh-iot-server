@@ -39,6 +39,10 @@ public class MsgSetReplyDO {
      */
     private String deviceSn;
 
+    private Long communityId;
+
+    private String communityName;
+
     /**
      * 消息体 (json数据)
      */

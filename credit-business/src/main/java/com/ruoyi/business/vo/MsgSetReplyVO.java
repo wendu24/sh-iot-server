@@ -62,6 +62,9 @@ public class MsgSetReplyVO {
      * 以下是查询参数
      */
 
+    private Long communityId;
+
+    private String communityName;
 
     /**
      * 分页大小
@@ -78,6 +81,9 @@ public class MsgSetReplyVO {
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime publishEndTime;
-
+    /**
+     * 是否响应
+     */
     private Boolean hasReply;
+
 }

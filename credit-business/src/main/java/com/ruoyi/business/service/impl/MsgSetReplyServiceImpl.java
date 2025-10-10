@@ -34,6 +34,7 @@ public class MsgSetReplyServiceImpl extends ServiceImpl<MsgSetReplyMapper, MsgSe
         LambdaQueryWrapper<MsgSetReplyDO> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(StringUtils.isNotEmpty(msgSetReplyVO.getDeviceSn()), MsgSetReplyDO::getDeviceSn, msgSetReplyVO.getDeviceSn())
                 .eq(Objects.nonNull(msgSetReplyVO.getCmdCode()), MsgSetReplyDO::getCmdCode, msgSetReplyVO.getCmdCode())
+                .eq(Objects.nonNull(msgSetReplyVO.getCommunityId()), MsgSetReplyDO::getCommunityId, msgSetReplyVO.getCommunityId())
                 // 修正：原代码重复添加了 cmdCode 查询
                 .ge(Objects.nonNull(msgSetReplyVO.getPublishStartTime()), MsgSetReplyDO::getPublishTime, msgSetReplyVO.getPublishStartTime())
                 // 修正：结束时间应该用 le (less than or equal)
