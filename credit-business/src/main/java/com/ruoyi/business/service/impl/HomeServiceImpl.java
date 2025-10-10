@@ -116,9 +116,23 @@ public class HomeServiceImpl implements HomeService {
                             .mapToDouble(BigDecimal::doubleValue)
                             .average()
                             .orElse(0.0);
+
+                    double avgSupplyWaterPressure = communityStatList.stream()
+                            .map(StatHourDO::getAvgSupplyWaterPressure)
+                            .mapToDouble(BigDecimal::doubleValue)
+                            .average()
+                            .orElse(0.0);
+
+                    double avgSupplyWaterTemperature = communityStatList.stream()
+                            .map(StatHourDO::getAvgSupplyWaterTemperature)
+                            .mapToDouble(BigDecimal::doubleValue)
+                            .average()
+                            .orElse(0.0);
                     RoomDataThirtyDayVO dataThirtyDayVO = RoomDataThirtyDayVO.builder()
                             .avgRoomHumidity(BigDecimal.valueOf(avgHumi))
                             .avgRoomTemperature(BigDecimal.valueOf(avgTemp))
+                            .supplyWaterPressure(BigDecimal.valueOf(avgSupplyWaterPressure))
+                            .supplyWaterTemperature(BigDecimal.valueOf(avgSupplyWaterTemperature))
                             .communityName(communityName)
                             .build();
                     result.add(dataThirtyDayVO);

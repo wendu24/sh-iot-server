@@ -15,6 +15,10 @@ public class RoomDataThirtyDayVO {
 
     private BigDecimal avgRoomHumidity;
 
+    private BigDecimal supplyWaterTemperature;
+
+    private BigDecimal supplyWaterPressure;
+
     private String communityName;
 
 }
