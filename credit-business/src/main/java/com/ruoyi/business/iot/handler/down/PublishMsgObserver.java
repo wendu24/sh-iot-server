@@ -29,7 +29,7 @@ public class PublishMsgObserver extends AbstractDownMsgObserver {
     public void handle( DtuDownDataVO dtuDownDataVO) {
         ArrayList<MsgSetReplyDO> msgSetReplyList = new ArrayList<>();
         dtuDownDataVO.getDataVOList().forEach(commonDownDataVO -> {
-            if(commonDownDataVO.getCmdCode() == DownCmdEnum.DOWNLINK_FF.getCode())
+            if(commonDownDataVO.getCmdCode() == DownCmdEnum.DOWNLINK_FF.getCode() || commonDownDataVO.getCmdCode() == DownCmdEnum.DOWNLINK_UDP_RESPONSE.getCode())
                 return;
             DeviceDO deviceDO ;
             try {
