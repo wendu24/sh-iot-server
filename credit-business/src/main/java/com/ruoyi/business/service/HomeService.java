@@ -16,5 +16,7 @@ public interface HomeService {
 
     public List<StatHourDO> scatterChart(HomeQueryVO homeQueryVO);
 
+    public  List<WaterTemperatureVO> waterTemperatureAndHour(HomeQueryVO homeQueryVO);
+
 
 }

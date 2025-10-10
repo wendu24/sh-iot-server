@@ -1,18 +1,20 @@
 package com.ruoyi.business.vo.home;
 
+import lombok.Builder;
 import lombok.Data;
 
 import java.math.BigDecimal;
 
 @Data
+@Builder
 public class WaterTemperatureVO {
 
 
     private Integer hour;
 
-    private BigDecimal agvSupplyWaterTemperature;
+    private BigDecimal avgSupplyWaterTemperature;
 
 
-    private BigDecimal agvReturnWaterTemperature;
+    private BigDecimal avgReturnWaterTemperature;
 
 }

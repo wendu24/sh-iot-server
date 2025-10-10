@@ -63,8 +63,9 @@ public class HomeController {
     /**
      * 供水水温/回水水温 和 小时的折线图
      */
+    @RequestMapping("/waterTemperatureAndHour")
     public void waterTemperatureAndHour(@RequestBody HomeQueryVO homeQueryVO){
-
+        AjaxResult.success(homeService.waterTemperatureAndHour(homeQueryVO));
     }
 
 

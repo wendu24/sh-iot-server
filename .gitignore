@@ -47,3 +47,4 @@ nbdist/
 !*/build/*.xml
 /mqttx_ea478444-tcp3999180141883/.lck
 /mqttx_ea478444_13-tcp3999180141883/.lck
+/mqttx_ea47844-tcp3999180141883/.lck

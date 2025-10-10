@@ -175,6 +175,39 @@ public class HomeServiceImpl implements HomeService {
     }
 
 
+    @Override
+    public  List<WaterTemperatureVO> waterTemperatureAndHour(HomeQueryVO homeQueryVO){
+        List<WaterTemperatureVO> result = new ArrayList<>();
+        LambdaQueryWrapper<StatHourDO> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.in(CollectionUtils.isNotEmpty(homeQueryVO.getCommunityIds()),StatHourDO::getCommunityId, homeQueryVO.getCommunityIds());
+        queryWrapper.ge(StatHourDO::getStatDay, DateUtil.formatLocalDateTime(LocalDateTime.now().minusDays(30),DateUtil.YYYY_MM_DD));
+        queryWrapper.le(StatHourDO::getStatDay, DateUtil.formatLocalDateTime(LocalDateTime.now(),DateUtil.YYYY_MM_DD));
+        queryWrapper.select(StatHourDO::getAvgSupplyWaterTemperature,StatHourDO::getAvgReturnWaterTemperature, StatHourDO::getStatHour);
+        statHourService.list(queryWrapper).stream()
+                .collect(Collectors.groupingBy(StatHourDO::getStatHour))
+                .forEach((statHour,hourStatList)->{
+                    double avgReturnWaterTemperature = hourStatList.stream()
+                            .map(StatHourDO::getAvgReturnWaterTemperature)
+                            .mapToDouble(BigDecimal::doubleValue)
+                            .average()
+                            .orElse(0.0); // 如果列表为空，返回 0.0
+
+                    double avgSupplyWaterTemperature = hourStatList.stream()
+                            .map(StatHourDO::getAvgSupplyWaterTemperature)
+                            .mapToDouble(BigDecimal::doubleValue)
+                            .average()
+                            .orElse(0.0);
+                    WaterTemperatureVO temperatureVO = WaterTemperatureVO.builder()
+                            .avgReturnWaterTemperature(BigDecimal.valueOf(avgReturnWaterTemperature))
+                            .avgSupplyWaterTemperature(BigDecimal.valueOf(avgSupplyWaterTemperature))
+                            .build();
+                    result.add(temperatureVO);
+
+                });
+        result.sort(Comparator.comparing(WaterTemperatureVO::getHour));
+        return result;
+    }
+
 
 
 
