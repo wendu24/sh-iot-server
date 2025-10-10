@@ -26,6 +26,17 @@ public class HomeController {
     @Autowired
     HomeService homeService;
 
+
+
+    /**
+     * 供水水温/回水水温 和 小时的折线图
+     */
+    @RequestMapping("/waterTemperatureAndHour")
+    public void waterTemperatureAndHour(@RequestBody HomeQueryVO homeQueryVO){
+        AjaxResult.success(homeService.waterTemperatureAndHour(homeQueryVO));
+    }
+
+
     /**
      *  总览: 小区数, 设备数(按类型), 故障设备数(按类型). 平均室温, 平均设备开度
      */
@@ -59,14 +70,6 @@ public class HomeController {
         return AjaxResult.success(homeService.scatterChart(homeQueryVO));
     }
 
-
-    /**
-     * 供水水温/回水水温 和 小时的折线图
-     */
-    @RequestMapping("/waterTemperatureAndHour")
-    public void waterTemperatureAndHour(@RequestBody HomeQueryVO homeQueryVO){
-        AjaxResult.success(homeService.waterTemperatureAndHour(homeQueryVO));
-    }
 
 
 

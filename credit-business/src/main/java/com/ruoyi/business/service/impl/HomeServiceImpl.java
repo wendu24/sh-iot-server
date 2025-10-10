@@ -100,7 +100,7 @@ public class HomeServiceImpl implements HomeService {
         queryWrapper.in(CollectionUtils.isNotEmpty(homeQueryVO.getCommunityIds()),StatHourDO::getCommunityId, homeQueryVO.getCommunityIds());
         queryWrapper.ge(StatHourDO::getStatDay, DateUtil.formatLocalDateTime(LocalDateTime.now().minusDays(30),DateUtil.YYYY_MM_DD));
         queryWrapper.le(StatHourDO::getStatDay, DateUtil.formatLocalDateTime(LocalDateTime.now(),DateUtil.YYYY_MM_DD));
-        queryWrapper.select(StatHourDO::getAvgTemperature,StatHourDO::getAvgHumidity, StatHourDO::getCommunityId, StatHourDO::getCommunityName);
+        queryWrapper.select(StatHourDO::getAvgTemperature,StatHourDO::getAvgHumidity,StatHourDO::getAvgSupplyWaterPressure,StatHourDO::getAvgSupplyWaterTemperature, StatHourDO::getCommunityId, StatHourDO::getCommunityName);
         statHourService.list(queryWrapper)
                 .stream()
                 .collect(Collectors.groupingBy(StatHourDO::getCommunityName))
@@ -198,6 +198,7 @@ public class HomeServiceImpl implements HomeService {
                             .average()
                             .orElse(0.0);
                     WaterTemperatureVO temperatureVO = WaterTemperatureVO.builder()
+                            .hour(statHour)
                             .avgReturnWaterTemperature(BigDecimal.valueOf(avgReturnWaterTemperature))
                             .avgSupplyWaterTemperature(BigDecimal.valueOf(avgSupplyWaterTemperature))
                             .build();
