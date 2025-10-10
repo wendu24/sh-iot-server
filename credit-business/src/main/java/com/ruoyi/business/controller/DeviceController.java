@@ -41,7 +41,11 @@ public class DeviceController {
         return AjaxResult.success();
     }
 
-
+    @RequestMapping("/update")
+    public AjaxResult update(@RequestBody DeviceVO deviceVO){
+        deviceService.update(deviceVO);
+        return AjaxResult.success();
+    }
 
     @RequestMapping("/public-msg")
     public AjaxResult publicMsg(@RequestBody @Validated List<CommonDownDataVO> commonDownDataVOS){

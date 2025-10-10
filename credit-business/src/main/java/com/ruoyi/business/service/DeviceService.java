@@ -13,6 +13,8 @@ import java.util.Map;
 public interface DeviceService extends IService<DeviceDO> {
 
 
+    public void update( DeviceVO deviceVO);
+
     public Page<DeviceDO> list(DeviceVO deviceVO);
 
     public void add(DeviceVO deviceVO);
