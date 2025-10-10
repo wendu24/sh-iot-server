@@ -26,6 +26,8 @@ public class MqttDeviceRecentDataServiceImpl extends ServiceImpl<MqttDeviceRecen
         LambdaQueryWrapper<MqttDeviceRecentDataDO> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(StringUtils.isNotEmpty(recentDataQueryVO.getDeviceSn()),MqttDeviceRecentDataDO::getDeviceSn,recentDataQueryVO.getDeviceSn());
         queryWrapper.eq(Objects.nonNull(recentDataQueryVO.getCommunityId()),MqttDeviceRecentDataDO::getCommunityId,recentDataQueryVO.getCommunityId());
+        queryWrapper.ge(Objects.nonNull(recentDataQueryVO.getCollectTimeStartTime()),MqttDeviceRecentDataDO::getCollectionTime,recentDataQueryVO.getCollectTimeStartTime());
+        queryWrapper.le(Objects.nonNull(recentDataQueryVO.getCollectTimeEndTime()),MqttDeviceRecentDataDO::getCollectionTime,recentDataQueryVO.getCollectTimeEndTime());
         queryWrapper.orderByDesc(MqttDeviceRecentDataDO::getId);
         Page<MqttDeviceRecentDataDO> pageParam = new Page<>(recentDataQueryVO.getPageNum(), recentDataQueryVO.getPageSize());
         return  page(pageParam, queryWrapper);

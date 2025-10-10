@@ -25,6 +25,8 @@ public class UdpDeviceRecentDataServiceImpl extends ServiceImpl<UdpDeviceRecentD
         LambdaQueryWrapper<UdpDeviceRecentDataDO> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(StringUtils.isNotEmpty(recentDataQueryVO.getDeviceSn()), UdpDeviceRecentDataDO::getDeviceSn,recentDataQueryVO.getDeviceSn());
         queryWrapper.eq(Objects.nonNull(recentDataQueryVO.getCommunityId()),UdpDeviceRecentDataDO::getCommunityId,recentDataQueryVO.getCommunityId());
+        queryWrapper.ge(Objects.nonNull(recentDataQueryVO.getCollectTimeStartTime()),UdpDeviceRecentDataDO::getCollectTime,recentDataQueryVO.getCollectTimeStartTime());
+        queryWrapper.le(Objects.nonNull(recentDataQueryVO.getCollectTimeEndTime()),UdpDeviceRecentDataDO::getCollectTime,recentDataQueryVO.getCollectTimeEndTime());
         queryWrapper.orderByDesc(UdpDeviceRecentDataDO::getId);
         Page<UdpDeviceRecentDataDO> pageParam = new Page<>(recentDataQueryVO.getPageNum(), recentDataQueryVO.getPageSize());
         return  page(pageParam, queryWrapper);
