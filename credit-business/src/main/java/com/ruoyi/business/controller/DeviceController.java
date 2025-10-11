@@ -1,5 +1,6 @@
 package com.ruoyi.business.controller;
 
+import com.alibaba.fastjson2.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ruoyi.business.domain.DeviceDO;
 import com.ruoyi.business.iot.common.vo.down.CommonDownDataVO;
@@ -11,11 +12,11 @@ import com.ruoyi.common.core.domain.AjaxResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -30,6 +31,35 @@ public class DeviceController {
     public Page<DeviceDO> list(@RequestBody DeviceVO deviceVO) {
         return deviceService.list(deviceVO);
     }
+
+
+    /**
+     * 文件导入接口
+     * 对应前端请求: POST /sh-iot/import
+     */
+    @PostMapping("/import")
+    public AjaxResult importFile(@RequestParam("file") MultipartFile file) {
+
+        try{
+        if (file.isEmpty()) {
+            return AjaxResult.error("文件为空");
+        }
+
+            // 2. 检查是否为 Excel 文件
+        String filename = file.getOriginalFilename();
+        if (!filename.toLowerCase().endsWith(".xlsx") && !filename.toLowerCase().endsWith(".xls")) {
+            return AjaxResult.error("只支持表格导入");
+        }
+        log.info("接收到导入请求 filename={}",filename);
+
+
+            return AjaxResult.success("导入成功");
+        } catch (Exception e) {
+           log.error("导入设备出错啦",e);
+           return AjaxResult.error("导入失败");
+        }
+    }
+
 
     @RequestMapping("/add")
     public AjaxResult add(@RequestBody @Validated(CreateGroup.class) DeviceVO deviceVO) {
@@ -51,6 +81,7 @@ public class DeviceController {
 
     @RequestMapping("/public-msg")
     public AjaxResult publicMsg(@RequestBody @Validated List<CommonDownDataVO> commonDownDataVOS){
+        log.info("请求发布消息 commonDownDataVOS={}", JSONObject.toJSONString(commonDownDataVOS));
         deviceService.publishMsg(commonDownDataVOS);
         return AjaxResult.success();
     }
