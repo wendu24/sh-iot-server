@@ -68,7 +68,7 @@ public class UdpService {
      * @param dtuDownDataVO
      * @throws Exception
      */
-    public void sendCommand2cache(String sn, DtuDownDataVO dtuDownDataVO) throws Exception {
+    public void sendCommand2cache(String sn, DtuDownDataVO dtuDownDataVO) {
         List<DtuDownDataVO> list = dataCache.computeIfAbsent(sn, k -> new ArrayList<>());
         list.add(dtuDownDataVO); // 直接操作返回的列表
     }

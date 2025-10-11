@@ -6,6 +6,7 @@ import com.ruoyi.business.domain.BizUserDO;
 import com.ruoyi.business.domain.DeviceDO;
 import com.ruoyi.business.iot.common.vo.down.CommonDownDataVO;
 import com.ruoyi.business.vo.DeviceVO;
+import com.ruoyi.business.vo.RefreshDeviceVO;
 
 import java.util.List;
 import java.util.Map;
@@ -18,6 +19,8 @@ public interface DeviceService extends IService<DeviceDO> {
     public Page<DeviceDO> list(DeviceVO deviceVO);
 
     public void add(DeviceVO deviceVO);
+
+    public void refreshData(RefreshDeviceVO refreshDeviceVO);
 
     public void publishMsg(List<CommonDownDataVO> commonDownDataVOS);
 

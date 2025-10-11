@@ -6,10 +6,13 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ruoyi.business.constant.DeleteEnum;
+import com.ruoyi.business.constant.DeviceTypeEnum;
 import com.ruoyi.business.domain.BizUserDO;
 import com.ruoyi.business.domain.DeviceDO;
 import com.ruoyi.business.iot.MqttService;
 import com.ruoyi.business.iot.UdpService;
+import com.ruoyi.business.iot.common.constant.DownCmdEnum;
+import com.ruoyi.business.iot.common.constant.ReadWriteEnum;
 import com.ruoyi.business.iot.common.vo.down.CommonDownDataVO;
 import com.ruoyi.business.iot.common.vo.down.DtuDownDataVO;
 import com.ruoyi.business.mapper.BizUserMapper;
@@ -17,6 +20,7 @@ import com.ruoyi.business.mapper.DeviceMapper;
 import com.ruoyi.business.service.BizUserService;
 import com.ruoyi.business.service.DeviceService;
 import com.ruoyi.business.vo.DeviceVO;
+import com.ruoyi.business.vo.RefreshDeviceVO;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.exception.ServiceException;
 import lombok.extern.slf4j.Slf4j;
@@ -73,6 +77,46 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, DeviceDO> imple
         newData.setCreateTime(LocalDateTime.now());
         newData.setUpdateTime(LocalDateTime.now());
         save(newData);
+
+        /**
+         * 刷新设备数据
+         */
+        refreshData(deviceVO);
+    }
+
+
+    @Override
+    public void refreshData(RefreshDeviceVO refreshDeviceVO){
+        findByDeviceSn2(refreshDeviceVO.getDeviceSnList()).forEach(deviceDO -> {
+            log.info("开始刷新设备的数据sn{}",deviceDO.getDeviceSn());
+            DeviceVO deviceVO = DeviceVO.builder().build();
+            BeanUtil.copyProperties(deviceDO,deviceVO);
+            refreshData(deviceVO);
+        });
+
+    }
+
+
+    private void refreshData(DeviceVO deviceVO) {
+        List<CommonDownDataVO> commonDownDataVOS = DownCmdEnum.autoFreshCommands()
+                .stream()
+                .map(cmdEnum -> CommonDownDataVO.builder()
+                    .deviceSn(deviceVO.getDeviceSn())
+                    .readWriteFlag(ReadWriteEnum.READ.getCode())
+                    .cmdCode(cmdEnum.getCode())
+                    .build())
+                .collect(Collectors.toList());
+        DtuDownDataVO dtuDownDataVO = DtuDownDataVO.builder().dataVOList(commonDownDataVOS).build();
+
+        try {
+            if(deviceVO.getDeviceType().equals(DeviceTypeEnum.DEV_TEMPERATURE.getCode())){
+                udpService.sendCommand2cache(deviceVO.getDeviceSn(), dtuDownDataVO);
+            }else {
+                mqttService.publish(deviceVO.getDtuSn(), dtuDownDataVO);
+            }
+        } catch (Exception e) {
+            log.error("新增设备时,刷新数据出错sn={}", deviceVO.getDeviceSn(),e);
+        }
     }
 
 

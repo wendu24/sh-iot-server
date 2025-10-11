@@ -13,11 +13,15 @@ public class UdpDeviceRecentDataDO {
 
 
     private Long id;
-
+    /**
+     * 设备编号
+     */
     private String deviceSn;
 
     private Long communityId;
-
+    /**
+     * 小区名称
+     */
     private String communityName;
 
     /**
@@ -32,13 +36,21 @@ public class UdpDeviceRecentDataDO {
      * 电池电量
      */
     private Integer batteryLevel;
-
+    /**
+     * 上报周期
+     */
     private Integer reportPeriod ;
-
+    /**
+     * 信号强度
+     */
     private Integer signalStrength;
-
+    /**
+     * ICCID
+     */
     private String iccId;
-
+    /**
+     * 采集时间
+     */
     private LocalDateTime collectTime ;
     /**
      * 室内温度

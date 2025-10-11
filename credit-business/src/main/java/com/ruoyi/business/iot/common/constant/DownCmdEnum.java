@@ -4,6 +4,7 @@ import lombok.Getter;
 
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 /**
  * CMD 命令枚举
@@ -28,6 +29,11 @@ public enum DownCmdEnum {
 
 
     ;
+
+
+    public static List<DownCmdEnum> autoFreshCommands(){
+        return Arrays.asList(DOWNLINK_16,DOWNLINK_19,DOWNLINK_26,DOWNLINK_23,DOWNLINK_25,DOWNLINK_30);
+    }
 
 
     public static DownCmdEnum getByCode(byte code){
