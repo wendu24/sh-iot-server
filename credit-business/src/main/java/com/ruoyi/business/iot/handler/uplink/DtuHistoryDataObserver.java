@@ -49,6 +49,7 @@ public class DtuHistoryDataObserver extends AbstractUplinkMsgObserver{
         mqttDeviceDataTemplateDO.setCommunityName(deviceDO.getCommunityName());
         mqttDeviceDataTemplateDO.setCommunityId(deviceDO.getCommunityId());
         mqttDeviceDataTemplateDO.setIccId(dtuDataVO.getIccId());
+        log.info("收到dtu设备上报数据,保存到历史数据表 mqttDeviceDataTemplateDO={}", mqttDeviceDataTemplateDO.getDeviceSn());
         mqttDeviceDataTemplateService.save(mqttDeviceDataTemplateDO);
 
     }

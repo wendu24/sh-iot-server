@@ -47,6 +47,7 @@ public class ReplyMsgObserver extends AbstractUplinkMsgObserver {
             replyMsg.setReplyBody(JSONObject.toJSONString(cmdFFDataVO));
             return replyMsg;
         }).collect(Collectors.toList());
+        log.info("收到设备回复消息,开始更新回复消息表 replyMsgDates={}",JSONObject.toJSONString(replyMsgDates));
         msgSetReplyService.updateBatchById(replyMsgDates);
     }
 

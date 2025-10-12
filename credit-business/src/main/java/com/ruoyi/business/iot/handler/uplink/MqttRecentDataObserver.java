@@ -64,6 +64,7 @@ public class MqttRecentDataObserver extends AbstractUplinkMsgObserver {
                 mqttDeviceRecentDataDO.setCommunityName(deviceDO.getCommunityName());
             }
             addList.add(mqttDeviceRecentDataDO);
+            log.info("收到mqtt上报数据,准备保存到近期数据表={}",mqttDeviceRecentDataDO.getDeviceSn());
         });
         mqttDeviceRecentDataService.saveBatch(addList);
         log.info("保存mqtt数据成功");

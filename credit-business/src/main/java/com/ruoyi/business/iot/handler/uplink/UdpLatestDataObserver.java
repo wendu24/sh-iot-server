@@ -1,6 +1,7 @@
 package com.ruoyi.business.iot.handler.uplink;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.alibaba.fastjson2.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.ruoyi.business.domain.DeviceDO;
@@ -72,11 +73,11 @@ public class UdpLatestDataObserver extends AbstractUplinkMsgObserver{
         udpDeviceLatestDataDO.setRoomTemperature(roomDataVO.getRoomTemperature());
         if(Objects.isNull(dbData)){
             udpDeviceLatestDataService.save(udpDeviceLatestDataDO);
-            log.info("保存udp数据成功");
+            log.info("收到udp上报数据,保存到最新数据成功={}", JSONObject.toJSONString(udpDeviceLatestDataDO));
         }else {
             udpDeviceLatestDataDO.setId(dbData.getId());
             udpDeviceLatestDataService.updateById(udpDeviceLatestDataDO);
-            log.info("更新udp数据成功");
+            log.info("收到udp上报数据,更新保存到最新数据成功={}",JSONObject.toJSONString(udpDeviceLatestDataDO));
         }
 
 

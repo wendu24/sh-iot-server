@@ -47,6 +47,7 @@ public class DeviceUpdateObserver extends AbstractUplinkMsgObserver {
             queryWrapper.ge(MsgSetReplyDO::getCreateTime, LocalDateTime.now().plusHours(-5));
             MsgSetReplyDO publishData = msgSetReplyService.getOne(queryWrapper);
             Byte readWriteFlag = cmdFFDataVO.getReadWriteFlag();
+            log.info("收到设备回复信息,准备更新设备数据={}",JSONObject.toJSONString(cmdFFDataVO));
             String data =null;
             if(readWriteFlag.equals(ReadWriteEnum.READ.getCode().byteValue())){
                 data = cmdFFDataVO.getData();
@@ -54,7 +55,7 @@ public class DeviceUpdateObserver extends AbstractUplinkMsgObserver {
                 if(cmdFFDataVO.getResult() != 0)
                     return;
                 CommonDownDataVO commonDownDataVO = JSONObject.parseObject(publishData.getMsgBody(), CommonDownDataVO.class);
-                data = StringUtils.isBlank(commonDownDataVO.getDataStr())?commonDownDataVO.getDataStr():commonDownDataVO.getData().toString();
+                data = StringUtils.isNotBlank(commonDownDataVO.getDataStr())?commonDownDataVO.getDataStr():commonDownDataVO.getData().toString();
             }
             if(StringUtils.isBlank(data))
                 return;

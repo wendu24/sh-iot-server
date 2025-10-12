@@ -65,6 +65,7 @@ public class UdpRecentDataObserver extends AbstractUplinkMsgObserver{
             udpDeviceRecentDataDO.setCommunityName(deviceDO.getCommunityName());
             udpDeviceRecentDataDO.setRoomTemperature(roomDataVO.getRoomTemperature());
             saveList.add(udpDeviceRecentDataDO);
+            log.info("收到udp上传数据,新增到近期设备表={}",udpDeviceRecentDataDO.getDeviceSn());
         });
         udpDeviceRecentDataService.saveBatch(saveList);
         log.info("保存udp数据成功");

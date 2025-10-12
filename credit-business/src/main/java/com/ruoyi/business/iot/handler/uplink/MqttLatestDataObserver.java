@@ -58,12 +58,12 @@ public class MqttLatestDataObserver extends AbstractUplinkMsgObserver {
          * 数据入库
          */
         if(CollectionUtils.isNotEmpty(updateList)){
+            log.info("收到mqtt上报数据,开始更新mqtt最新数据表={}",updateList.stream().map(MqttDeviceLatestDataDO::getDeviceSn).collect(Collectors.toList()));
             mqttDeviceLatestDataService.updateBatchById(updateList);
-            log.info("更新mqtt数据成功");
         }
         if(CollectionUtils.isNotEmpty(addList)){
+            log.info("收到mqtt上报数据,开始更新mqtt最新数据表={}",updateList.stream().map(MqttDeviceLatestDataDO::getDeviceSn).collect(Collectors.toList()));
             mqttDeviceLatestDataService.saveBatch(addList);
-            log.info("保存mqtt数据成功");
         }
     }
 

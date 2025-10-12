@@ -45,7 +45,7 @@ public class MqttCheckTimeObserver extends AbstractUplinkMsgObserver{
         if(Objects.nonNull(latestPushTime)&& latestPushTime.plusHours(1).compareTo(LocalDateTime.now()) > 0){
             return;
         }
-        log.info("开始准备下发时间校验deviceSn={}",deviceSn);
+        log.info("开始准备下发mqtt时间校验deviceSn={}",deviceSn);
         LambdaQueryWrapper<DeviceDO> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(DeviceDO::getDeviceSn,deviceSn);
         queryWrapper.eq(DeviceDO::getDeleteFlag, DeleteEnum.NORMAL.getCode());
