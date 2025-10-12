@@ -11,10 +11,16 @@ import com.ruoyi.business.iot.handler.UplinkMsgHandler;
 import com.ruoyi.business.iot.packager.udp.UdpDataPackager;
 import com.ruoyi.business.iot.parser.UdpDataParseContext;
 import com.ruoyi.business.iot.udp.NettyUdpServer;
+import com.ruoyi.business.vo.UdpManualDownVO;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
+import io.netty.channel.socket.DatagramPacket;
+import io.netty.util.CharsetUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.net.InetSocketAddress;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -69,7 +75,7 @@ public class UdpService {
      * @throws Exception
      */
     public void sendCommand2cache(String sn, DtuDownDataVO dtuDownDataVO) {
-        log.info("命令加入udp缓存={}",JSONObject.toJSONString(dtuDownDataVO));
+        log.info("命令加入udp缓存={}", JSONObject.toJSONString(dtuDownDataVO));
         List<DtuDownDataVO> list = dataCache.computeIfAbsent(sn, k -> new ArrayList<>());
         list.add(dtuDownDataVO); // 直接操作返回的列表
     }
@@ -81,10 +87,11 @@ public class UdpService {
      * @param dtuDownDataVO
      * @throws Exception
      */
-    public void sendCommand(String sn, DtuDownDataVO dtuDownDataVO) throws Exception {
+    public void sendCommand(String sn, DtuDownDataVO dtuDownDataVO) {
         dtuDownDataVO.getDataVOList().forEach(commonDownDataVO -> commonDownDataVO.setMid(midGenerator.generatorMid(commonDownDataVO.getDeviceSn())));
         dtuDownDataVO.setPublishTime(LocalDateTime.now());
         try {
+            Thread.sleep(5000);
             /**
              * 构造数据下发的字节数组
              */
@@ -105,6 +112,7 @@ public class UdpService {
 
     /**
      * 发送缓存的消息
+     *
      * @param sn
      */
     public void sendCachedMsg(String sn) {
@@ -113,14 +121,45 @@ public class UdpService {
             return;
         dtuDownDataVOS.forEach(dtuDownDataVO -> {
             try {
-                log.info("sn={}准备下发缓存的udp数据 dtuDownDataVO={}",sn,JSONObject.toJSONString(dtuDownDataVO));
+                log.info("sn={}准备下发缓存的udp数据 dtuDownDataVO={}", sn, JSONObject.toJSONString(dtuDownDataVO));
                 sendCommand(sn, dtuDownDataVO);
-                Thread.sleep(2000);
             } catch (Exception e) {
                 log.error("构建下发数据出错啦dtuDownDataVO={}", JSONObject.toJSONString(dtuDownDataVO), e);
             }
         });
-        dtuDownDataVOS.clear();
+        clearCacheData(sn);
     }
 
+    /**
+     * 手动发送消息
+     *
+     * @param udpManualDownVO
+     */
+    public void sendMsgManual(UdpManualDownVO udpManualDownVO) {
+        udpManualDownVO.getDataVOList().forEach(commonDownDataVO -> commonDownDataVO.setMid(midGenerator.generatorMid(commonDownDataVO.getDeviceSn())));
+        udpManualDownVO.setPublishTime(LocalDateTime.now());
+        String sn = udpManualDownVO.getDataVOList().get(0).getDeviceSn();
+        DtuDownDataVO dtuDownDataVO = DtuDownDataVO.builder()
+                .publishTime(udpManualDownVO.getPublishTime())
+                .dataVOList(udpManualDownVO.getDataVOList())
+                .build();
+        /**
+         * 构造数据下发的字节数组
+         */
+        try {
+            byte[] dataBytes = UdpDataPackager.build(dtuDownDataVO, sn, AesUtil.getAesKey(sn));
+            nettyUdpServer.sendMessage(udpManualDownVO.getIp(), udpManualDownVO.getPort(), sn,dataBytes);
+        } catch (Exception e) {
+            log.error("手动发送信息出错",e);
+        }
+    }
+
+    public static void clearCacheData(String deviceSn) {
+        List<DtuDownDataVO> dtuDownDataVOS = dataCache.get(deviceSn);
+        if (CollectionUtils.isNotEmpty(dtuDownDataVOS)) {
+            log.info("清除缓存 dtuDownDataVOS={}", JSONObject.toJSONString(dtuDownDataVOS));
+            dtuDownDataVOS.clear();
+        }
+
+    }
 }

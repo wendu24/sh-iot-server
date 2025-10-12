@@ -9,6 +9,7 @@ import com.ruoyi.business.service.BizUserService;
 import com.ruoyi.business.service.MqttDeviceDataTemplateService;
 import com.ruoyi.business.service.UdpDeviceDataTemplateService;
 import com.ruoyi.business.vo.BizUserVO;
+import com.ruoyi.business.vo.UdpManualDownVO;
 import com.ruoyi.common.core.domain.AjaxResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,6 +75,16 @@ public class BizUserController {
         String topicDeviceSn = "102110042509080001";
         try {
             udpService.sendCommand(topicDeviceSn, dtuDownDataVO);
+            return AjaxResult.success("消息发布成功");
+        } catch (Exception e) {
+            log.error("发布消息出错啦,",e);
+            return AjaxResult.error(e.getMessage());
+        }
+    }
+    @RequestMapping("/publish-msg-manual")
+    public AjaxResult publishMsgManual(@RequestBody UdpManualDownVO dtuDownDataVO){
+        try {
+            udpService.sendMsgManual( dtuDownDataVO);
             return AjaxResult.success("消息发布成功");
         } catch (Exception e) {
             log.error("发布消息出错啦,",e);

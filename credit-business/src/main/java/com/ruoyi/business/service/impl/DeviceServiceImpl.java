@@ -174,7 +174,7 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, DeviceDO> imple
 
             try {
                 udpService.sendCommand2cache(sn,DtuDownDataVO.builder().dataVOList(Arrays.asList(commonDownDataVO)).build());
-
+                udpService.sendCommand(sn,DtuDownDataVO.builder().dataVOList(Arrays.asList(commonDownDataVO)).build());
             } catch (Exception e) {
                 log.error("UDP消息发布出错啦commonDownDataVO={}", JSONObject.toJSONString(commonDownDataVO),e);
             }

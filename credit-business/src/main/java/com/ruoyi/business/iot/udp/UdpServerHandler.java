@@ -28,9 +28,8 @@ public class UdpServerHandler extends SimpleChannelInboundHandler<DatagramPacket
         packet.content().readBytes(data);
         String msg = IotCommonUtil.bytesToHex(data);
         InetSocketAddress sender = packet.sender();
-        log.info("sender={}", JSONObject.toJSONString(sender));
         // 解析SN，假设协议是 JSON，例如 {"sn":"ABC123","data":"xxx"}
-        log.info("收到UDP请求 msg={}",msg);
+        log.info("收到UDP ={} 请求 msg={}",JSONObject.toJSONString(sender),msg);
         String sn = UdpDataParseContext.parseSn(msg);
 //        // 更新设备地址
         DeviceSessionManager.updateDevice(sn, sender);
@@ -51,6 +50,6 @@ public class UdpServerHandler extends SimpleChannelInboundHandler<DatagramPacket
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         // 避免因单条消息异常影响 channel
-        cause.printStackTrace();
+        log.error("udp报错",cause);
     }
 }

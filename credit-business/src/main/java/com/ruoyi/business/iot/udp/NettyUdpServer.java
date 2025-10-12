@@ -24,6 +24,7 @@ import io.netty.channel.socket.nio.NioDatagramChannel;
 import io.netty.channel.epoll.EpollDatagramChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
+import io.netty.util.CharsetUtil;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -106,6 +107,22 @@ public class NettyUdpServer {
     }
 
 
+    /**
+     * 手动发送消息
+     * @param ip
+     * @param port
+     * @param dataBytes
+     */
+    public void sendMessage(String ip, int port,String deviceSn, byte[] dataBytes) {
+        InetSocketAddress target = new InetSocketAddress(ip, port);
+//        ByteBuf buf = Unpooled.copiedBuffer(message, CharsetUtil.UTF_8);
+        ByteBuf byteBuf = Unpooled.wrappedBuffer(dataBytes);
+        DatagramPacket packet = new DatagramPacket(byteBuf, target);
+        log.info("udp下发deviceSn={}消息target={}",deviceSn, JSONObject.toJSONString(target));
+        channel.writeAndFlush(packet);
+    }
+
+
 
     public void sendUdpMsg(String deviceSn, byte[] dataBytes){
         InetSocketAddress target = DeviceSessionManager.getDeviceAddress(deviceSn);
@@ -117,7 +134,7 @@ public class NettyUdpServer {
             log.error("UDP channel未就绪，无法下发");
             return;
         }
-        log.info("udp下发消息target={}", JSONObject.toJSONString(target));
+        log.info("udp下发deviceSn={}消息target={}",deviceSn, JSONObject.toJSONString(target));
         ByteBuf byteBuf = Unpooled.wrappedBuffer(dataBytes);
         channel.writeAndFlush(new DatagramPacket(byteBuf, target));
     }

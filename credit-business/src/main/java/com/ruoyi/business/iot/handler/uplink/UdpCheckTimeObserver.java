@@ -32,7 +32,7 @@ public class UdpCheckTimeObserver extends AbstractUplinkMsgObserver{
 
         String deviceSn = uplinkDataVO.getUdpCmd08DataVO().getDeviceSn();
         LocalDateTime latestPushTime = timeMap.get(deviceSn);
-        if(Objects.nonNull(latestPushTime)&& latestPushTime.plusHours(1).compareTo(LocalDateTime.now()) > 0){
+        if(Objects.nonNull(latestPushTime)&& latestPushTime.plusHours(3).compareTo(LocalDateTime.now()) > 0){
             return;
         }
         log.info("开始准备下发时间校验deviceSn={}",deviceSn);

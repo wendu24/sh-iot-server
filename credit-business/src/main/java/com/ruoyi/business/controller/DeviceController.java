@@ -89,6 +89,7 @@ public class DeviceController {
 
     @RequestMapping("/refresh")
     public AjaxResult refresh(@RequestBody RefreshDeviceVO refreshDeviceVO){
+        log.info("请求刷新数据refreshDeviceVO={}",JSONObject.toJSONString(refreshDeviceVO));
         deviceService.refreshData(refreshDeviceVO);
         return AjaxResult.success();
     }
