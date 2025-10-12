@@ -50,30 +50,30 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, DeviceDO> imple
 
 
     @Override
-    public Page<DeviceDO> list(DeviceVO deviceVO){
+    public Page<DeviceDO> list(DeviceVO deviceVO) {
 
         LambdaQueryWrapper<DeviceDO> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(StringUtils.isNotEmpty(deviceVO.getDeviceSn()),DeviceDO::getDeviceSn,deviceVO.getDeviceSn());
-        queryWrapper.eq(StringUtils.isNotEmpty(deviceVO.getDtuSn()),DeviceDO::getDtuSn,deviceVO.getDtuSn());
-        queryWrapper.eq(Objects.nonNull(deviceVO.getDeviceType()),DeviceDO::getDeviceType,deviceVO.getDeviceType());
-        queryWrapper.eq(DeviceDO::getDeleteFlag,DeleteEnum.NORMAL.getCode());
-        queryWrapper.like(StringUtils.isNotEmpty(deviceVO.getCommunityName()),DeviceDO::getCommunityName,deviceVO.getCommunityName());
+        queryWrapper.eq(StringUtils.isNotEmpty(deviceVO.getDeviceSn()), DeviceDO::getDeviceSn, deviceVO.getDeviceSn());
+        queryWrapper.eq(StringUtils.isNotEmpty(deviceVO.getDtuSn()), DeviceDO::getDtuSn, deviceVO.getDtuSn());
+        queryWrapper.eq(Objects.nonNull(deviceVO.getDeviceType()), DeviceDO::getDeviceType, deviceVO.getDeviceType());
+        queryWrapper.eq(DeviceDO::getDeleteFlag, DeleteEnum.NORMAL.getCode());
+        queryWrapper.like(StringUtils.isNotEmpty(deviceVO.getCommunityName()), DeviceDO::getCommunityName, deviceVO.getCommunityName());
         queryWrapper.orderByDesc(DeviceDO::getId);
         Page<DeviceDO> pageParam = new Page<>(deviceVO.getPageNum(), deviceVO.getPageSize());
-        return page(pageParam,queryWrapper);
+        return page(pageParam, queryWrapper);
     }
 
 
     @Override
-    public void add(DeviceVO deviceVO){
+    public void add(DeviceVO deviceVO) {
         LambdaQueryWrapper<DeviceDO> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(DeviceDO::getDeviceSn,deviceVO.getDeviceSn());
-        queryWrapper.eq(DeviceDO::getDeleteFlag,DeleteEnum.NORMAL.getCode());
+        queryWrapper.eq(DeviceDO::getDeviceSn, deviceVO.getDeviceSn());
+        queryWrapper.eq(DeviceDO::getDeleteFlag, DeleteEnum.NORMAL.getCode());
         DeviceDO dbData = getOne(queryWrapper);
-        if(Objects.nonNull(dbData))
+        if (Objects.nonNull(dbData))
             throw new ServiceException("sn 已存在");
         DeviceDO newData = new DeviceDO();
-        BeanUtil.copyProperties(deviceVO,newData);
+        BeanUtil.copyProperties(deviceVO, newData);
         newData.setCreateTime(LocalDateTime.now());
         newData.setUpdateTime(LocalDateTime.now());
         save(newData);
@@ -81,30 +81,30 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, DeviceDO> imple
         /**
          * 刷新设备数据
          */
-        refreshData(deviceVO);
+        refreshData(deviceVO, true);
     }
 
 
     @Override
-    public void refreshData(RefreshDeviceVO refreshDeviceVO){
+    public void refreshData(RefreshDeviceVO refreshDeviceVO, boolean usingCache) {
         findByDeviceSn2(refreshDeviceVO.getDeviceSnList()).forEach(deviceDO -> {
-            log.info("开始刷新设备的数据sn{}",deviceDO.getDeviceSn());
+            log.info("开始刷新设备的数据sn{}", deviceDO.getDeviceSn());
             DeviceVO deviceVO = DeviceVO.builder().build();
-            BeanUtil.copyProperties(deviceDO,deviceVO);
-            refreshData(deviceVO);
+            BeanUtil.copyProperties(deviceDO, deviceVO);
+            refreshData(deviceVO, usingCache);
         });
 
     }
 
 
-    private void refreshData(DeviceVO deviceVO) {
+    private void refreshData(DeviceVO deviceVO, boolean usingCache) {
         List<CommonDownDataVO> commonDownDataVOS = DownCmdEnum.autoFreshCommands()
                 .stream()
                 .map(cmdEnum -> CommonDownDataVO.builder()
-                    .deviceSn(deviceVO.getDeviceSn())
-                    .readWriteFlag(ReadWriteEnum.READ.getCode())
-                    .cmdCode(cmdEnum.getCode())
-                    .build())
+                        .deviceSn(deviceVO.getDeviceSn())
+                        .readWriteFlag(ReadWriteEnum.READ.getCode())
+                        .cmdCode(cmdEnum.getCode())
+                        .build())
                 .collect(Collectors.toList());
 
         /**
@@ -113,13 +113,17 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, DeviceDO> imple
         commonDownDataVOS.forEach(commonDownDataVO -> {
             DtuDownDataVO dtuDownDataVO = DtuDownDataVO.builder().dataVOList(Arrays.asList(commonDownDataVO)).build();
             try {
-                if(deviceVO.getDeviceType().equals(DeviceTypeEnum.DEV_TEMPERATURE.getCode())){
-                    udpService.sendCommand2cache(deviceVO.getDeviceSn(), dtuDownDataVO);
-                }else {
+                if (deviceVO.getDeviceType().equals(DeviceTypeEnum.DEV_TEMPERATURE.getCode())) {
+                    if (usingCache) {
+                        udpService.sendCommand2cache(deviceVO.getDeviceSn(), dtuDownDataVO);
+                    } else {
+                        udpService.sendCommand(deviceVO.getDeviceSn(), dtuDownDataVO);
+                    }
+                } else {
                     mqttService.publish(deviceVO.getDtuSn(), dtuDownDataVO);
                 }
             } catch (Exception e) {
-                log.error("新增设备时,刷新数据出错sn={}", deviceVO.getDeviceSn(),e);
+                log.error("新增设备时,刷新数据出错sn={}", deviceVO.getDeviceSn(), e);
             }
 
         });
@@ -127,17 +131,18 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, DeviceDO> imple
 
 
     @Override
-    public void update( DeviceVO deviceVO) {
+    public void update(DeviceVO deviceVO) {
         DeviceDO updateData = new DeviceDO();
-        BeanUtil.copyProperties(deviceVO,updateData);
+        BeanUtil.copyProperties(deviceVO, updateData);
         updateData.setUpdateTime(LocalDateTime.now());
         updateById(updateData);
     }
-        /**
-         * 下发命令读取设备参数
-         */
+
+    /**
+     * 下发命令读取设备参数
+     */
     @Override
-    public void publishMsg(List<CommonDownDataVO> commonDownDataVOS){
+    public void publishMsg(List<CommonDownDataVO> commonDownDataVOS, boolean usingCache) {
 
 
         List<String> deviceSnList = commonDownDataVOS.stream().map(CommonDownDataVO::getDeviceSn).distinct().collect(Collectors.toList());
@@ -152,13 +157,13 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, DeviceDO> imple
         /**
          * 发布mqtt消息
          */
-        dtuMap.forEach((sn,deviceDO)->{
+        dtuMap.forEach((sn, deviceDO) -> {
             CommonDownDataVO commonDownDataVO = downDataVOMap.get(sn);
 
             try {
-                mqttService.publish(deviceDO.getDtuSn(),DtuDownDataVO.builder().dataVOList(Arrays.asList(commonDownDataVO)).build());
+                mqttService.publish(deviceDO.getDtuSn(), DtuDownDataVO.builder().dataVOList(Arrays.asList(commonDownDataVO)).build());
             } catch (Exception e) {
-                log.error("MQTT消息发布出错啦commonDownDataVO={}", JSONObject.toJSONString(commonDownDataVO),e);
+                log.error("MQTT消息发布出错啦commonDownDataVO={}", JSONObject.toJSONString(commonDownDataVO), e);
             }
         });
 
@@ -169,14 +174,17 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, DeviceDO> imple
                 .filter(deviceDO -> StringUtils.isEmpty(deviceDO.getDtuSn()))
                 .collect(Collectors.toMap(DeviceDO::getDeviceSn, Function.identity(), (t1, t2) -> t1));
 
-        udpMap.forEach((sn,deviceDO)->{
+        udpMap.forEach((sn, deviceDO) -> {
             CommonDownDataVO commonDownDataVO = downDataVOMap.get(sn);
 
             try {
-                udpService.sendCommand2cache(sn,DtuDownDataVO.builder().dataVOList(Arrays.asList(commonDownDataVO)).build());
-                udpService.sendCommand(sn,DtuDownDataVO.builder().dataVOList(Arrays.asList(commonDownDataVO)).build());
+                if(usingCache){
+                    udpService.sendCommand2cache(sn, DtuDownDataVO.builder().dataVOList(Arrays.asList(commonDownDataVO)).build());
+                }else{
+                    udpService.sendCommand(sn, DtuDownDataVO.builder().dataVOList(Arrays.asList(commonDownDataVO)).build());
+                }
             } catch (Exception e) {
-                log.error("UDP消息发布出错啦commonDownDataVO={}", JSONObject.toJSONString(commonDownDataVO),e);
+                log.error("UDP消息发布出错啦commonDownDataVO={}", JSONObject.toJSONString(commonDownDataVO), e);
             }
         });
 
@@ -187,26 +195,26 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, DeviceDO> imple
     @Override
     public DeviceDO findByDeviceSn(String deviceSn) throws Exception {
         LambdaQueryWrapper<DeviceDO> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(DeviceDO::getDeviceSn,deviceSn);
+        queryWrapper.eq(DeviceDO::getDeviceSn, deviceSn);
         queryWrapper.eq(DeviceDO::getDeleteFlag, DeleteEnum.NORMAL.getCode());
         DeviceDO deviceDO = this.getOne(queryWrapper);
-        if(Objects.isNull(deviceDO))
+        if (Objects.isNull(deviceDO))
             throw new Exception("设备未找到" + deviceSn);
         return deviceDO;
     }
 
     @Override
-    public Map<String,DeviceDO> findByDeviceSn(List<String> deviceSns)  {
+    public Map<String, DeviceDO> findByDeviceSn(List<String> deviceSns) {
         LambdaQueryWrapper<DeviceDO> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.in(DeviceDO::getDeviceSn,deviceSns);
+        queryWrapper.in(DeviceDO::getDeviceSn, deviceSns);
         queryWrapper.eq(DeviceDO::getDeleteFlag, DeleteEnum.NORMAL.getCode());
-        return list(queryWrapper).stream().collect(Collectors.toMap(DeviceDO::getDeviceSn, Function.identity(),(t1,t2)->t1));
+        return list(queryWrapper).stream().collect(Collectors.toMap(DeviceDO::getDeviceSn, Function.identity(), (t1, t2) -> t1));
     }
 
     @Override
-    public List<DeviceDO> findByDeviceSn2(List<String> deviceSns)  {
+    public List<DeviceDO> findByDeviceSn2(List<String> deviceSns) {
         LambdaQueryWrapper<DeviceDO> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.in(DeviceDO::getDeviceSn,deviceSns);
+        queryWrapper.in(DeviceDO::getDeviceSn, deviceSns);
         queryWrapper.eq(DeviceDO::getDeleteFlag, DeleteEnum.NORMAL.getCode());
         return list(queryWrapper);
     }

@@ -82,15 +82,39 @@ public class DeviceController {
     @RequestMapping("/public-msg")
     public AjaxResult publicMsg(@RequestBody @Validated List<CommonDownDataVO> commonDownDataVOS){
         log.info("请求发布消息 commonDownDataVOS={}", JSONObject.toJSONString(commonDownDataVOS));
-        deviceService.publishMsg(commonDownDataVOS);
+        deviceService.publishMsg(commonDownDataVOS,false);
+        return AjaxResult.success();
+    }
+
+    /**
+     * 单条不用缓存
+     * @param refreshDeviceVO
+     * @return
+     */
+    @RequestMapping("/refresh")
+    public AjaxResult refresh(@RequestBody RefreshDeviceVO refreshDeviceVO){
+        log.info("请求刷新数据refreshDeviceVO={}",JSONObject.toJSONString(refreshDeviceVO));
+        deviceService.refreshData(refreshDeviceVO,false);
+        return AjaxResult.success();
+    }
+
+    /**
+     * 批量的用缓存
+     * @param commonDownDataVOS
+     * @return
+     */
+    @RequestMapping("/public-msg-cache")
+    public AjaxResult publicMsgCache(@RequestBody @Validated List<CommonDownDataVO> commonDownDataVOS){
+        log.info("请求发布消息 commonDownDataVOS={}", JSONObject.toJSONString(commonDownDataVOS));
+        deviceService.publishMsg(commonDownDataVOS,true);
         return AjaxResult.success();
     }
 
 
-    @RequestMapping("/refresh")
-    public AjaxResult refresh(@RequestBody RefreshDeviceVO refreshDeviceVO){
+    @RequestMapping("/refresh-cache")
+    public AjaxResult refreshCache(@RequestBody RefreshDeviceVO refreshDeviceVO){
         log.info("请求刷新数据refreshDeviceVO={}",JSONObject.toJSONString(refreshDeviceVO));
-        deviceService.refreshData(refreshDeviceVO);
+        deviceService.refreshData(refreshDeviceVO,true);
         return AjaxResult.success();
     }
 

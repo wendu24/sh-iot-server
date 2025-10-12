@@ -20,9 +20,9 @@ public interface DeviceService extends IService<DeviceDO> {
 
     public void add(DeviceVO deviceVO);
 
-    public void refreshData(RefreshDeviceVO refreshDeviceVO);
+    public void refreshData(RefreshDeviceVO refreshDeviceVO, boolean usingCache);
 
-    public void publishMsg(List<CommonDownDataVO> commonDownDataVOS);
+    public void publishMsg(List<CommonDownDataVO> commonDownDataVOS, boolean usingCache);
 
     public DeviceDO findByDeviceSn(String deviceSn) throws Exception ;
 
