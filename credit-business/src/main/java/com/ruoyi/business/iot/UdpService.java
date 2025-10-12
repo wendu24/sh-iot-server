@@ -69,6 +69,7 @@ public class UdpService {
      * @throws Exception
      */
     public void sendCommand2cache(String sn, DtuDownDataVO dtuDownDataVO) {
+        log.info("命令加入udp缓存={}",JSONObject.toJSONString(dtuDownDataVO));
         List<DtuDownDataVO> list = dataCache.computeIfAbsent(sn, k -> new ArrayList<>());
         list.add(dtuDownDataVO); // 直接操作返回的列表
     }
@@ -112,7 +113,9 @@ public class UdpService {
             return;
         dtuDownDataVOS.forEach(dtuDownDataVO -> {
             try {
+                log.info("sn={}准备下发缓存的udp数据 dtuDownDataVO={}",sn,JSONObject.toJSONString(dtuDownDataVO));
                 sendCommand(sn, dtuDownDataVO);
+                Thread.sleep(2000);
             } catch (Exception e) {
                 log.error("构建下发数据出错啦dtuDownDataVO={}", JSONObject.toJSONString(dtuDownDataVO), e);
             }

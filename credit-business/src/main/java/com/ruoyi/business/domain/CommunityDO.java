@@ -20,6 +20,9 @@ public class CommunityDO {
      */
     private String name;
 
+
+    private String code;
+
     /**
      * 地址
      */

@@ -106,17 +106,23 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, DeviceDO> imple
                     .cmdCode(cmdEnum.getCode())
                     .build())
                 .collect(Collectors.toList());
-        DtuDownDataVO dtuDownDataVO = DtuDownDataVO.builder().dataVOList(commonDownDataVOS).build();
 
-        try {
-            if(deviceVO.getDeviceType().equals(DeviceTypeEnum.DEV_TEMPERATURE.getCode())){
-                udpService.sendCommand2cache(deviceVO.getDeviceSn(), dtuDownDataVO);
-            }else {
-                mqttService.publish(deviceVO.getDtuSn(), dtuDownDataVO);
+        /**
+         * 单条命令下发,避免设备不支持批量
+         */
+        commonDownDataVOS.forEach(commonDownDataVO -> {
+            DtuDownDataVO dtuDownDataVO = DtuDownDataVO.builder().dataVOList(Arrays.asList(commonDownDataVO)).build();
+            try {
+                if(deviceVO.getDeviceType().equals(DeviceTypeEnum.DEV_TEMPERATURE.getCode())){
+                    udpService.sendCommand2cache(deviceVO.getDeviceSn(), dtuDownDataVO);
+                }else {
+                    mqttService.publish(deviceVO.getDtuSn(), dtuDownDataVO);
+                }
+            } catch (Exception e) {
+                log.error("新增设备时,刷新数据出错sn={}", deviceVO.getDeviceSn(),e);
             }
-        } catch (Exception e) {
-            log.error("新增设备时,刷新数据出错sn={}", deviceVO.getDeviceSn(),e);
-        }
+
+        });
     }
 
 

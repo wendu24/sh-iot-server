@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
+import java.util.Random;
 
 @Slf4j
 @Service
@@ -43,6 +44,7 @@ public class CommunityServiceImpl extends ServiceImpl<CommunityMapper, Community
             throw new ServiceException("重复的小区名称");
         CommunityDO newData = new CommunityDO();
         BeanUtil.copyProperties(communityVO,newData);
+        newData.setCode("TJS-" + System.currentTimeMillis());
         newData.setCreateTime(LocalDateTime.now());
         newData.setUpdateTime(LocalDateTime.now());
         save(newData);

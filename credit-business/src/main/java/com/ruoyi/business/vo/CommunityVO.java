@@ -15,6 +15,8 @@ public class CommunityVO {
      */
     @NotNull(groups = { UpdateGroup.class}, message = "id不能为空")
     private Long id;
+
+    private String code;
     /**
      * 名称
      */
