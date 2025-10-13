@@ -7,7 +7,6 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ruoyi.business.constant.DeleteEnum;
 import com.ruoyi.business.constant.DeviceTypeEnum;
-import com.ruoyi.business.domain.BizUserDO;
 import com.ruoyi.business.domain.DeviceDO;
 import com.ruoyi.business.iot.MqttService;
 import com.ruoyi.business.iot.UdpService;
@@ -15,19 +14,15 @@ import com.ruoyi.business.iot.common.constant.DownCmdEnum;
 import com.ruoyi.business.iot.common.constant.ReadWriteEnum;
 import com.ruoyi.business.iot.common.vo.down.CommonDownDataVO;
 import com.ruoyi.business.iot.common.vo.down.DtuDownDataVO;
-import com.ruoyi.business.mapper.BizUserMapper;
 import com.ruoyi.business.mapper.DeviceMapper;
-import com.ruoyi.business.service.BizUserService;
 import com.ruoyi.business.service.DeviceService;
 import com.ruoyi.business.vo.DeviceVO;
 import com.ruoyi.business.vo.RefreshDeviceVO;
-import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.exception.ServiceException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -117,7 +112,7 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, DeviceDO> imple
                     if (usingCache) {
                         udpService.sendCommand2cache(deviceVO.getDeviceSn(), dtuDownDataVO);
                     } else {
-                        udpService.sendCommand(deviceVO.getDeviceSn(), dtuDownDataVO);
+                        udpService.sendCommandAsync(deviceVO.getDeviceSn(), dtuDownDataVO);
                     }
                 } else {
                     mqttService.publish(deviceVO.getDtuSn(), dtuDownDataVO);
@@ -181,7 +176,7 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, DeviceDO> imple
                 if(usingCache){
                     udpService.sendCommand2cache(sn, DtuDownDataVO.builder().dataVOList(Arrays.asList(commonDownDataVO)).build());
                 }else{
-                    udpService.sendCommand(sn, DtuDownDataVO.builder().dataVOList(Arrays.asList(commonDownDataVO)).build());
+                    udpService.sendCommandAsync(sn, DtuDownDataVO.builder().dataVOList(Arrays.asList(commonDownDataVO)).build());
                 }
             } catch (Exception e) {
                 log.error("UDP消息发布出错啦commonDownDataVO={}", JSONObject.toJSONString(commonDownDataVO), e);

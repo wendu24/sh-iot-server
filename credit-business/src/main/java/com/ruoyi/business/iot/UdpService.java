@@ -12,15 +12,11 @@ import com.ruoyi.business.iot.packager.udp.UdpDataPackager;
 import com.ruoyi.business.iot.parser.UdpDataParseContext;
 import com.ruoyi.business.iot.udp.NettyUdpServer;
 import com.ruoyi.business.vo.UdpManualDownVO;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
-import io.netty.channel.socket.DatagramPacket;
-import io.netty.util.CharsetUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
-import java.net.InetSocketAddress;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -87,7 +83,8 @@ public class UdpService {
      * @param dtuDownDataVO
      * @throws Exception
      */
-    public void sendCommand(String sn, DtuDownDataVO dtuDownDataVO) {
+    @Async
+    public void sendCommandAsync(String sn, DtuDownDataVO dtuDownDataVO) {
         dtuDownDataVO.getDataVOList().forEach(commonDownDataVO -> commonDownDataVO.setMid(midGenerator.generatorMid(commonDownDataVO.getDeviceSn())));
         dtuDownDataVO.setPublishTime(LocalDateTime.now());
         try {
@@ -122,7 +119,7 @@ public class UdpService {
         dtuDownDataVOS.forEach(dtuDownDataVO -> {
             try {
                 log.info("sn={}准备下发缓存的udp数据 dtuDownDataVO={}", sn, JSONObject.toJSONString(dtuDownDataVO));
-                sendCommand(sn, dtuDownDataVO);
+                sendCommandAsync(sn, dtuDownDataVO);
             } catch (Exception e) {
                 log.error("构建下发数据出错啦dtuDownDataVO={}", JSONObject.toJSONString(dtuDownDataVO), e);
             }

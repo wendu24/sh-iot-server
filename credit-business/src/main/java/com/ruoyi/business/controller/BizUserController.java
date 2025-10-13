@@ -2,7 +2,6 @@ package com.ruoyi.business.controller;
 
 import com.ruoyi.business.iot.MqttService;
 import com.ruoyi.business.iot.UdpService;
-import com.ruoyi.business.iot.udp.NettyUdpServer;
 import com.ruoyi.business.iot.common.vo.down.DtuDownDataVO;
 import com.ruoyi.business.job.TableCopyJob;
 import com.ruoyi.business.service.BizUserService;
@@ -74,7 +73,7 @@ public class BizUserController {
     public AjaxResult publishMsgUdp(@RequestBody DtuDownDataVO dtuDownDataVO){
         String topicDeviceSn = "102110042509080001";
         try {
-            udpService.sendCommand(topicDeviceSn, dtuDownDataVO);
+            udpService.sendCommandAsync(topicDeviceSn, dtuDownDataVO);
             return AjaxResult.success("消息发布成功");
         } catch (Exception e) {
             log.error("发布消息出错啦,",e);
