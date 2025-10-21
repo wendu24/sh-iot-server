@@ -26,6 +26,17 @@ public enum DownCmdEnum {
     DOWNLINK_FF((byte)0xFF, Date.class,4,"下发时间戳"),
     DOWNLINK_UDP_RESPONSE((byte)0x08, Date.class,4,"下发时间戳"),
 
+    /**
+     * udp 1.1版本命令
+     */
+    DOWNLINK_UDP_E0((byte)0xE0, Byte.class,1,"下发温度补偿模式"),
+    DOWNLINK_UDP_E1((byte)0xE1, Short.class,2,"补偿设定时间1"),
+    DOWNLINK_UDP_E2((byte)0xE2, Short.class,2,"补偿设定时间2"),
+    DOWNLINK_UDP_E3((byte)0xE3, Short.class,2,"补偿设定时间3"),
+
+    DOWNLINK_UDP_E4((byte)0xE4, Short.class,2,"补偿设定功率1"),
+    DOWNLINK_UDP_E5((byte)0xE5, Byte.class,1,"供热模式有效性"),
+
 
 
     ;
