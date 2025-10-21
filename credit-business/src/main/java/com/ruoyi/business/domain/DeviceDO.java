@@ -106,4 +106,38 @@ public class DeviceDO {
     private BigDecimal roomTemperature;
 
 
+
+
+
+    /**
+     * 温度补偿模式 (00=无补偿, 01=超过【设定功率1】保持上传无负载时温度, 02=超过【设定功率1】启用温度升降的功率补偿)
+     */
+    private Integer temperatureCompensationMode;
+
+    /**
+     * 补偿设定时间1 (单位: 秒)
+     */
+    private Integer compensationTime1;
+
+    /**
+     * 补偿设定时间2 (单位: 秒)
+     */
+    private Integer compensationTime2;
+
+    /**
+     * 补偿设定时间3 (单位: 秒)
+     */
+    private Integer compensationTime3;
+
+    /**
+     * 补偿设定功率1 (单位: 瓦特, 精度: 小数点后1位)
+     */
+    private BigDecimal compensationWatt1; // 使用 BigDecimal 处理 decimal 类型
+
+    /**
+     * 供热模式有效性标志 (0=无效, 1=有效)
+     */
+    private Integer modeValidFlag;
+
+
 }

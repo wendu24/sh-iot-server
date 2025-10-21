@@ -103,8 +103,34 @@ public class DeviceUpdateObserver extends AbstractUplinkMsgObserver {
                 break;
             case 51:
             case 52:
+
             case 63:
                 break;
+
+            case -32:
+                update.setTemperatureCompensationMode(Integer.parseInt(data));
+                break;
+
+            case -31:
+                update.setCompensationTime1(Integer.parseInt(data));
+                break;
+
+            case -30:
+                update.setCompensationTime2(Integer.parseInt(data));
+                break;
+
+            case -29:
+                update.setCompensationTime3(Integer.parseInt(data));
+                break;
+
+            case -28:
+                update.setCompensationWatt1(new BigDecimal(data));
+                break;
+
+            case -27:
+                update.setModeValidFlag(Integer.parseInt(data));
+                break;
+
             default:
                 log.error("未知的cmd={}", cmdCode);
                 break;
