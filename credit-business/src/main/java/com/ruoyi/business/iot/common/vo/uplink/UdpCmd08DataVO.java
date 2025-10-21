@@ -34,5 +34,7 @@ public class UdpCmd08DataVO {
 
     private String iccId;
 
+    private byte dataNum;
+
     private List<RoomDataVO> roomDataVOList;
 }

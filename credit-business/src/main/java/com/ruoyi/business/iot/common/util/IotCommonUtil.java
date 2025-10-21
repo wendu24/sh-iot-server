@@ -18,6 +18,16 @@ public class IotCommonUtil {
         return sb.toString();
     }
 
+
+    /**
+     * 将单个 byte 转为两位十六进制字符串
+     * @param b 要转换的字节
+     * @return 十六进制字符串（大写）
+     */
+    public static String byteToHex(byte b) {
+        return String.format("%02X", b);
+    }
+
     public static byte[] hexToBytes(String hex) {
         ByteBuffer buffer = ByteBuffer.allocate(hex.length() / 2);
         for (int i = 0; i < hex.length(); i += 2) {

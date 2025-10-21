@@ -64,6 +64,8 @@ public class UdpHistoryDataObserver extends AbstractUplinkMsgObserver{
             udpDeviceRecentDataDO.setCollectTime(roomDataVO.getCollectTime());
             udpDeviceRecentDataDO.setRoomHumidity(roomDataVO.getRoomHumidity());
             udpDeviceRecentDataDO.setRoomTemperature(roomDataVO.getRoomTemperature());
+            udpDeviceRecentDataDO.setWatt(roomDataVO.getWatt());
+
             saveList.add(udpDeviceRecentDataDO);
             log.info("收到udp设备上报数据,开始准备保存到历史数据表={}",udpDeviceRecentDataDO.getDeviceSn());
         });

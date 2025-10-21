@@ -7,6 +7,7 @@ import com.ruoyi.business.iot.common.vo.uplink.RoomDataVO;
 import com.ruoyi.business.iot.common.vo.uplink.UdpCmd08DataVO;
 import com.ruoyi.business.util.DateUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 
 import java.math.BigDecimal;
 import java.nio.ByteBuffer;
@@ -18,7 +19,20 @@ public class Cmd08DataParser {
 
 
     public static UdpCmd08DataVO parse(String deviceSn, ByteBuffer buffer){
+        /**
+         * 解析公共数据
+         */
+        UdpCmd08DataVO udpCmd08DataVO = parseCommonData(deviceSn, buffer);
+        /**
+         * 解析室温数据
+         */
+        List<RoomDataVO> roomDataVOList = parseRoomDates(buffer, udpCmd08DataVO.getDataNum());
+        udpCmd08DataVO.setRoomDataVOList(roomDataVOList);
+        log.info("解析出来的数据{}", JSONObject.toJSONString(udpCmd08DataVO));
+        return udpCmd08DataVO;
+    }
 
+    public static UdpCmd08DataVO parseCommonData(String deviceSn, ByteBuffer buffer) {
         byte deviceVersion = buffer.get();
         byte warning = buffer.get();
         byte batteryLevel = buffer.get();
@@ -37,8 +51,12 @@ public class Cmd08DataParser {
                 .reportPeriod(reportPeriod)
                 .signalStrength(IotCommonUtil.byte2int(signalStrength))
                 .iccId(IotCommonUtil.bytesToHex(ICCID))
+                .dataNum(dataNum)
                 .build();
+        return udpCmd08DataVO;
+    }
 
+    private static @NotNull List<RoomDataVO> parseRoomDates(ByteBuffer buffer, byte dataNum) {
         List<RoomDataVO> roomDataVOList = new ArrayList<>(dataNum);
         for (int i = 0; i < dataNum; i++) {
             int collectTime = buffer.getInt();
@@ -53,9 +71,7 @@ public class Cmd08DataParser {
             roomDataVOList.add(roomDataVO);
 
         }
-        udpCmd08DataVO.setRoomDataVOList(roomDataVOList);
-        log.info("解析出来的数据{}", JSONObject.toJSONString(udpCmd08DataVO));
-        return udpCmd08DataVO;
+        return roomDataVOList;
     }
 
 

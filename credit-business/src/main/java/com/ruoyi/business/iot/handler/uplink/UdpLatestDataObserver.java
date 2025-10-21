@@ -71,6 +71,7 @@ public class UdpLatestDataObserver extends AbstractUplinkMsgObserver{
         udpDeviceLatestDataDO.setCollectTime(roomDataVO.getCollectTime());
         udpDeviceLatestDataDO.setRoomHumidity(roomDataVO.getRoomHumidity());
         udpDeviceLatestDataDO.setRoomTemperature(roomDataVO.getRoomTemperature());
+        udpDeviceLatestDataDO.setWatt(roomDataVO.getWatt());
         if(Objects.isNull(dbData)){
             udpDeviceLatestDataService.save(udpDeviceLatestDataDO);
             log.info("收到udp上报数据,保存到最新数据成功={}", JSONObject.toJSONString(udpDeviceLatestDataDO));

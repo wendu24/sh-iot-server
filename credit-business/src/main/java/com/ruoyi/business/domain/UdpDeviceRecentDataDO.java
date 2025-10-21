@@ -59,6 +59,10 @@ public class UdpDeviceRecentDataDO {
 
     // 室内湿度
     private BigDecimal roomHumidity ;
+    /**
+     * 功率
+     */
+    private BigDecimal watt ;
 
     private LocalDateTime createTime;
 

@@ -31,6 +31,7 @@ public class UdpDataParseContext {
        return IotCommonUtil.bytesToHex(snByte);
     }
 
+
     /**
      * 解析数据
      * @param deviceSn
@@ -40,6 +41,7 @@ public class UdpDataParseContext {
     public static UplinkDataVO parseData(String deviceSn, String hexString){
 
         byte[] rawData = IotCommonUtil.hexToBytes(hexString);
+        String version = parseVersion(hexString);
         String aesKey = AesUtil.getAesKey(deviceSn);
         try {
             /**
@@ -53,7 +55,7 @@ public class UdpDataParseContext {
             /**
              * 第三步:解析CMD数据
              */
-            return parseData(buffer);
+            return parseData(buffer,version);
         } catch (Exception e) {
             log.error("消息解析出错啦hexString={}",hexString,e);
             return null;
@@ -61,7 +63,7 @@ public class UdpDataParseContext {
     }
 
 
-    private static UplinkDataVO parseData(ByteBuffer buffer) {
+    private static UplinkDataVO parseData(ByteBuffer buffer,String version) {
         byte snLength = buffer.get();
         byte[] snByte = new byte[snLength];
         buffer.get(snByte);
@@ -71,8 +73,7 @@ public class UdpDataParseContext {
         UplinkDataVO uplinkDataVO = UplinkDataVO.builder()
                 .build();
         if(UplinkCmdEnum.UPLINK_08.getCode().equals(cmdCode)){
-            UdpCmd08DataVO udpCmd08DataVO = Cmd08DataParser.parse(deviceSn, buffer);
-            uplinkDataVO.setUdpCmd08DataVO(udpCmd08DataVO);
+            parseCmd08(buffer, deviceSn, uplinkDataVO,version);
         }else {
             CmdFFDataVO cmdFFDataVO = CmdFFDataParser.parse(buffer, cmdCode);
             cmdFFDataVO.setDeviceSn(deviceSn);
@@ -80,5 +81,29 @@ public class UdpDataParseContext {
         }
         return uplinkDataVO;
     }
+
+    private static void parseCmd08(ByteBuffer buffer, String deviceSn, UplinkDataVO uplinkDataVO,String version) {
+        if("10".equalsIgnoreCase(version)){
+            UdpCmd08DataVO udpCmd08DataVO = Cmd08DataParser.parse(deviceSn, buffer);
+            uplinkDataVO.setUdpCmd08DataVO(udpCmd08DataVO);
+        }else {
+            UdpCmd08DataVO udpCmd08DataVO = com.ruoyi.business.iot.parser.udp.v11.Cmd08DataParser.parse(deviceSn, buffer);
+            uplinkDataVO.setUdpCmd08DataVO(udpCmd08DataVO);
+        }
+    }
+
+
+
+    /**
+     * 解析SN
+     * @param hexString
+     * @return
+     */
+    public static String parseVersion( String hexString){
+        byte[] rawData = IotCommonUtil.hexToBytes(hexString);
+        byte rawDatum = rawData[4];
+        return IotCommonUtil.byteToHex(rawDatum);
+    }
+
 
 }
