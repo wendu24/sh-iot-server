@@ -56,7 +56,7 @@ public class Cmd08DataParser {
         return udpCmd08DataVO;
     }
 
-    private static @NotNull List<RoomDataVO> parseRoomDates(ByteBuffer buffer, byte dataNum) {
+    private static  List<RoomDataVO> parseRoomDates(ByteBuffer buffer, byte dataNum) {
         List<RoomDataVO> roomDataVOList = new ArrayList<>(dataNum);
         for (int i = 0; i < dataNum; i++) {
             int collectTime = buffer.getInt();

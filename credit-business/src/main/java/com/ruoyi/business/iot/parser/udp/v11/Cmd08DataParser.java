@@ -48,7 +48,7 @@ public class Cmd08DataParser extends com.ruoyi.business.iot.parser.udp.Cmd08Data
                     .collectTime(DateUtil.timestampToLocalDateTime(collectTime * 1000L))
                     .roomHumidity(IotCommonUtil.short2bigdecimal(roomHumidity, BigDecimal.valueOf(100)))
                     .roomTemperature(IotCommonUtil.short2bigdecimal(roomTemperature,BigDecimal.valueOf(100)))
-                    .roomTemperature(IotCommonUtil.short2bigdecimal(watt,BigDecimal.valueOf(100)))
+                    .watt(IotCommonUtil.short2bigdecimal(watt,BigDecimal.valueOf(100)))
                     .build();
             roomDataVOList.add(roomDataVO);
 

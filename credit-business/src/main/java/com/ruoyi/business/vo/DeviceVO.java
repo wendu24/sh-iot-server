@@ -29,6 +29,11 @@ public class DeviceVO {
      */
     @NotBlank(groups = {CreateGroup.class, UpdateGroup.class},message = "SN不能为空")
     private String deviceSn;
+
+    /**
+     * 协议版本
+     */
+    private String version;
     /**
      * 设备位置
      */

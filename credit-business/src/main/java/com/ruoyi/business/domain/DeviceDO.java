@@ -20,6 +20,10 @@ public class DeviceDO {
      * 设备序列号
      */
     private String deviceSn;
+    /**
+     * 协议版本
+     */
+    private String version;
 
     private String position;
 

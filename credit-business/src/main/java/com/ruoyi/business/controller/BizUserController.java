@@ -47,9 +47,11 @@ public class BizUserController {
 
     @RequestMapping("/publish-msg")
     public AjaxResult publishMsg(@RequestBody DtuDownDataVO dtuDownDataVO){
-        String topicDeviceSn = "105110042509083201";
+//        String topicDeviceSn = "105110042509083201";
+        String deviceSn = dtuDownDataVO.getDataVOList().get(0).getDeviceSn();
+
         try {
-            mqttService.publish(topicDeviceSn, dtuDownDataVO);
+            mqttService.publish(deviceSn, dtuDownDataVO);
             return AjaxResult.success("消息发布成功");
         } catch (Exception e) {
             log.error("发布消息出错啦,",e);
@@ -59,9 +61,10 @@ public class BizUserController {
 
     @RequestMapping("/publish-msg-udp-cache")
     public AjaxResult publishMsgUdpCache(@RequestBody DtuDownDataVO dtuDownDataVO){
-        String topicDeviceSn = "102110042509080001";
+//        String topicDeviceSn = "102110042509080001";
+        String deviceSn = dtuDownDataVO.getDataVOList().get(0).getDeviceSn();
         try {
-            udpService.sendCommand2cache(topicDeviceSn, dtuDownDataVO);
+            udpService.sendCommand2cache(deviceSn, dtuDownDataVO);
             return AjaxResult.success("消息发布成功");
         } catch (Exception e) {
             log.error("发布消息出错啦,",e);
@@ -71,9 +74,10 @@ public class BizUserController {
 
     @RequestMapping("/publish-msg-udp")
     public AjaxResult publishMsgUdp(@RequestBody DtuDownDataVO dtuDownDataVO){
-        String topicDeviceSn = "102110042509080001";
+//        String topicDeviceSn = "102110042509080001";
+        String deviceSn = dtuDownDataVO.getDataVOList().get(0).getDeviceSn();
         try {
-            udpService.sendCommandAsync(topicDeviceSn, dtuDownDataVO);
+            udpService.sendCommandAsync(deviceSn, dtuDownDataVO);
             return AjaxResult.success("消息发布成功");
         } catch (Exception e) {
             log.error("发布消息出错啦,",e);

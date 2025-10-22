@@ -4,9 +4,11 @@ import com.ruoyi.business.iot.common.constant.DownCmdEnum;
 import com.ruoyi.business.iot.common.constant.ReadWriteEnum;
 import com.ruoyi.business.iot.common.util.IotCommonUtil;
 import com.ruoyi.business.iot.common.vo.uplink.CmdFFDataVO;
+import lombok.extern.slf4j.Slf4j;
 
 import java.nio.ByteBuffer;
 
+@Slf4j
 public class CmdFFDataParser {
 
 
@@ -41,6 +43,10 @@ public class CmdFFDataParser {
             byte[] remainingData = new byte[remainingBytes];
             buffer.get(remainingData);
             cmdFFDataVO.setData(IotCommonUtil.paddedBytesToString(remainingData));
+        }else if(downCmdEnum.getDataClazz() == Byte.class){
+            cmdFFDataVO.setData(String.valueOf(buffer.get()));
+        }else {
+            log.info("解析设备回复消息时, 不支持的数据类型={}",downCmdEnum.getCode());
         }
     }
 
