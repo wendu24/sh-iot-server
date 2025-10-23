@@ -25,10 +25,13 @@ wx:
 # 日志配置
 logging:
   level:
-    org.springframework: debug
+    org.springframework: info
     com.github.binarywang.demo.wx.mp: DEBUG
     org.mybatis.spring.mapper: DEBUG
     com.baomidou.mybatisplus: DEBUG
+    #项目mapper目录
+    com.ruoyi.business.mapper: DEBUG
+
     me.chanjar.weixin: DEBUG
 
 # 数据源配置
@@ -39,7 +42,7 @@ spring:
     druid:
       # 主库数据源
       master:
-        url: jdbc:mysql://127.0.0.1:3306/sky-credit?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+        url: jdbc:mysql://121.43.179.245:3306/sh-iot?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
         username: root
         password: 24jx
       # 从库数据源
@@ -95,7 +98,7 @@ spring:
     # 端口，默认为6379
     port: 6379
     # 数据库索引
-    database: 0
+    database: 3
     # 密码
     password: redis4mac
     # 连接超时时间
@@ -112,11 +115,11 @@ spring:
         max-wait: -1ms
 mqtt:
   server:
-    host: tcp://your_mqtt_broker_address:1883
+    host: tcp://39.99.180.14:1883
   client:
-    id: spring-boot-client-id
-  username: your_username
-  password: your_password
+    id: mqttx_prod_ea47844 # mqttx_prod_ea47844  mqttx_dev_ea47844
+  username: root
+  password: root
 
 udp:
   port: 9990
