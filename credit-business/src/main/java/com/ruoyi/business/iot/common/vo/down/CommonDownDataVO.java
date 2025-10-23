@@ -14,6 +14,7 @@ public class CommonDownDataVO {
     @NotBlank(message = "SN不能为空")
     private String deviceSn;
 
+    @NotBlank(message = "version不能为空")
     private String version;
 
     /**

@@ -15,7 +15,9 @@ public class DtuDownDataVO implements IotUplinkMsg {
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime publishTime;
-
+    /**
+     * 只支持一条消息
+     */
     List<CommonDownDataVO> dataVOList;
 
     @Tolerate

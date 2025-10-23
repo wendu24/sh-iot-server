@@ -3,6 +3,8 @@ package com.ruoyi.business.controller;
 import com.alibaba.fastjson2.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ruoyi.business.domain.DeviceDO;
+import com.ruoyi.business.iot.MqttService;
+import com.ruoyi.business.iot.UdpService;
 import com.ruoyi.business.iot.common.vo.down.CommonDownDataVO;
 import com.ruoyi.business.service.DeviceService;
 import com.ruoyi.business.validate.CreateGroup;
@@ -27,10 +29,35 @@ public class DeviceController {
     @Autowired
     DeviceService deviceService;
 
+    @Autowired
+    MqttService mqttService;
+
+    @Autowired
+    UdpService udpService;
+
     @RequestMapping("/list")
     public Page<DeviceDO> list(@RequestBody DeviceVO deviceVO) {
         return deviceService.list(deviceVO);
     }
+
+
+
+    @RequestMapping("/mqtt/public-msg")
+    public AjaxResult publicMqttMsg(@RequestBody @Validated List<CommonDownDataVO> commonDownDataVOS){
+        log.info("收到下发MQTT消息 commonDownDataVOS={}",JSONObject.toJSONString(commonDownDataVOS));
+        deviceService.publishMqttMsg(commonDownDataVOS);
+        return AjaxResult.success("消息已下发");
+    }
+
+
+    @RequestMapping("/udp/public-msg")
+    public AjaxResult publicUdpMsg(@RequestBody @Validated List<CommonDownDataVO> commonDownDataVOS){
+        log.info("收到下发UDP消息 commonDownDataVOS={}",JSONObject.toJSONString(commonDownDataVOS));
+        deviceService.publishUdpMsg(commonDownDataVOS);
+        return AjaxResult.success("消息发布中,十分钟之后查看下发结果");
+    }
+
+
 
 
     /**
@@ -78,14 +105,6 @@ public class DeviceController {
         return AjaxResult.success();
     }
 
-
-    @RequestMapping("/public-msg")
-    public AjaxResult publicMsg(@RequestBody @Validated List<CommonDownDataVO> commonDownDataVOS){
-        log.info("请求发布消息 commonDownDataVOS={}", JSONObject.toJSONString(commonDownDataVOS));
-        deviceService.publishMsg(commonDownDataVOS,false);
-        return AjaxResult.success();
-    }
-
     /**
      * 单条不用缓存
      * @param refreshDeviceVO
@@ -94,29 +113,10 @@ public class DeviceController {
     @RequestMapping("/refresh")
     public AjaxResult refresh(@RequestBody RefreshDeviceVO refreshDeviceVO){
         log.info("请求刷新数据refreshDeviceVO={}",JSONObject.toJSONString(refreshDeviceVO));
-        deviceService.refreshData(refreshDeviceVO,false);
+        deviceService.refreshData(refreshDeviceVO);
         return AjaxResult.success();
     }
 
-    /**
-     * 批量的用缓存
-     * @param commonDownDataVOS
-     * @return
-     */
-    @RequestMapping("/public-msg-cache")
-    public AjaxResult publicMsgCache(@RequestBody @Validated List<CommonDownDataVO> commonDownDataVOS){
-        log.info("请求发布消息 commonDownDataVOS={}", JSONObject.toJSONString(commonDownDataVOS));
-        deviceService.publishMsg(commonDownDataVOS,true);
-        return AjaxResult.success();
-    }
-
-
-    @RequestMapping("/refresh-cache")
-    public AjaxResult refreshCache(@RequestBody RefreshDeviceVO refreshDeviceVO){
-        log.info("请求刷新数据refreshDeviceVO={}",JSONObject.toJSONString(refreshDeviceVO));
-        deviceService.refreshData(refreshDeviceVO,true);
-        return AjaxResult.success();
-    }
 
     @RequestMapping("/delete")
     public AjaxResult delete(@RequestBody DeviceVO deviceVO) {

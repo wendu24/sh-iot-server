@@ -18,6 +18,11 @@ public enum DeviceTypeEnum {
 
     ;
 
+
+    public static boolean udpDeviceType(Integer deviceType){
+        return DEV_TEMPERATURE.code.equals(deviceType);
+    }
+
     private Integer code;
 
     private String desc;

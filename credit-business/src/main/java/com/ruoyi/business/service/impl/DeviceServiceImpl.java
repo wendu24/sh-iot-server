@@ -12,12 +12,16 @@ import com.ruoyi.business.iot.MqttService;
 import com.ruoyi.business.iot.UdpService;
 import com.ruoyi.business.iot.common.constant.DownCmdEnum;
 import com.ruoyi.business.iot.common.constant.ReadWriteEnum;
+import com.ruoyi.business.iot.common.util.MidGenerator;
 import com.ruoyi.business.iot.common.vo.down.CommonDownDataVO;
 import com.ruoyi.business.iot.common.vo.down.DtuDownDataVO;
 import com.ruoyi.business.mapper.DeviceMapper;
 import com.ruoyi.business.service.DeviceService;
+import com.ruoyi.business.service.MsgSetReplyService;
+import com.ruoyi.business.util.RedisKeyUtil;
 import com.ruoyi.business.vo.DeviceVO;
 import com.ruoyi.business.vo.RefreshDeviceVO;
+import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.exception.ServiceException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -29,6 +33,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -42,6 +47,15 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, DeviceDO> imple
 
     @Autowired
     UdpService udpService;
+
+    @Autowired
+    RedisCache redisCache;
+
+    @Autowired
+    MidGenerator midGenerator;
+
+    @Autowired
+    MsgSetReplyService msgSetReplyService;
 
 
     @Override
@@ -76,52 +90,45 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, DeviceDO> imple
         /**
          * 刷新设备数据
          */
-        refreshData(deviceVO, true);
+        refreshData(deviceVO);
     }
 
 
     @Override
-    public void refreshData(RefreshDeviceVO refreshDeviceVO, boolean usingCache) {
+    public void refreshData(RefreshDeviceVO refreshDeviceVO) {
         findByDeviceSn2(refreshDeviceVO.getDeviceSnList()).forEach(deviceDO -> {
             log.info("开始刷新设备的数据sn{}", deviceDO.getDeviceSn());
             DeviceVO deviceVO = DeviceVO.builder().build();
             BeanUtil.copyProperties(deviceDO, deviceVO);
-            refreshData(deviceVO, usingCache);
+            refreshData(deviceVO);
         });
 
     }
 
 
-    private void refreshData(DeviceVO deviceVO, boolean usingCache) {
-        List<CommonDownDataVO> commonDownDataVOS = DownCmdEnum.autoFreshCommands()
-                .stream()
-                .map(cmdEnum -> CommonDownDataVO.builder()
-                        .deviceSn(deviceVO.getDeviceSn())
-                        .readWriteFlag(ReadWriteEnum.READ.getCode())
-                        .cmdCode(cmdEnum.getCode())
-                        .build())
-                .collect(Collectors.toList());
+    private void refreshData(DeviceVO deviceVO) {
+        if(StringUtils.isBlank(deviceVO.getDtuSn())){
+            List<CommonDownDataVO> commonDownDataVOS = DownCmdEnum.udpAutoFreshCommands()
+                    .stream()
+                    .map(cmdEnum -> CommonDownDataVO.builder()
+                            .deviceSn(deviceVO.getDeviceSn())
+                            .readWriteFlag(ReadWriteEnum.READ.getCode())
+                            .cmdCode(cmdEnum.getCode())
+                            .build())
+                    .collect(Collectors.toList());
 
-        /**
-         * 单条命令下发,避免设备不支持批量
-         */
-        commonDownDataVOS.forEach(commonDownDataVO -> {
-            DtuDownDataVO dtuDownDataVO = DtuDownDataVO.builder().dataVOList(Arrays.asList(commonDownDataVO)).build();
-            try {
-                if (deviceVO.getDeviceType().equals(DeviceTypeEnum.DEV_TEMPERATURE.getCode())) {
-                    if (usingCache) {
-                        udpService.sendCommand2cache(deviceVO.getDeviceSn(), dtuDownDataVO);
-                    } else {
-                        udpService.sendCommandAsync(deviceVO.getDeviceSn(), dtuDownDataVO);
-                    }
-                } else {
-                    mqttService.publish(deviceVO.getDtuSn(), dtuDownDataVO);
-                }
-            } catch (Exception e) {
-                log.error("新增设备时,刷新数据出错sn={}", deviceVO.getDeviceSn(), e);
-            }
-
-        });
+            publishUdpMsg(commonDownDataVOS);
+        }else{
+            List<CommonDownDataVO> commonDownDataVOS = DownCmdEnum.mqttAutoFreshCommands()
+                    .stream()
+                    .map(cmdEnum -> CommonDownDataVO.builder()
+                            .deviceSn(deviceVO.getDeviceSn())
+                            .readWriteFlag(ReadWriteEnum.READ.getCode())
+                            .cmdCode(cmdEnum.getCode())
+                            .build())
+                    .collect(Collectors.toList());
+            publishMqttMsg(commonDownDataVOS);
+        }
     }
 
 
@@ -133,57 +140,50 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, DeviceDO> imple
         updateById(updateData);
     }
 
-    /**
-     * 下发命令读取设备参数
-     */
     @Override
-    public void publishMsg(List<CommonDownDataVO> commonDownDataVOS, boolean usingCache) {
-
-
+    public void publishMqttMsg(List<CommonDownDataVO> commonDownDataVOS) {
+        /**
+         * 查询设备信息
+         */
         List<String> deviceSnList = commonDownDataVOS.stream().map(CommonDownDataVO::getDeviceSn).distinct().collect(Collectors.toList());
-        Map<String, CommonDownDataVO> downDataVOMap = commonDownDataVOS.stream().collect(Collectors.toMap(CommonDownDataVO::getDeviceSn, Function.identity(), (t1, t2) -> t1));
-
         List<DeviceDO> deviceDOList = findByDeviceSn2(deviceSnList);
-        Map<String, DeviceDO> dtuMap = deviceDOList.stream()
+        Map<String, DeviceDO> mattDeviceMap = deviceDOList.stream()
                 .filter(deviceDO -> StringUtils.isNotBlank(deviceDO.getDtuSn()))
                 .collect(Collectors.toMap(DeviceDO::getDeviceSn, Function.identity(), (t1, t2) -> t1));
-
-
         /**
          * 发布mqtt消息
          */
-        dtuMap.forEach((sn, deviceDO) -> {
-            CommonDownDataVO commonDownDataVO = downDataVOMap.get(sn);
-
+        commonDownDataVOS.forEach(commonDownDataVO -> {
+            DeviceDO deviceDO = mattDeviceMap.get(commonDownDataVO.getDeviceSn());
+            if(Objects.isNull(deviceDO))
+                return;
             try {
                 mqttService.publish(deviceDO.getDtuSn(), DtuDownDataVO.builder().dataVOList(Arrays.asList(commonDownDataVO)).build());
             } catch (Exception e) {
                 log.error("MQTT消息发布出错啦commonDownDataVO={}", JSONObject.toJSONString(commonDownDataVO), e);
             }
         });
+    }
 
-        /**
-         * 发布udp消息
-         */
-        Map<String, DeviceDO> udpMap = deviceDOList.stream()
-                .filter(deviceDO -> StringUtils.isEmpty(deviceDO.getDtuSn()))
-                .collect(Collectors.toMap(DeviceDO::getDeviceSn, Function.identity(), (t1, t2) -> t1));
 
-        udpMap.forEach((sn, deviceDO) -> {
-            CommonDownDataVO commonDownDataVO = downDataVOMap.get(sn);
+    @Override
+    public void publishUdpMsg(List<CommonDownDataVO> commonDownDataVOS) {
 
+        commonDownDataVOS.forEach(commonDownDataVO -> {
             try {
-                if(usingCache){
-                    udpService.sendCommand2cache(sn, DtuDownDataVO.builder().dataVOList(Arrays.asList(commonDownDataVO)).build());
-                }else{
-                    udpService.sendCommandAsync(sn, DtuDownDataVO.builder().dataVOList(Arrays.asList(commonDownDataVO)).build());
-                }
+                DtuDownDataVO dtuDownDataVO = DtuDownDataVO.builder().dataVOList(Arrays.asList(commonDownDataVO)).build();
+                dtuDownDataVO.setPublishTime(LocalDateTime.now());
+                commonDownDataVO.setMid(midGenerator.generatorMid(commonDownDataVO.getDeviceSn()));
+
+                log.info("UDP命令加入redis 缓存={}", JSONObject.toJSONString(dtuDownDataVO));
+
+                String udpMsgCacheKey = RedisKeyUtil.udpMsgCacheKey(commonDownDataVO.getDeviceSn());
+                redisCache.setCacheMapValue(udpMsgCacheKey,String.valueOf(commonDownDataVO.getCmdCode()),dtuDownDataVO);
+                redisCache.expire(udpMsgCacheKey,1L, TimeUnit.HOURS);
             } catch (Exception e) {
-                log.error("UDP消息发布出错啦commonDownDataVO={}", JSONObject.toJSONString(commonDownDataVO), e);
+                log.error("UDP消息写入缓存出错啦commonDownDataVO={}", JSONObject.toJSONString(commonDownDataVO), e);
             }
         });
-
-
     }
 
 

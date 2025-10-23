@@ -21,6 +21,7 @@ public enum DownCmdEnum {
     DOWNLINK_23((byte)0x23, Float.class,2,"下发设置/读取上报间隔"),
     DOWNLINK_25((byte)0x25,Float.class,2,"下发设置/读取采集间隔"),
     DOWNLINK_30((byte)0x30,Float.class,2,"下发设置/读取阀门开度"),
+
     DOWNLINK_40((byte)0x40,null,null,"下发读取实时数据并上报"),
     DOWNLINK_F0((byte)0xF0,null,null,"设备固件升级"),
     DOWNLINK_FF((byte)0xFF, Date.class,4,"下发时间戳"),
@@ -42,8 +43,13 @@ public enum DownCmdEnum {
     ;
 
 
-    public static List<DownCmdEnum> autoFreshCommands(){
+    public static List<DownCmdEnum> mqttAutoFreshCommands(){
         return Arrays.asList(DOWNLINK_16,DOWNLINK_19,DOWNLINK_26,DOWNLINK_23,DOWNLINK_25,DOWNLINK_30);
+    }
+
+
+    public static List<DownCmdEnum> udpAutoFreshCommands(){
+        return Arrays.asList(DOWNLINK_16,DOWNLINK_19,DOWNLINK_26,DOWNLINK_23,DOWNLINK_25,DOWNLINK_UDP_E0,DOWNLINK_UDP_E1,DOWNLINK_UDP_E2,DOWNLINK_UDP_E3,DOWNLINK_UDP_E4,DOWNLINK_UDP_E5 );
     }
 
 

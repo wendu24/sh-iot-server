@@ -20,9 +20,12 @@ public interface DeviceService extends IService<DeviceDO> {
 
     public void add(DeviceVO deviceVO);
 
-    public void refreshData(RefreshDeviceVO refreshDeviceVO, boolean usingCache);
+    public void refreshData(RefreshDeviceVO refreshDeviceVO);
 
-    public void publishMsg(List<CommonDownDataVO> commonDownDataVOS, boolean usingCache);
+    public void publishMqttMsg(List<CommonDownDataVO> commonDownDataVOS);
+
+    public void publishUdpMsg(List<CommonDownDataVO> commonDownDataVOS);
+
 
     public DeviceDO findByDeviceSn(String deviceSn) throws Exception ;
 

@@ -39,14 +39,6 @@ public class UdpServerHandler extends SimpleChannelInboundHandler<DatagramPacket
 
         udpService.handleAllMsg(msg);
 
-//        UplinkDataVO uplinkDataVO = UdpDataParseContext.parseData(sn, msg);
-//        log.info("解析出来的数据 headerDataVO={}",uplinkDataVO);
-//        uplinkMsgHandler.handle(uplinkDataVO);
-//        /**
-//         * 触发消息下发
-//         */
-//        nettyUdpServer.doSend(sn);
-
     }
 
 

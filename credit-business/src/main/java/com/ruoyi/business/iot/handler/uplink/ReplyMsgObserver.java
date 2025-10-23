@@ -3,10 +3,13 @@ package com.ruoyi.business.iot.handler.uplink;
 import com.alibaba.fastjson2.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.ruoyi.business.domain.MsgSetReplyDO;
 import com.ruoyi.business.iot.common.vo.UplinkDataVO;
 import com.ruoyi.business.iot.common.vo.uplink.CmdFFDataVO;
 import com.ruoyi.business.service.MsgSetReplyService;
+import com.ruoyi.business.util.RedisKeyUtil;
+import com.ruoyi.common.core.redis.RedisCache;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -24,6 +27,7 @@ public class ReplyMsgObserver extends AbstractUplinkMsgObserver {
 
     @Autowired
     MsgSetReplyService msgSetReplyService;
+
 
     @Override
     public void handle(UplinkDataVO uplinkDataVO) {

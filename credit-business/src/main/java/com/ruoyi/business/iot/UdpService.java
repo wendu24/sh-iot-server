@@ -5,13 +5,16 @@ import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.ruoyi.business.iot.common.util.AesUtil;
 import com.ruoyi.business.iot.common.util.MidGenerator;
 import com.ruoyi.business.iot.common.vo.UplinkDataVO;
+import com.ruoyi.business.iot.common.vo.down.CommonDownDataVO;
 import com.ruoyi.business.iot.common.vo.down.DtuDownDataVO;
 import com.ruoyi.business.iot.handler.DownMsgHandler;
 import com.ruoyi.business.iot.handler.UplinkMsgHandler;
 import com.ruoyi.business.iot.packager.udp.UdpDataPackager;
 import com.ruoyi.business.iot.parser.UdpDataParseContext;
 import com.ruoyi.business.iot.udp.NettyUdpServer;
+import com.ruoyi.business.util.RedisKeyUtil;
 import com.ruoyi.business.vo.UdpManualDownVO;
+import com.ruoyi.common.core.redis.RedisCache;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
@@ -21,12 +24,11 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Component
 public class UdpService {
-
-    private static final ConcurrentHashMap<String, List<DtuDownDataVO>> dataCache = new ConcurrentHashMap<>();
 
     @Autowired
     private DownMsgHandler downMsgHandler;
@@ -39,6 +41,9 @@ public class UdpService {
 
     @Autowired
     private NettyUdpServer nettyUdpServer;
+
+    @Autowired
+    RedisCache redisCache;
 
     /**
      * 处理所有接收到的所有的udp数据
@@ -56,25 +61,8 @@ public class UdpService {
          * 数据处理
          */
         uplinkMsgHandler.handle(uplinkDataVO);
-        /**
-         * 接收到消息后,触发缓存消息下发
-         */
-        sendCachedMsg(sn);
     }
 
-
-    /**
-     * 由于UDP不稳定,所以先缓存,设备上传数据后在一次性下发
-     *
-     * @param sn
-     * @param dtuDownDataVO
-     * @throws Exception
-     */
-    public void sendCommand2cache(String sn, DtuDownDataVO dtuDownDataVO) {
-        log.info("命令加入udp缓存={}", JSONObject.toJSONString(dtuDownDataVO));
-        List<DtuDownDataVO> list = dataCache.computeIfAbsent(sn, k -> new ArrayList<>());
-        list.add(dtuDownDataVO); // 直接操作返回的列表
-    }
 
     /**
      * 直接下发
@@ -85,10 +73,7 @@ public class UdpService {
      */
     @Async
     public void sendCommandAsync(String sn, DtuDownDataVO dtuDownDataVO) {
-        dtuDownDataVO.getDataVOList().forEach(commonDownDataVO -> commonDownDataVO.setMid(midGenerator.generatorMid(commonDownDataVO.getDeviceSn())));
-        dtuDownDataVO.setPublishTime(LocalDateTime.now());
         try {
-            Thread.sleep(5000);
             /**
              * 构造数据下发的字节数组
              */
@@ -107,56 +92,4 @@ public class UdpService {
     }
 
 
-    /**
-     * 发送缓存的消息
-     *
-     * @param sn
-     */
-    public void sendCachedMsg(String sn) {
-        List<DtuDownDataVO> dtuDownDataVOS = dataCache.get(sn);
-        if (CollectionUtils.isEmpty(dtuDownDataVOS))
-            return;
-        dtuDownDataVOS.forEach(dtuDownDataVO -> {
-            try {
-                log.info("sn={}准备下发缓存的udp数据 dtuDownDataVO={}", sn, JSONObject.toJSONString(dtuDownDataVO));
-                sendCommandAsync(sn, dtuDownDataVO);
-            } catch (Exception e) {
-                log.error("构建下发数据出错啦dtuDownDataVO={}", JSONObject.toJSONString(dtuDownDataVO), e);
-            }
-        });
-        clearCacheData(sn);
-    }
-
-    /**
-     * 手动发送消息
-     *
-     * @param udpManualDownVO
-     */
-    public void sendMsgManual(UdpManualDownVO udpManualDownVO) {
-        udpManualDownVO.getDataVOList().forEach(commonDownDataVO -> commonDownDataVO.setMid(midGenerator.generatorMid(commonDownDataVO.getDeviceSn())));
-        udpManualDownVO.setPublishTime(LocalDateTime.now());
-        String sn = udpManualDownVO.getDataVOList().get(0).getDeviceSn();
-        DtuDownDataVO dtuDownDataVO = DtuDownDataVO.builder()
-                .publishTime(udpManualDownVO.getPublishTime())
-                .dataVOList(udpManualDownVO.getDataVOList())
-                .build();
-        /**
-         * 构造数据下发的字节数组
-         */
-        try {
-            byte[] dataBytes = UdpDataPackager.build(dtuDownDataVO, sn, AesUtil.getAesKey(sn));
-            nettyUdpServer.sendMessage(udpManualDownVO.getIp(), udpManualDownVO.getPort(), sn,dataBytes);
-        } catch (Exception e) {
-            log.error("手动发送信息出错",e);
-        }
-    }
-
-    public static void clearCacheData(String deviceSn) {
-        List<DtuDownDataVO> dtuDownDataVOS = dataCache.get(deviceSn);
-        if (CollectionUtils.isNotEmpty(dtuDownDataVOS)) {
-            log.info("清除缓存 dtuDownDataVOS={}", JSONObject.toJSONString(dtuDownDataVOS));
-            dtuDownDataVOS.clear();
-        }
-
-    }
 }
