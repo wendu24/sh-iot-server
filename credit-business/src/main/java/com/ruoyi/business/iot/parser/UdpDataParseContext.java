@@ -38,11 +38,10 @@ public class UdpDataParseContext {
      * @param hexString
      * @return
      */
-    public static UplinkDataVO parseData(String deviceSn, String hexString){
+    public static UplinkDataVO parseData(String deviceSn, String hexString,String aesKey){
 
         byte[] rawData = IotCommonUtil.hexToBytes(hexString);
         String version = parseVersion(hexString);
-        String aesKey = AesUtil.getAesKey(deviceSn);
         try {
             /**
              * 第一步: 解析出消息体并解密

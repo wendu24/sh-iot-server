@@ -34,4 +34,5 @@ public interface DeviceService extends IService<DeviceDO> {
     public List<DeviceDO> findByDeviceSn2(List<String> deviceSns);
 
 
+
 }

@@ -21,18 +21,17 @@ import java.nio.ByteOrder;
 public class MqttDataParseContext {
 
 
-    public static UplinkDataVO parse(String topic, String hexString){
-        String[] parts = topic.split("/");
-        String dtuDeviceSN = parts[3];
-        UplinkDataVO uplinkDataVO = parseData(dtuDeviceSN, hexString);
+    public static UplinkDataVO parse(String topicDeviceSn, String hexString,String aesKey){
+//        String[] parts = topic.split("/");
+//        String dtuDeviceSN = parts[3];
+        UplinkDataVO uplinkDataVO = parseData(topicDeviceSn, hexString,aesKey);
         return uplinkDataVO;
     }
 
 
-    private static UplinkDataVO parseData(String dtuDeviceSN, String hexString){
+    private static UplinkDataVO parseData(String dtuDeviceSN, String hexString,String aesKey){
 
         byte[] rawData = IotCommonUtil.hexToBytes(hexString);
-        String aesKey = AesUtil.getAesKey(dtuDeviceSN);
         try {
             /**
              * 第一步: 解析出消息体并解密
@@ -102,8 +101,4 @@ public class MqttDataParseContext {
         return IotCommonUtil.bytesToHex(snBytes);
     }
 
-    public static void main(String[] args) {
-        MqttDataParseContext mqttDataParseContext = new MqttDataParseContext();
-//        mqttMsgHandler.handle2();
-    }
 }

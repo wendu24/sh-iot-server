@@ -1,11 +1,17 @@
 package com.ruoyi.business.iot.common.util;
 
+import com.ruoyi.business.domain.DeviceDO;
+import com.ruoyi.business.service.DeviceService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 
 @Slf4j
+@Component
 public class AesUtil {
 
     // AES 加密相关常量
@@ -13,19 +19,18 @@ public class AesUtil {
     private static final String CIPHER_TRANSFORMATION = "AES/ECB/PKCS5Padding"; // 加密模式：AES ECB 模式 + PKCS7 填充
 
 
-    public static String getAesKey(String deviceSn){
-        return "SHUANG12345678HE";
-    }
+    public static final String DEFAULT_AES_KEY =  "SHUANG12345678HE";
 
 
     /**
      * 使用 AES ECB 模式和 PKCS7 填充对数据进行加密
+     *
      * @param payload 要加密的原始数据
      * @param key     16 字节的 AES 密钥
      * @return 加密后的字节数组
      */
     public static byte[] aesEncrypt(byte[] payload, byte[] key) throws Exception {
-        log.info("加密前的数据={}",IotCommonUtil.bytesToHex(payload));
+        log.info("加密前的数据={}", IotCommonUtil.bytesToHex(payload));
         SecretKeySpec secretKey = new SecretKeySpec(key, AES_ALGORITHM);
         Cipher cipher = Cipher.getInstance(CIPHER_TRANSFORMATION);
         cipher.init(Cipher.ENCRYPT_MODE, secretKey);
@@ -33,9 +38,9 @@ public class AesUtil {
     }
 
 
-
     /**
      * 使用 AES ECB 模式和 PKCS7 填充对数据进行解密
+     *
      * @param encryptedPayload 要解密的加密数据
      * @param key              16 字节的 AES 密钥
      * @return 解密后的原始字节数组
