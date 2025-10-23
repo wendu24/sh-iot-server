@@ -3,6 +3,7 @@ package com.ruoyi.business.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import com.alibaba.fastjson2.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ruoyi.business.constant.DeleteEnum;
@@ -65,7 +66,9 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, DeviceDO> imple
         queryWrapper.eq(StringUtils.isNotEmpty(deviceVO.getDeviceSn()), DeviceDO::getDeviceSn, deviceVO.getDeviceSn());
         queryWrapper.eq(StringUtils.isNotEmpty(deviceVO.getDtuSn()), DeviceDO::getDtuSn, deviceVO.getDtuSn());
         queryWrapper.eq(Objects.nonNull(deviceVO.getDeviceType()), DeviceDO::getDeviceType, deviceVO.getDeviceType());
+        queryWrapper.eq(Objects.nonNull(deviceVO.getCommunityId()),DeviceDO::getCommunityId,deviceVO.getCommunityId());
         queryWrapper.eq(DeviceDO::getDeleteFlag, DeleteEnum.NORMAL.getCode());
+        queryWrapper.in(CollectionUtils.isNotEmpty(deviceVO.getDeviceTypes()),DeviceDO::getDeviceType,deviceVO.getDeviceTypes());
         queryWrapper.like(StringUtils.isNotEmpty(deviceVO.getCommunityName()), DeviceDO::getCommunityName, deviceVO.getCommunityName());
         queryWrapper.orderByDesc(DeviceDO::getId);
         Page<DeviceDO> pageParam = new Page<>(deviceVO.getPageNum(), deviceVO.getPageSize());

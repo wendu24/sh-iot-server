@@ -4,6 +4,9 @@ package com.ruoyi.business.constant;
 import lombok.Data;
 import lombok.Getter;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * 10:DTU;20:阀门;30:测温模板;40:压力传感器
  */
@@ -22,6 +25,12 @@ public enum DeviceTypeEnum {
     public static boolean udpDeviceType(Integer deviceType){
         return DEV_TEMPERATURE.code.equals(deviceType);
     }
+
+    public static List<Integer> mqttDeiceTypes(){
+        return Arrays.asList(DEV_DTU.code,DEV_VALVE.code,DEV_PRESSURE.code);
+    }
+
+
 
     private Integer code;
 

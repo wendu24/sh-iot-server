@@ -12,6 +12,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @Builder
@@ -148,6 +149,11 @@ public class DeviceVO {
      * 当前页数
      */
     private Integer pageNum;
+
+    /**
+     * 查询参数
+     */
+    private List<Integer> deviceTypes;
 
     /**
      * 创建时间
