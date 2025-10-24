@@ -62,6 +62,7 @@ public class CmdDataPackager {
 
     private static void writeData(ByteArrayOutputStream outputStream,CommonDownDataVO commonDownDataVO) throws IOException {
         DownCmdEnum downCmdEnum = DownCmdEnum.getByCode(commonDownDataVO.getCmdCode());
+        log.info("构造下发命令消息={}",downCmdEnum.getDesc());
         if(downCmdEnum.getDataClazz() == Float.class ){
             // 写入数据 (2 字节)
             outputStream.write(IotCommonUtil.shortToBytes(commonDownDataVO.getData().shortValue()));
@@ -79,9 +80,9 @@ public class CmdDataPackager {
             byte[] timeBytes = IotCommonUtil.intToBytes(time);
             outputStream.write(timeBytes);
             outputStream.write((byte)0);
-            log.info("time={}",time);
-            log.info("timeBytes={}",IotCommonUtil.bytesToHex(timeBytes));
 
+        }else if(downCmdEnum.getDataClazz() == Byte.class) {
+            outputStream.write(commonDownDataVO.getData().byteValue());
         }else {
             log.error("暂不支持的数据类型");
         }
