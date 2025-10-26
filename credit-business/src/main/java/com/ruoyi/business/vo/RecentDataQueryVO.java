@@ -18,9 +18,9 @@ public class RecentDataQueryVO {
     /**
      * 数据采集时间
      */
-    private LocalDateTime collectTimeStartTime;
+    private LocalDateTime collectStartTime;
 
-    private LocalDateTime collectTimeEndTime;
+    private LocalDateTime collectEndTime;
 
     /**
      * 分页大小

@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ruoyi.business.domain.MqttDeviceRecentDataDO;
-import com.ruoyi.business.domain.UdpDeviceRecentDataDO;
 import com.ruoyi.business.mapper.MqttDeviceRecentDataMapper;
 import com.ruoyi.business.service.MqttDeviceRecentDataService;
 import com.ruoyi.business.vo.RecentDataQueryVO;
@@ -26,8 +25,8 @@ public class MqttDeviceRecentDataServiceImpl extends ServiceImpl<MqttDeviceRecen
         LambdaQueryWrapper<MqttDeviceRecentDataDO> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(StringUtils.isNotEmpty(recentDataQueryVO.getDeviceSn()),MqttDeviceRecentDataDO::getDeviceSn,recentDataQueryVO.getDeviceSn());
         queryWrapper.eq(Objects.nonNull(recentDataQueryVO.getCommunityId()),MqttDeviceRecentDataDO::getCommunityId,recentDataQueryVO.getCommunityId());
-        queryWrapper.ge(Objects.nonNull(recentDataQueryVO.getCollectTimeStartTime()),MqttDeviceRecentDataDO::getCollectionTime,recentDataQueryVO.getCollectTimeStartTime());
-        queryWrapper.le(Objects.nonNull(recentDataQueryVO.getCollectTimeEndTime()),MqttDeviceRecentDataDO::getCollectionTime,recentDataQueryVO.getCollectTimeEndTime());
+        queryWrapper.ge(Objects.nonNull(recentDataQueryVO.getCollectStartTime()),MqttDeviceRecentDataDO::getCollectionTime,recentDataQueryVO.getCollectStartTime());
+        queryWrapper.le(Objects.nonNull(recentDataQueryVO.getCollectEndTime()),MqttDeviceRecentDataDO::getCollectionTime,recentDataQueryVO.getCollectEndTime());
         queryWrapper.orderByDesc(MqttDeviceRecentDataDO::getId);
         Page<MqttDeviceRecentDataDO> pageParam = new Page<>(recentDataQueryVO.getPageNum(), recentDataQueryVO.getPageSize());
         return  page(pageParam, queryWrapper);
