@@ -61,10 +61,10 @@ public class MsgSetReplyServiceImpl extends ServiceImpl<MsgSetReplyMapper, MsgSe
 
                 if (ReadWriteEnum.READ.getCode().equals(readWriteFlag) && StringUtils.isNotBlank(doRecord.getReplyBody())) {
                     JsonNode replyBodyNode = mapper.readTree(doRecord.getReplyBody());
-                    vo.setReplyData(replyBodyNode.get("data").asText());
+                    vo.setReplyData(replyBodyNode.path("data").asText());
                 } else if (ReadWriteEnum.WRITE.getCode().equals(readWriteFlag)) {
-                    String data = msgBodyNode.get("data").asText(null);
-                    String dataStr = msgBodyNode.get("dataStr").asText(null);
+                    String data = msgBodyNode.path("data").asText("");
+                    String dataStr = msgBodyNode.path("dataStr").asText("");
                     vo.setPublishData(StringUtils.isEmpty(data) ? dataStr : data);
                 }
             } catch (Exception e) {

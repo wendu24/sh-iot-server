@@ -45,7 +45,7 @@ public class Cmd08DataParser {
         byte dataNum = buffer.get();
         UdpCmd08DataVO udpCmd08DataVO = UdpCmd08DataVO.builder()
                 .deviceSn(deviceSn)
-                .deviceVersion(IotCommonUtil.byte2Gigdecimal(deviceVersion))
+                .deviceVersion(BigDecimal.valueOf(deviceVersion))
                 .abnormalTypes(buildAbnormalTypes(warning))
                 .batteryLevel(IotCommonUtil.byte2int(batteryLevel) == 255?null:IotCommonUtil.byte2int(batteryLevel))
                 .reportPeriod(reportPeriod)
