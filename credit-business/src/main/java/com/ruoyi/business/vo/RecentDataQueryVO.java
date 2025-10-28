@@ -1,5 +1,6 @@
 package com.ruoyi.business.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -18,8 +19,10 @@ public class RecentDataQueryVO {
     /**
      * 数据采集时间
      */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime collectStartTime;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime collectEndTime;
 
     /**
